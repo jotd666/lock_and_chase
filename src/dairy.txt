@@ -1,0 +1,29 @@
+1. First reverse engineering phase (using Notepad++, python & MAME)
+
+- Disassembled the ROM ($C000-$FFFF)
+- MAME sources copied for reference
+- named the variables that MAME cheat reveals (number of lives, time... whatever)
+- Memory map & I/O copied from MAME source into the disassembly
+- identified the location where the number of credits is written on screen
+- identified credits variable ($1f) by following the source of the char written for credits
+- removed the non-code parts (we'll use the ROM binary images to read the data)
+- dumped the sprites & tiles using MAME - tile saving edition
+  
+2. Build the executable
+
+- keeping old private versions of "graphics.68k", and other generated stuff copied from burger_time
+  just for it to link
+- extracted data offsets
+- ran the conversion to 68k
+- started to fix .error directives, adapted code using a post processing script (in tools)
+- fixed missing entrypoints
+- coded the important "get_address" function to select which memory bank is read/written to
+
+3. Booting
+
+- changed read/write from/to $400x addresses to relevant DSW reads or scroll writes
+- ensured that copper interrupt happens in properly set copperlist
+  (else no copper => no sync => program stuck)
+- now we have to figure out where screen writes occur to perform osd_w_videoram calls
+  and display tiles on screen (we'll see for sprites later). Tag the original source code
+  
