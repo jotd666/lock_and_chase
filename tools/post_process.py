@@ -4,13 +4,10 @@ from shared import *
 
 
 
-input_dict = {"system_3300":"read_system_inputs",
-"in0_3301":"read_inputs_1",
-"in1_3302":"read_inputs_2",
-"speech_4000":"set_speech_status",
-"speech_6000":"get_speech_status",
-"scroll_dir_2042":"set_scroll_direction",
-"audio_register_w_1500":"sound_start",
+input_dict = {
+"player_1_controls_9000":"read_inputs",
+
+
 
 }
 

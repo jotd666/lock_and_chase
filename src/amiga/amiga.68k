@@ -177,7 +177,8 @@ start:
 	.global	osd_set_background
 	.global	osd_clear_background
 	.global	osd_sound_command
-		
+	.global	osd_read_inputs
+	
 
 
 		.global	is_game_playing
@@ -2222,7 +2223,10 @@ set_bitplanes:
 osd_debug_hook:
 	rts
 	
-
+osd_read_inputs:
+	move.b	player_1_controls,d0
+	rts
+	
 
 * < D1: previous state
 update_controls:
@@ -2278,30 +2282,6 @@ update_controls:
 	beq.b	0f
 	bclr	#BIT_FIRE,d0
 0:
-	* control hack
-*	move.b	player_1_controls,d3	| old inputs
-*	and.w	#0xF,d3
-*	move.b	d0,d4
-*	and.w	#0xF,d4
-*	cmp.b	d3,d4
-*	jeq		0f
-*	* old/new direction changes
-*	lea		direction_table(pc),a0
-*	not.b	d4
-*	not.b	d3
-*	tst.b	(a0,d4.w)
-*	bpl		0f
-*	* new input is a diagonal, see what old input was
-*	tst.b	(a0,d3.w)
-*	jmi		0f		| diagonal too, give it up!
-*	* new input diagonal, old input not diagonal
-*	* keep only new direction
-*	eor.b	d3,d4
-*	not.b	d4
-*	and.w	#0xF,d4
-*	and.w	#0xF0,d0
-*	or.b	d4,d0
-*0:
 	move.b	d0,player_1_controls
 
 	bsr		is_game_playing
