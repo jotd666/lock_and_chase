@@ -181,12 +181,12 @@ skip\@:
 
 	.macro GET_ADDRESS	offset
 	lea	\offset,a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_UNCHECKED_ADDRESS	offset
 	lea	\offset,a0
-	jbsr	get_address
+	lea		(a6,a0.l),a0
 	.endm
 
 	.macro GET_ADDRESS_X	offset
@@ -195,20 +195,70 @@ skip\@:
 	.else
 	lea	\offset\().w,a0
 	.endif
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	lea	(a0,d1.w),a0
 	READ_LE_WORD	a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
 	.macro GET_INDIRECT_ADDRESS	offset
 	GET_ADDRESS	\offset
 	READ_LE_WORD	a0
-	jbsr	get_address
+	GET_ADDRESS_FUNC
 	.endm
 
+	.macro	GET_UNCHECKED_ADDRESS_FUNC
+	lea		(a6,a0.l),a0
+	.endm
+	
 
+	.ifdef	RELEASE
+	.macro	GET_ADDRESS_FUNC
+	GET_UNCHECKED_ADDRESS_FUNC
+	.endm
+	
+	.else
+	
+	.macro	GET_ADDRESS_FUNC
+	jbsr	get_address
+	.endm
+	
+	
+* dev mode, more checks about the address
 get_address:
-	ERROR    "TODO: implement this by adding memory base to a0"
+	cmp.l	#0xC000,a0
+	jcc		10f		| rom: ok
+	cmp.w	#0x4000,a0
+	jcs		0f
+	* >= 0x4000
+	cmp.w	#0x7800,a0
+	jcc		0f
+	BREAKPOINT	"unsupported address range 0x4000-0x77FF"
+	illegal
+0:
+	cmp.l	#0x8000,a0
+	jcc		1f
+	* 0X3c00 <= range < 0x4000, video ram
+	cmp.w	#0x7c00,a0
+	jcs		0f
+	* video/attribute: must be done without "get_address"
+	jbsr	osd_get_last_known_pc
+	BREAKPOINT	"unsupported address range 0x7c00-0x7FFF, PC in D6"	
+0:
+	cmp.w	#0x3c00,a0
+	jcs		10f
+	* 0X3c00 <= range < 0x4000, video ram
+	* video/attribute: must be done without "get_address"
+	jbsr	osd_get_last_known_pc
+	BREAKPOINT	"unsupported address range 0x3c00-0x3FFF, PC in D6"
+	jra		10f
+0:
+1:
+	* >0x8000
+	BREAKPOINT	"unsupported address range 0x8000-0xBFFF, PC in D6"
+	
+10:
+	GET_UNCHECKED_ADDRESS_FUNC
 	rts
-
+	.endif
+	

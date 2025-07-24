@@ -178,6 +178,7 @@ start:
 	.global	osd_clear_background
 	.global	osd_sound_command
 	.global	osd_read_inputs
+	.global	osd_wait_for_sync
 	
 
 
@@ -361,10 +362,6 @@ _user:
 	move.w	#TOTAL_NB_COLORS,d0
 	lea		playfield_palette,a0
 	lea		game_colors,a1
-	bsr		load_palette
-	move.w	#TOTAL_NB_COLORS,d0
-	lea		background_palette,a0
-	lea		background_colors,a1
 	bsr		load_palette
 	move.w	#TOTAL_NB_COLORS,d0
 	lea		playfield_palette,a0
@@ -610,7 +607,7 @@ demo_game:
 	* compute ram start
 	lea		ram_buffer,a6
 	.ifndef	RELEASE
-	* align so real addresses are $xxxx8yyyy
+	* align so real addresses are $xxxx0yyy
 	* and lower 16-bit match original RAM offsets
 	move.l	a6,d0
 	clr.w	d0
@@ -619,9 +616,15 @@ demo_game:
 	move.l	a6,ram_start_0000
 	.endif
 	
-	* TODO: copy ROM at the end
-	ILLEGAL
-
+	* copy ROM at the end. Memory is one big block now
+	lea	rom_base,a0
+	move.l	a6,a1
+	add.l	#0xC000,a1
+	move.w	#0xFFF,d0
+0:
+	move.l	(a0)+,(a1)+
+	dbf		d0,0b
+	
 	* enable interrupts. Game doesn't use them
 	* but relies on vbl sync flags
 	moveq	#1,d0
@@ -741,8 +744,12 @@ _vblank:
     movem.l (a7)+,d0-d7/a0-a6
     rte
 	
-
-
+osd_wait_for_sync:
+	tst.b	bof_sync_flag
+	jeq		osd_wait_for_sync
+	clr.b	bof_sync_flag
+	rts
+	
 osd_blitz:
 	blitz
 	rts
@@ -1963,7 +1970,7 @@ compute_tile_xy:
 * < D1: Y (in pixels)
 * < D2: tile code
 update_bg_tile:
-
+	.ifdef	xxxxx
 	lea		background_table,a0
 
 	
@@ -2012,7 +2019,7 @@ update_bg_tile:
 5:
 	CLEAR_TILE16_PLANE
 	jra		41b
-
+	.endif
 
 
 * each column has 0x20*8 = 256 pixels

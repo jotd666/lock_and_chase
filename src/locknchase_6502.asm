@@ -239,7 +239,7 @@ C137: 20 A6 B9 jsr $d9c6
 C13A: A2 5B    ldx #$3b
 C13C: 20 DC B9 jsr $d9bc
 C13F: 20 59 B1 jsr $d139
-C142: 20 D7 BB jsr $dbb7
+C142: 20 D7 BB jsr sync_dbb7
 C145: 20 B1 BC jsr $dcd1
 C148: 20 5B A2 jsr $c23b
 C14B: 20 B6 AA jsr $cad6
@@ -510,7 +510,7 @@ C3A9: 09 80    ora #$80
 C3AB: 85 5C    sta $3c
 C3AD: A9 05    lda #$05
 C3AF: 20 E7 B9 jsr $d9e7
-C3B2: 20 D7 BB jsr $dbb7
+C3B2: 20 D7 BB jsr sync_dbb7
 C3B5: A9 01    lda #$01
 C3B7: 20 E0 B7 jsr $d7e0
 C3BA: A9 A0    lda #$c0
@@ -544,7 +544,7 @@ C3F3: 85 5C    sta $3c
 C3F5: A9 20    lda #$40
 C3F7: 85 29    sta $49
 C3F9: 20 E0 B9 jsr $d9e0
-C3FC: 20 D7 BB jsr $dbb7
+C3FC: 20 D7 BB jsr sync_dbb7
 C3FF: A9 C5    lda #$a5
 C401: 20 E7 B9 jsr $d9e7
 C404: A5 29    lda $49
@@ -809,7 +809,7 @@ C691: 85 5B    sta $3b
 C693: A9 00    lda #$00
 C695: 20 E0 B7 jsr $d7e0
 C698: 20 E0 B9 jsr $d9e0
-C69B: 20 D7 BB jsr $dbb7
+C69B: 20 D7 BB jsr sync_dbb7
 C69E: A9 C5    lda #$a5
 C6A0: 20 E7 B9 jsr $d9e7
 C6A3: 60       rts
@@ -992,7 +992,7 @@ C8C1: DD 21 A9 cmp $c941, x
 C8C4: D0 7A    bne $c940
 C8C6: E6 58    inc $38
 C8C8: 20 B8 B9 jsr $d9d8
-C8CB: 20 D7 BB jsr $dbb7
+C8CB: 20 D7 BB jsr sync_dbb7
 C8CE: A9 45    lda #$25
 C8D0: 20 E7 B9 jsr $d9e7
 C8D3: A9 80    lda #$80
@@ -1959,15 +1959,15 @@ D338: 20 BD BB jsr $dbdd
 D33B: 20 C6 B3 jsr $d3a6
 D33E: 20 A2 BB jsr $dbc2
 D341: 20 E2 BB jsr $dbe2
-D344: 20 D7 BB jsr $dbb7
+D344: 20 D7 BB jsr sync_dbb7
 D347: 20 CD B3 jsr $d3ad
 D34A: 20 A2 BB jsr $dbc2
 D34D: 20 E7 BB jsr $dbe7
-D350: 20 D7 BB jsr $dbb7
+D350: 20 D7 BB jsr sync_dbb7
 D353: 20 D4 B3 jsr $d3b4
 D356: 20 A2 BB jsr $dbc2
 D359: 20 EC BB jsr $dbec
-D35C: 20 D7 BB jsr $dbb7
+D35C: 20 D7 BB jsr sync_dbb7
 D35F: 20 DB B3 jsr $d3bb
 D362: 20 A2 BB jsr $dbc2
 D365: 20 F1 BB jsr $dbf1
@@ -2099,7 +2099,7 @@ D4A4: A9 F8    lda #$f8
 D4A6: 8D 02 7C sta $7c02
 D4A9: A9 94    lda #$94
 D4AB: 8D 03 7C sta $7c03
-D4AE: 20 D7 BB jsr $dbb7
+D4AE: 20 D7 BB jsr sync_dbb7
 D4B1: 20 B1 BC jsr $dcd1
 D4B4: 20 9C BC jsr $dc9c
 D4B7: 20 5C B5 jsr $d53c
@@ -2232,7 +2232,7 @@ D61B: 8D 06 7C sta $7c06
 D61E: A9 94    lda #$94
 D620: 8D 03 7C sta $7c03
 D623: 8D 07 7C sta $7c07
-D626: 20 D7 BB jsr $dbb7
+D626: 20 D7 BB jsr sync_dbb7
 D629: 20 B1 BC jsr $dcd1
 D62C: 20 9C BC jsr $dc9c
 D62F: 20 5C B5 jsr $d53c
@@ -2572,7 +2572,7 @@ D94C: E6 4D    inc $2d
 D94E: 20 8C BA jsr $da8c
 D951: A9 0B    lda #$0b
 D953: 20 E7 B9 jsr $d9e7
-D956: 20 D7 BB jsr $dbb7
+D956: 20 D7 BB jsr sync_dbb7
 D959: 60       rts
 
 
@@ -2805,14 +2805,16 @@ DBB1: 18       clc
 DBB2: 69 5C    adc #$3c
 DBB4: 85 CC    sta $ac
 DBB6: 60       rts
+
+sync_dbb7:
 DBB7: AD 00 80 lda dsw1_8000
-DBBA: 10 FB    bpl $dbb7
+DBBA: 10 FB    bpl sync_dbb7
 DBBC: AD 00 80 lda dsw1_8000
 DBBF: 30 FB    bmi $dbbc
 DBC1: 60       rts
 DBC2: A9 18    lda #$18
 DBC4: 85 C3    sta $a3
-DBC6: 20 D7 BB jsr $dbb7
+DBC6: 20 D7 BB jsr sync_dbb7
 DBC9: C6 C3    dec $a3
 DBCB: D0 F9    bne $dbc6
 DBCD: 60       rts

@@ -24,10 +24,36 @@ with open(source_dir / "conv.s") as f:
             equates.append(line.replace("$","0x"))
             line = ""
 
+        if "nop" in line.split():
+            line = remove_instruction(lines,i)
+
+        if "stray b" in line:
+            line = ""       # when disabling this, make sure that false alarms have been reviewed
+
+        if "[$f7df:" in line or "[$f7df:" in line or "[$f7eb:" in line:
+            # X flag set by lsr
+            line = "\tSET_C_FROM_X\n"+line
+            lines[i+1]=""
+
+        if "unsupported return from interrupt" in line:
+            line = change_instruction("rts",lines,i)
+
+        if any(x in line for x in ("GET_ADDRESS","GET_INDIRECT_ADDRESS","or.","move.","addq.","clr.")):
+            if "POP_SR" in lines[i-1]:
+                # optimize: no need to restore SR, it won't be used
+                lines[i-1] = ""
+                for j in range(i-1,i-10,-1):
+                    if j>=0 and "PUSH_SR" in lines[j]:
+                        lines[j] = ""
+                        break
 
         # pre-add video_address tag if we find a store instruction to an explicit 3000-3FFF address
         if store_to_video.search(line):
             line = line.rstrip() + " [video_address]\n"
+
+        if "[$d031:" in line:
+            line = "\tINVERT_XC_FLAGS\n"+line       # cmp invert before RTS
+            lines[i+1] = ""
 
         if "road_row_counter_0830" in line and ":" in line:
             # special case: not really a video address
@@ -52,7 +78,8 @@ with open(source_dir / "conv.s") as f:
         line = re.sub(tablere,subt,line)
 
 
-
+        # sync system is crap
+        line = line.replace("jbsr\tsync_dbb7","jbsr\tosd_wait_for_sync")
 
         if "GET_ADDRESS" in line:
             val = line.split()[1]
