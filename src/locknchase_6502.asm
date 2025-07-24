@@ -317,6 +317,13 @@ C1F0: 88       dey
 C1F1: 10 F7    bpl $c1ea
 C1F3: 60       rts
 
+C1F6: A4 04    ldy $04
+C1F8: F0 0F    beq $c209
+C1FA: 4C 0F A2 jmp $c20f
+C1FD: A0 01    ldy #$01
+C1FF: A5 05    lda $05
+C201: C9 02    cmp #$02
+C203: 90 04    bcc $c209
 C205: A4 06    ldy $06
 C207: C8       iny
 C208: C8       iny
@@ -359,7 +366,7 @@ C25C: 4C 91 A3 jmp $c391
 C25F: 4C ED A3 jmp $c3ed
 C262: 4C 2D A4 jmp $c44d
 C265: 4C 8F A4 jmp $c48f
-
+C26C: A5 4E    lda $2e
 C26D: 4E F0 03 lsr $03f0
 C270: 4C 01 A3 jmp $c301
 C273: A5 5C    lda $3c
@@ -677,7 +684,7 @@ C524: 85 5D    sta $3d
 C526: 60       rts
 C527: 20 DB A5 jsr $c5bb
 C52A: A6 2C    ldx $4c
-C52C: BD 3D A5 lda $c55d, x		; [jump_table]
+C52C: BD 3D A5 lda table_c55d, x		; [jump_table]
 C52F: 85 CD    sta $ad
 C531: BD 3E A5 lda $c55e, x
 C534: 85 CE    sta $ae
@@ -761,7 +768,9 @@ C62A: AA       tax
 C62B: BD 52 A6 lda $c632, x
 C62E: 20 E7 B9 jsr $d9e7
 C631: 60       rts
-
+C634: A5 5B    lda $3b
+C636: 09 02    ora #$02
+C638: 85 5B    sta $3b
 C63A: A6 59    ldx $39
 C63C: E6 59    inc $39
 C63E: BD 30 A6 lda $c650, x
@@ -773,15 +782,16 @@ C64A: A9 0A    lda #$0a
 C64C: 20 E7 B9 jsr $d9e7
 C64F: 60       rts
 
-C657: 68       pla
-C658: A6 0A    ldx $0a
+C654: A6 50    ldx $30
+C656: BD 68 A6 lda $c668, x
+C659: 0A       asl a
 C65A: 7D 68 A6 adc $c668, x
 C65D: 85 99    sta $99
 C65F: 20 FD B8 jsr $d8fd
 C662: A9 08    lda #$08
 C664: 20 E7 B9 jsr $d9e7
 C667: 60       rts
-
+C672: A5 23    lda $43
 C674: 4A       lsr a
 C675: 29 01    and #$01
 C677: AA       tax
@@ -793,8 +803,7 @@ C681: 90 05    bcc $c688
 C683: BD 8B A6 lda $c68b, x
 C686: 85 5E    sta $3e
 C688: 60       rts
-C689: EC F4 0C cpx $0cf4
-C68C: EC A5 5B cpx $3bc5
+C68D: A5 5B    lda $3b
 C68F: 09 08    ora #$08
 C691: 85 5B    sta $3b
 C693: A9 00    lda #$00
@@ -1084,6 +1093,8 @@ C9A9: 85 9B    sta $9b
 C9AB: C6 9B    dec $9b
 C9AD: 60       rts
 
+C9C5: A5 9C    lda $9c
+C9C7: 10 03    bpl $c9cc
 C9C9: 4C 62 AA jmp $ca62
 C9CC: A2 00    ldx #$00
 C9CE: AC E6 7E ldy $7ee6
@@ -1219,14 +1230,15 @@ CB07: 8D 14 7C sta $7c14
 CB0A: A9 FF    lda #$ff
 CB0C: 85 30    sta $50
 CB0E: 60       rts
-CB0F: BD 5C AB lda $cb3c, x
+
+CB0F: BD 5C AB lda table_cb3c, x		; [jump_table]
 CB12: 85 CD    sta $ad
 CB14: BD 5D AB lda $cb3d, x
 CB17: 85 CE    sta $ae
 CB19: A9 02    lda #$02
 CB1B: 85 31    sta $51
 CB1D: A6 2F    ldx $4f
-CB1F: BC 24 AB ldy $cb44, x		; [jump_table]
+CB1F: BC 24 AB ldy $cb44, x
 CB22: 20 F4 B2 jsr $d2f4
 CB25: 6C CD 00 jmp ($00ad)		; [indirect_jump]
 
@@ -1241,8 +1253,6 @@ CB37: C6 31    dec $51
 CB39: D0 E2    bne $cb1d
 CB3B: 60       rts
 
-CB48: 20 0A 04 jsr $040a
-CB4B: 40       rti
 CB4C: A5 35    lda $55
 CB4E: 29 07    and #$07
 CB50: 4A       lsr a
@@ -1397,8 +1407,7 @@ CCAB: 90 04    bcc $ccb1
 CCAD: A9 00    lda #$00
 CCAF: 85 64    sta $64
 CCB1: 60       rts
-
-
+CCEA: A9 00    lda #$00
 CCEC: 85 75    sta $75
 CCEE: 85 32    sta $52
 CCF0: 20 17 B1 jsr $d117
@@ -1422,7 +1431,7 @@ CD16: A0 04    ldy #$04
 CD18: 98       tya
 CD19: 0A       asl a
 CD1A: AA       tax
-CD1B: BD 48 AD lda $cd28, x		; [jump_table]
+CD1B: BD 48 AD lda table_cd28, x		; [jump_table]
 CD1E: 85 6F    sta $6f
 CD20: BD 49 AD lda $cd29, x
 CD23: 85 70    sta $70
@@ -1492,7 +1501,10 @@ CDB9: 85 6E    sta $6e
 CDBB: C6 6E    dec $6e
 CDBD: E6 6D    inc $6d
 CDBF: 60       rts
-
+CDD0: A4 3F    ldy $5f
+CDD2: BE F0 AB ldx $cbf0, y
+CDD5: B5 7B    lda $7b, x
+CDD7: 10 05    bpl $cdde
 CDD9: B9 F9 AB lda $cbf9, y
 CDDC: 85 3F    sta $5f
 CDDE: 60       rts
@@ -1516,7 +1528,8 @@ CDFC: 18       clc
 CDFD: 79 05 AE adc $ce05, y
 CE00: 95 39    sta $59, x
 CE02: 60       rts
-
+CE07: A6 76    ldx $76
+CE09: BC 66 AE ldy $ce66, x
 CE0C: A5 3F    lda $5f
 CE0E: 3D 6A AE and $ce6a, x
 CE11: F0 18    beq $ce2b
@@ -1634,12 +1647,14 @@ CF0F: A5 35    lda $55
 CF11: 29 04    and #$04
 CF13: F0 02    beq $cf17
 CF15: A2 00    ldx #$00
-CF17: BD 44 AF lda $cf24, x		; [jump_table]
+CF17: BD 44 AF lda table_cf24, x		; [jump_table]
 CF1A: 85 71    sta $71
 CF1C: BD 45 AF lda $cf25, x
 CF1F: 85 72    sta $72
 CF21: 6C 71 00 jmp ($0071)		; [indirect_jump]
 
+CF2E: 60       rts
+CF2F: 20 73 AF jsr $cf73
 CF32: A5 3D    lda $5d
 CF34: 18       clc
 CF35: 65 77    adc $77
@@ -1686,7 +1701,8 @@ CF80: CA       dex
 CF81: 10 FA    bpl $cf7d
 CF83: 85 77    sta $77
 CF85: 60       rts
-
+D00A: A5 5B    lda $3b
+D00C: 29 04    and #$04
 D00E: D0 1A    bne $d02a
 D010: A5 37    lda $57
 D012: 38       sec
@@ -1908,7 +1924,8 @@ D2E2: B9 68 02 lda $0268, y
 D2E5: 3D F0 B2 and $d2f0, x
 D2E8: 99 68 02 sta $0268, y
 D2EB: 60       rts
-
+D2F4: 84 C4    sty $a4                                             
+D2F6: A2 00    ldx #$00                                            
 D2F8: B9 00 02 lda $0200, y
 D2FB: 95 35    sta $55, x
 D2FD: C8       iny
@@ -2201,7 +2218,12 @@ D5F8: 9D 11 5E sta $3e11, x
 D5FB: CA       dex
 D5FC: 10 F7    bpl $d5f5
 D5FE: 60       rts
-
+D606: A9 00    lda #$00
+D608: 85 35    sta $55
+D60A: 85 36    sta $56
+D60C: 85 37    sta $57
+D60E: 85 38    sta $58
+D610: 85 3B    sta $5b
 D612: A9 0F    lda #$0f
 D614: 85 39    sta $59
 D616: A9 F8    lda #$f8
@@ -2293,11 +2315,7 @@ D6D8: 20 E8 B6 jsr $d6e8
 D6DB: A9 A0    lda #$c0
 D6DD: 85 36    sta $56
 D6DF: 4C 46 B6 jmp $d626
-D6E2: 68       pla
-D6E3: 24 94    bit $94
-D6E5: 94 95    sty $95, x
-D6E7: 95 BD    sta $dd, x
-D6E9: 05 B7    ora $d7
+D6E8: BD 05 B7 lda $d705, x
 D6EB: 85 3B    sta $5b
 D6ED: BD 06 B7 lda $d706, x
 D6F0: 85 3C    sta $5c
@@ -2487,7 +2505,7 @@ D8CA: C6 75    dec $75
 D8CC: D0 ED    bne $d8bb
 D8CE: 60       rts
 
-D8D1: 2C 29 0F bit $0f49
+D8D2: 29 0F    and #$0f
 D8D4: D0 18    bne $d8ee
 D8D6: A4 76    ldy $76
 D8D8: F0 18    beq $d8f2
@@ -2586,9 +2604,7 @@ D9EB: F0 03    beq $d9f0
 D9ED: 8D 02 90 sta system_9002
 D9F0: A6 D2    ldx $b2
 D9F2: 60       rts
-D9F3: 16 17    asl $17, x
-D9F5: 18       clc
-D9F6: 19 19 F8 ora $f819, y
+D9F8: F8       sed
 D9F9: 38       sec
 D9FA: A5 02    lda $02
 D9FC: E9 01    sbc #$01
@@ -2671,7 +2687,7 @@ DA9F: 20 CC BA jsr $daac
 DAA2: C6 C1    dec $a1
 DAA4: 10 EC    bpl $da92
 DAA6: 60       rts
-
+DAAC: A2 00    ldx #$00
 DAAE: 8E 03 80 stx inc_charbank_8003
 DAB1: A2 03    ldx #$03
 DAB3: BC DF BA ldy $dabf, x
@@ -2682,6 +2698,8 @@ DABB: CA       dex
 DABC: 10 F5    bpl $dab3
 DABE: 60       rts
 
+DAC3: A6 4F    ldx $2f
+DAC5: F0 08    beq $dacf
 DAC7: A5 50    lda $30
 DAC9: C9 09    cmp #$09
 DACB: B0 02    bcs $dacf
@@ -2726,8 +2744,7 @@ DB0A: 69 01    adc #$01
 DB0C: C8       iny
 DB0D: 99 9C 5F sta $3f9c, y
 DB10: 60       rts
-
-
+DB2F: A9 00    lda #$00
 DB31: 8D 03 80 sta inc_charbank_8003
 DB34: 20 16 A9 jsr $c916
 DB37: 20 97 A9 jsr $c997
@@ -2755,7 +2772,9 @@ DB68: 10 EE    bpl $db58
 DB6A: A9 01    lda #$01
 DB6C: 20 E0 B7 jsr $d7e0
 DB6F: 60       rts
-
+DB79: A5 04    lda $04
+DB7B: F0 43    beq $dba0
+DB7D: A0 00    ldy #$00
 DB7F: AD 00 80 lda dsw1_8000
 DB82: 29 20    and #$40
 DB84: F0 02    beq $db88
@@ -2863,7 +2882,7 @@ DC5D: 4C 27 BC jmp $dc47
 DC60: A9 00    lda #$00
 DC62: 8D 03 80 sta inc_charbank_8003
 DC65: 60       rts
-
+DC9C: A5 02    lda $02
 DC9E: F0 18    beq $dcb8
 DCA0: 20 83 B7 jsr $d783
 DCA3: A9 00    lda #$00
@@ -2895,9 +2914,9 @@ DCDA: 8D 00 80 sta dsw1_8000
 DCDD: 60       rts
 
 
-
-
-E1BA: 06 AA    asl $ca
+E1B8: 0A       asl a
+E1B9: 65 06    adc $06
+E1BB: AA       tax
 E1BC: BC F1 E1 ldy $e1f1, x
 E1BF: B9 F7 E1 lda $e1f7, y
 E1C2: 85 C9    sta $a9
@@ -2994,7 +3013,9 @@ E60F: 20 45 E6 jsr $e625
 E612: 20 3B E6 jsr $e65b
 E615: 20 66 BA jsr $da66
 E618: 60       rts
-
+E625: A4 37    ldy $57
+E627: B1 35    lda ($55), y
+E629: 99 72 00 sta $0072, y
 E62C: 88       dey
 E62D: 10 F8    bpl $e627
 E62F: A5 72    lda $72
@@ -3346,7 +3367,7 @@ E97F: 38       sec
 E980: E9 1E    sbc #$1e
 E982: 0A       asl a
 E983: AA       tax
-E984: BD BB E9 lda $e9db, x
+E984: BD BB E9 lda table_e9db, x	; [jump_table]
 E987: 85 35    sta $55
 E989: BD BC E9 lda $e9dc, x
 E98C: 85 36    sta $56
@@ -3354,7 +3375,7 @@ E98E: A9 5F    lda #$3f
 E990: 85 60    sta $60
 E992: A9 0A    lda #$0a
 E994: 20 E7 B9 jsr $d9e7
-E997: 6C 35 00 jmp ($0055)
+E997: 6C 35 00 jmp ($0055)        ; [indirect_jump]
 E99A: 60       rts
 E99B: A5 62    lda $62
 E99D: 29 40    and #$20
@@ -3392,7 +3413,7 @@ E9D4: A5 61    lda $61
 E9D6: 09 20    ora #$40
 E9D8: 85 61    sta $61
 E9DA: 60       rts
-
+E9E7: A5 62    lda $62
 E9E9: 29 40    and #$20
 E9EB: D0 ED    bne $e9da
 E9ED: A9 F5    lda #$f5
@@ -3558,8 +3579,10 @@ EB2A: 85 C1    sta $a1
 EB2C: 60       rts
 
 
-
+insert_coin_irq_f000:
 F000: 4C AD F1 jmp $f1cd
+
+reset_f003:
 F003: 4C 09 F0 jmp $f009
 F006: 4C 05 F2 jmp $f205
 F009: A2 FF    ldx #$ff
@@ -3745,12 +3768,13 @@ F19A: 8D 02 90 sta system_9002
 F19D: A5 08    lda $08
 F19F: 0A       asl a
 F1A0: AA       tax
-F1A1: BD CE F1 lda $f1ae, x		; [jump_table]
+F1A1: BD CE F1 lda table_f1ae, x		; [jump_table]
 F1A4: 85 09    sta $09
 F1A6: BD CF F1 lda $f1af, x
 F1A9: 85 0A    sta $0a
 F1AB: 6C 09 00 jmp ($0009)		; [indirect_jump]
 
+F1BA: A9 00    lda #$00
 F1BC: 8D 02 90 sta system_9002
 F1BF: E6 08    inc $08
 F1C1: A5 08    lda $08
@@ -4506,3 +4530,42 @@ F7ED: A9 02    lda #$02
 F7EF: 9D B1 5D sta $3dd1, x
 F7F2: 68       pla
 F7F3: 60       rts
+table_c55d:
+	dc.w	$c6c2	; $c55d
+	dc.w	$c617	; $c55f
+	dc.w	$c634	; $c561
+	dc.w	$c654	; $c563
+	dc.w	$c672	; $c565
+	dc.w	$c68d	; $c567
+	dc.w	$c6a4	; $c569
+table_cb3c:
+	dc.w	$cb4c	; $cb3c
+	dc.w	$cb86	; $cb3e
+	dc.w	$cba1	; $cb40
+	dc.w	$cb9b	; $cb42
+table_cd28:
+	dc.w	$cd32	; $cd28
+	dc.w	$cd48	; $cd2a
+	dc.w	$cd6b	; $cd2c
+	dc.w	$cd87	; $cd2e
+	dc.w	$cdd0	; $cd30
+table_cf24:
+	dc.w	$cf2e	; $cf24
+	dc.w	$cf2f	; $cf26
+	dc.w	$cf40	; $cf28
+	dc.w	$cf51	; $cf2a
+	dc.w	$cf62	; $cf2c
+table_e9db:
+	dc.w	$e9e7	; $e9db
+	dc.w	$e9e7	; $e9dd
+	dc.w	$e9fd	; $e9df
+	dc.w	$e9fd	; $e9e1
+	dc.w	$e9f6	; $e9e3
+	dc.w	$e9f6	; $e9e5
+table_f1ae:
+	dc.w	$f31a	; $f1ae
+	dc.w	$f453	; $f1b0
+	dc.w	$f4dd	; $f1b2
+	dc.w	$f55e	; $f1b4
+	dc.w	$f6b3	; $f1b6
+	dc.w	$f7a1	; $f1b8

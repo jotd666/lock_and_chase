@@ -1,4 +1,4 @@
-PROGNAME = lock_and_chase
+PROGNAME = locknchase
 MAIN_000 = ..\$(PROGNAME)_000
 MAIN_020 = ..\$(PROGNAME)_020
 

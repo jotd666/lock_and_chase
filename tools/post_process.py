@@ -21,7 +21,7 @@ with open(source_dir / "conv.s") as f:
     while i < len(lines):
         line = lines[i]
         if " = " in line:
-            equates.append(line)
+            equates.append(line.replace("$","0x"))
             line = ""
 
 
@@ -88,11 +88,10 @@ with open(source_dir / "conv.s") as f:
 with open(source_dir / "data.inc","w") as fw:
     fw.writelines(equates)
 
-with open(source_dir / "lock_and_chase.68k","w") as fw:
-    fw.write("""\t*.include "jailbreak.inc"
+with open(source_dir / "locknchase.68k","w") as fw:
+    fw.write("""\t*.include "locknchase.inc"
 .include "data.inc"
-\t.global\tirq_8a57
-\t.global\tirq_b05d
-\t.global\treset_81a6
+\t.global\tinsert_coin_irq_f000
+\t.global\treset_f003
 """)
     fw.writelines(lines)

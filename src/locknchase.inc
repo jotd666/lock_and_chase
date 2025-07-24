@@ -3,7 +3,36 @@
 * include file which contains generic macros
 * and also macros that the user must fill/tune
 
+	.ifdef	RELEASE
+	.macro	BREAKPOINT comment
+	.endm
 
+	.else
+	.ifdef	__amiga__
+LOG_BUFFER_SIZE = 0x80000
+	* amiga specific
+	.macro	BREAKPOINT comment
+	move.l	a0,-(a7)
+	lea		comment\@(pc),a0
+	jbsr	osd_break
+	move.l	(a7)+,a0
+	jra		next\@
+comment\@:
+	.asciz	"\comment"
+	.align	2
+next\@:
+	.endm
+	.else
+	.macro	BREAKPOINT comment
+	.endm
+	.endif
+	
+	.endif
+	
+	.macro	ERROR	arg
+	*.error	"\arg"     | comment out to disable errors
+	.endm
+	
 	.ifdef	MC68020
 * 68020 optimized
 	.macro PUSH_SR
@@ -139,16 +168,23 @@ skip\@:
 	.endm
 
 	.macro SET_I_FLAG
-.error "TODO: insert interrupt disable code here"
+	ERROR  "TODO: insert interrupt disable code here"
 	.endm
 	.macro CLR_I_FLAG
-.error  "TODO: insert interrupt enable code here"
+	ERROR   "TODO: insert interrupt enable code here"
 	.endm
 
 
-
+	.macro	VIDEO_BYTE_DIRTY
+	
+	.endm
 
 	.macro GET_ADDRESS	offset
+	lea	\offset,a0
+	jbsr	get_address
+	.endm
+
+	.macro GET_UNCHECKED_ADDRESS	offset
 	lea	\offset,a0
 	jbsr	get_address
 	.endm
@@ -171,4 +207,8 @@ skip\@:
 	jbsr	get_address
 	.endm
 
+
+get_address:
+	ERROR    "TODO: implement this by adding memory base to a0"
+	rts
 

@@ -14,7 +14,7 @@
 .include "custom.i"
 .include "dos_lvos.i"
 .include "whdload_funcs.i"
-.include "burger_time.inc"
+.include "locknchase.inc"
 .include "sounds.inc"
 
 SCORE_FILE_SIZE = 0x23
