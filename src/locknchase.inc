@@ -262,3 +262,13 @@ get_address:
 	rts
 	.endif
 	
+	.macro	PUSH_TABLE_X_ADDRESS	table
+	lea		\table(pc),a0
+	and.w	#0xFF,d1
+	.ifdef	MC68020
+	move.l	(a0,d1.w*2),-(a7)
+	.else
+	add.w	d1,d1
+	move.l	(a0,d1.w),-(a7)
+	.endif
+	.endm

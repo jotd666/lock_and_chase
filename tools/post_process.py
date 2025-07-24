@@ -24,10 +24,23 @@ with open(source_dir / "conv.s") as f:
             equates.append(line.replace("$","0x"))
             line = ""
 
-        if "nop" in line.split():
+        if "GET_ADDRESS\ttable" in line:
+            line = line.replace("GET_ADDRESS","PUSH_TABLE_X_ADDRESS")
+            if any(x in line for x in ("_cd28","_cf24","_c55d","_f1ae")):
+                lines[i+1] = "\trts   | rest of the code is useless, just jump\n\n"
+            if "_e9db" in line:
+                for j in range(i+1,i+11):
+                    lines[j] = ""
+            else:
+                lines[i+1] = ""
+
+        if "[indirect_jump]" in line:
+            line = change_instruction("rts",lines,i)  # proper address already on stack
+
+        elif "nop" in line.split():
             line = remove_instruction(lines,i)
 
-        if "stray b" in line:
+        elif "stray b" in line:
             line = ""       # when disabling this, make sure that false alarms have been reviewed
 
         if "[$f7df:" in line or "[$f7df:" in line or "[$f7eb:" in line:
