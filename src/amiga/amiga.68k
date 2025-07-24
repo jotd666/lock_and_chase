@@ -670,13 +670,7 @@ _vblank:
 	bne.b	13f
 	move.b	music_track_start_number,d1
 	jbsr		osd_music_stop
-	tst.b	d1
-	jne		13f
-	* music start just ended, play the loop music
-	tst.b	no_main_tune
-	jne		13f
-	move.w	#MAIN_TUNE_SND,d0
-	jbsr	osd_sound_start
+
 13:
 	
 	* ack vbl twice (040/pistorm bug)

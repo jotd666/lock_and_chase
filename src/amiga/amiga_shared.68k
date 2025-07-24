@@ -7,7 +7,10 @@
 		.global	force_sound_stop
 		.global music_tick
 		.global	music_track_start_number
-
+		.global	osd_get_last_known_pc
+		.global	osd_log_cpu
+		.global	osd_cpu_logging_control
+	
 
 * sound engine and also highscore management, common to all versions
 	
@@ -243,22 +246,38 @@ osd_sound_start:
 
 	
 
+osd_get_last_known_pc:
+	move.w	last_known_m6502_pc,d6
+	rts
+	
+osd_log_cpu:
+	move.w	(6,a7),last_known_m6502_pc
+	rts
+	
+	
+* < D6: 0 disable, 1 enable
+osd_cpu_logging_control:
+	move.b	d6,cpu_log_enable
+	rts
 	
 music_playing:
 	.byte	0
 looped_sound_enabled:
 	.byte	0
+cpu_log_enable:
+	.byte 0
 music_loops:
 	.byte	0
 music_volume:
 	.byte	0
 music_track_start_number:
-	.word	0
+	.word	-1
 music_pattern:
 	.word	0
 music_tick:
 	.word	0
-
+last_known_m6502_pc:
+	.word	0xFFFF
 music_duration:
 	.word	0
 high_score_buffer:
