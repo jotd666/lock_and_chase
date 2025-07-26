@@ -4,11 +4,18 @@ from shared import *
 
 
 
-input_dict = {
+input_read_dict = {
 "player_1_controls_9000":"read_inputs",
+"dsw1_8000":"read_dsw1",
+"dsw2_8001":"read_dsw2",
+}
 
-
-
+input_write_dict = {
+"player_1_controls_9000":"",
+"dsw1_8000":"",
+"dsw2_8001":"video_control",
+"system_9002":"",   # sound_start
+"inc_charbank_8003":"",  # inc charbank
 }
 
 
@@ -94,8 +101,13 @@ with open(source_dir / "conv.s") as f:
         # sync system is crap
         line = line.replace("jbsr\tsync_dbb7","jbsr\tosd_wait_for_sync")
 
+        if "[$f23f" in line:
+            line = change_instruction("jbra\tosd_wait_for_sync",lines,i)
+
         if "GET_ADDRESS" in line:
             val = line.split()[1]
+            toks = line.split()
+            input_dict = input_read_dict if "lda" in toks else input_write_dict
             osd_call = input_dict.get(val)
             if osd_call is not None:
                 if osd_call:
@@ -103,6 +115,10 @@ with open(source_dir / "conv.s") as f:
                 else:
                     line = remove_instruction(lines,i)
                 lines[i+1] = remove_instruction(lines,i+1)
+            if "read_dsw1" in line and "sta" in line:
+                line = remove_instruction(lines,i)
+            if "read_dsw2" in line and "sta" in line:
+                line = change_instruction("jbsr\tosd_video_control",lines,i)
 
 
         elif "unsupported instruction rti" in line:

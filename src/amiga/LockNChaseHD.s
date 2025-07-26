@@ -68,7 +68,7 @@ DECL_VERSION:MACRO
 	ENDC
 	ENDM
 _data   dc.b    0
-_name	dc.b	'Burger Time',0
+_name	dc.b	"Lock'N'Chase",0
 _copy	dc.b	'2025 JOTD',0
 _info
     dc.b    "Music by no9",0
@@ -135,5 +135,6 @@ progstart
 	; 020 exe just uses CCR instead of SR. Not a problem in
 	; supervisor mode
 exe:
-	dc.b	"burger_time_000",0
+	dc.b	"locknchase_000",0
+
 	

@@ -3,31 +3,8 @@
 * include file which contains generic macros
 * and also macros that the user must fill/tune
 
-	.ifdef	RELEASE
-	.macro	BREAKPOINT comment
-	.endm
 
-	.else
-	.ifdef	__amiga__
-LOG_BUFFER_SIZE = 0x80000
-	* amiga specific
-	.macro	BREAKPOINT comment
-	move.l	a0,-(a7)
-	lea		comment\@(pc),a0
-	jbsr	osd_break
-	move.l	(a7)+,a0
-	jra		next\@
-comment\@:
-	.asciz	"\comment"
-	.align	2
-next\@:
-	.endm
-	.else
-	.macro	BREAKPOINT comment
-	.endm
-	.endif
-	
-	.endif
+	.include	"breakpoint.inc"
 	
 	.macro	ERROR	arg
 	*.error	"\arg"     | comment out to disable errors
@@ -176,7 +153,7 @@ skip\@:
 
 
 	.macro	VIDEO_BYTE_DIRTY
-	
+	jbsr	osd_video_byte_dirty
 	.endm
 
 	.macro GET_ADDRESS	offset
@@ -205,6 +182,12 @@ skip\@:
 	GET_ADDRESS	\offset
 	READ_LE_WORD	a0
 	GET_ADDRESS_FUNC
+	.endm
+
+	.macro GET_INDIRECT_UNCHECKED_ADDRESS	offset
+	GET_ADDRESS	\offset
+	READ_LE_WORD	a0
+	GET_UNCHECKED_ADDRESS_FUNC
 	.endm
 
 	.macro	GET_UNCHECKED_ADDRESS_FUNC
@@ -254,7 +237,8 @@ get_address:
 	jra		10f
 0:
 1:
-	* >0x8000
+	* >=0x8000
+	jbsr	osd_get_last_known_pc
 	BREAKPOINT	"unsupported address range 0x8000-0xBFFF, PC in D6"
 	
 10:
@@ -263,7 +247,7 @@ get_address:
 	.endif
 	
 	.macro	PUSH_TABLE_X_ADDRESS	table
-	lea		\table(pc),a0
+	lea		\table,a0
 	and.w	#0xFF,d1
 	.ifdef	MC68020
 	move.l	(a0,d1.w*2),-(a7)

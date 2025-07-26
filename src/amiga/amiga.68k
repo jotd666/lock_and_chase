@@ -1,16 +1,16 @@
 *
-*	Amiga-specific portions of Burger Time
+*	Amiga-specific portions of Lock'n'Chase
 *
 * (c) JOTD 2025
 *
 
 
 
-.include "../src/locknchase.inc"
-.include "custom.i"
-.include "exec_lvos.i"
-.include "dos_lvos.i"
-.include "graphics_lvos.i"
+	.include "../src/breakpoint.inc"
+	.include "custom.i"
+	.include "exec_lvos.i"
+	.include "dos_lvos.i"
+	.include "graphics_lvos.i"
 
 AttnFlags = 0x128
 AFB_68010 = 0
@@ -34,8 +34,10 @@ Y_MAX = 256
 
 
 BASE_BPLCON2_VALUE = 0x0064		| sprites above all playfields
-SCREEN_TILE_ADDRESS = 0x1000
-SCREEN_COLOR_ADDRESS = 0x1400
+SPRITE_ADDRESS = 0x3C00
+MIRROR_ADDRESS = 0x7C00
+SCREEN_TILE_ADDRESS = 0x3c20
+SCREEN_COLOR_ADDRESS = 0x7800
 
 
 
@@ -52,12 +54,10 @@ TARGET_SPRITE_CODE = 1
 
 
 	.ifdef	RELEASE
-OPT_ENABLE_PROFILING = 0         | DO NOT CHANGE THIS
 OPT_ENABLE_LOGGING = 0           | DO NOT CHANGE THIS
 
 	.else
 OPT_ENABLE_LOGGING = 0
-OPT_ENABLE_PROFILING = 0
 * set to higher values than 1 to speed game up
 
 
@@ -170,17 +170,14 @@ start:
 	.global osd_interrupt_control
 	.global osd_break		| for debug	
 	.global osd_blitz		| for debug
-	.global osd_w_videoram
 	.global osd_read_dsw0
 	.global osd_read_dsw1
 	.global osd_read_dsw2
-	.global	osd_set_background
-	.global	osd_clear_background
 	.global	osd_sound_command
 	.global	osd_read_inputs
 	.global	osd_wait_for_sync
-	
-
+	.global	osd_video_control
+	.global	osd_video_byte_dirty
 
 		.global	is_game_playing
 		
@@ -188,11 +185,6 @@ start:
 	.include	"whdload_funcs.i"
 		.text
 
-
-	.ifne	OPT_ENABLE_PROFILING
-	* init profiling if enabled
-	.include	"profiler.68k"
-	.endif
 
 	    
 _user:
@@ -915,6 +907,10 @@ blit_background:
 	movem.l	(a7)+,d2-d6/a0-a5
 	rts
 
+osd_video_byte_dirty:
+	BREAKPOINT
+	rts
+	
 * we're going to scan for dirty tiles (0x400 array)
 * an optimization is to also have flags for 0x20-size regions
 * if the value is 0, then no need to try to refresh the next
@@ -968,7 +964,7 @@ really_update_sprites:
 update_bobs_and_hw_sprites:
 	* make a copy of the sprite memory
 	GET_RAM_START_IN_A6
-	lea	(0x1800,a6),a0
+	lea	(SPRITE_ADDRESS,a6),a0
 	lea	sprite_memory,a1
 	* super-quick copy of 32 bytes of memory
 	movem.l	(a0),d0-d7
@@ -1639,14 +1635,6 @@ platform_init:
 	moveq	#1,d0	| PAL
 	jsr		_mt_install_cia
 
-	.ifne	OPT_ENABLE_PROFILING
-	* init profiling if enabled
-	lea		0x180000,a0
-	move.l	#0x20000,d0
-	lea		0x100,a1
-	bsr		init_fixed_address
-	bsr		install_profiler_vbl_hook
-	.endif
 
 	
     rts
@@ -1678,42 +1666,6 @@ osd_interrupt_control:
 	rts
 0:
 	move.w	#0x0030,_custom+intena
-	rts
-
-osd_set_background:
-	move.w	#0xFF,d3
-	moveq	#0,d0
-	moveq	#0,d1
-0:
-	move.b	(a0)+,d2
-	movem.l	d0-d1/a0,-(a7)
-	jbsr	update_bg_tile
-	movem.l	(a7)+,d0-d1/a0
-	addq	#2,d0
-	cmp.b	#0x20,d0
-	jne		1f
-	moveq	#0,d0
-	add.w	#0x10,d1
-1:
-	dbf		d3,0b
-	rts
-	
-osd_clear_background:
-	move.w	#0xFF,d3
-	moveq	#0,d0
-	moveq	#0,d1
-0:
-	moveq	#0,d2
-	movem.l	d0-d1/a0,-(a7)
-	jbsr	update_bg_tile
-	movem.l	(a7)+,d0-d1/a0
-	addq	#2,d0
-	cmp.b	#0x20,d0
-	jne		1f
-	moveq	#0,d0
-	add.w	#0x10,d1
-1:
-	dbf		d3,0b
 	rts
 	
 	
@@ -1837,7 +1789,7 @@ osd_w_videoram:
 	.ifndef	RELEASE
 	jmi		2f
 	.endif
-	cmp.w	#0x1820,d7
+	cmp.w	#SCREEN_TILE_ADDRESS,d7
 	jcs		0f
 	jbsr	mirrored_videoram
 	jra		1f
@@ -1872,7 +1824,7 @@ osd_w_videoram:
 	move.w	d7,d1	
 	lsr.w		#5,d1
 	move.l	a6,a0
-	add.w	#0x1800,a0
+	add.w	#SPRITE_ADDRESS,a0
 	move.b	d0,(a0,d1.w)
 4:
 	* now set the flag for tile refresh in copper interrupt (so it doesn't
@@ -2190,6 +2142,9 @@ set_bitplanes:
 
 	
 osd_debug_hook:
+	rts
+	
+osd_video_control:
 	rts
 	
 osd_read_inputs:

@@ -2642,7 +2642,7 @@ DA47: 85 C6    sta $a6
 DA49: A0 00    ldy #$00
 DA4B: A9 00    lda #$00
 DA4D: 8D 03 80 sta inc_charbank_8003
-DA50: 91 C5    sta ($a5), y
+DA50: 91 C5    sta ($a5), y		; [video_address]
 DA52: C8       iny
 DA53: D0 FB    bne $da50
 DA55: E6 C6    inc $a6
@@ -2650,7 +2650,7 @@ DA57: C6 C3    dec $a3
 DA59: D0 F0    bne $da4b
 DA5B: A0 1F    ldy #$1f
 DA5D: A9 00    lda #$00
-DA5F: 99 00 7C sta $7c00, y
+DA5F: 99 00 7C sta $7c00, y		; [video_address]
 DA62: 88       dey
 DA63: 10 F8    bpl $da5d
 DA65: 60       rts
@@ -2742,7 +2742,7 @@ DB07: 29 0F    and #$0f
 DB09: 18       clc
 DB0A: 69 01    adc #$01
 DB0C: C8       iny
-DB0D: 99 9C 5F sta $3f9c, y
+DB0D: 99 9C 5F sta $3f9c, y  ; [video_address]
 DB10: 60       rts
 DB2F: A9 00    lda #$00
 DB31: 8D 03 80 sta inc_charbank_8003
@@ -2763,10 +2763,10 @@ DB52: C6 C3    dec $a3
 DB54: 10 EC    bpl $db42
 DB56: A2 02    ldx #$02
 DB58: BD 76 BB lda $db76, x
-DB5B: 9D 2D 7C sta $7c4d, x
-DB5E: 9D 31 7C sta $7c51, x
-DB61: 9D CD 7F sta $7fad, x
-DB64: 9D D1 7F sta $7fb1, x
+DB5B: 9D 2D 7C sta $7c4d, x  ; [video_address]
+DB5E: 9D 31 7C sta $7c51, x  ; [video_address]
+DB61: 9D CD 7F sta $7fad, x  ; [video_address]
+DB64: 9D D1 7F sta $7fb1, x  ; [video_address]
 DB67: CA       dex
 DB68: 10 EE    bpl $db58
 DB6A: A9 01    lda #$01
@@ -2881,6 +2881,7 @@ DC57: 81 C5    sta ($a5, x)
 DC59: C8       iny
 DC5A: 20 7E BA jsr $da7e
 DC5D: 4C 27 BC jmp $dc47
+
 DC60: A9 00    lda #$00
 DC62: 8D 03 80 sta inc_charbank_8003
 DC65: 60       rts
@@ -3825,13 +3826,14 @@ F209: AA       tax
 F20A: 68       pla
 F20B: 8D 00 90 sta player_1_controls_9000
 F20E: 4C 98 F1 jmp $f198
+
 F211: A0 00    ldy #$00
 F213: A9 00    lda #$00
 F215: 85 0B    sta $0b
 F217: A9 7C    lda #$7c
 F219: 85 0C    sta $0c
 F21B: A9 00    lda #$00
-F21D: 91 0B    sta ($0b), y
+F21D: 91 0B    sta ($0b), y		; [video_address]
 F21F: C8       iny
 F220: D0 F9    bne $f21b
 F222: E6 0C    inc $0c

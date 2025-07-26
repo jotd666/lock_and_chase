@@ -252,6 +252,7 @@ osd_get_last_known_pc:
 	
 osd_log_cpu:
 	move.w	(6,a7),last_known_m6502_pc
+	move.w	(6,a7),0x100
 	rts
 	
 	
