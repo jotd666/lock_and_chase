@@ -2749,6 +2749,7 @@ DAD2: 69 01    adc #$01
 DAD4: 85 4F    sta $2f
 DAD6: D8       cld
 DAD7: 60       rts
+
 DAD8: A6 50    ldx $30
 DADA: A9 00    lda #$00
 DADC: 8D 03 80 sta inc_charbank_8003
@@ -2919,7 +2920,7 @@ DC4E: C9 FF    cmp #$ff
 DC50: F0 0E    beq $dc60
 DC52: 8D 03 80 sta inc_charbank_8003
 DC55: B1 C9    lda ($a9), y
-DC57: 81 C5    sta ($a5, x)
+DC57: 81 C5    sta ($a5, x)		; [video_address]
 DC59: C8       iny
 DC5A: 20 7E BA jsr $da7e
 DC5D: 4C 27 BC jmp $dc47

@@ -166,7 +166,7 @@ skip\@:
 	lea		(a6,a0.l),a0
 	.endm
 
-	.macro GET_ADDRESS_X	offset
+	.macro	PREP_GET_ADDRESS_X	offset
 	.ifgt	\offset-0x8000
 	lea	\offset,a0
 	.else
@@ -174,8 +174,17 @@ skip\@:
 	.endif
 	GET_ADDRESS_FUNC
 	lea	(a0,d1.w),a0
-	READ_LE_WORD	a0
+	READ_LE_WORD	a0	
+	.endm
+	
+	.macro GET_ADDRESS_X	offset
+	PREP_GET_ADDRESS_X	\offset
 	GET_ADDRESS_FUNC
+	.endm
+	
+	.macro GET_UNCHECKED_ADDRESS_X	offset
+	PREP_GET_ADDRESS_X	\offset
+	GET_UNCHECKED_ADDRESS_FUNC
 	.endm
 
 	.macro GET_INDIRECT_ADDRESS	offset

@@ -1,2 +1,7 @@
+- implement video dirty
+- figure out mirroring
+
+optim:
+
 - last post_processing phase: change move.b dx,(a0) / move.b (a0),dx after a GET_ADDRESS or such
   by direct (a6,a0.w) in zero page

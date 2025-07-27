@@ -619,6 +619,7 @@ demo_game:
 	
 	* enable interrupts. Game doesn't use them
 	* but relies on vbl sync flags
+	jbsr	cpu_init		| zero all registers
 	moveq	#1,d0
 	jbsr	osd_interrupt_control
 	jmp			reset_f003					| pass control to the mpatrol core

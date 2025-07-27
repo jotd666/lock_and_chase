@@ -58,8 +58,8 @@ with open(source_dir / "conv.s") as f:
             line = "\tSET_C_FROM_X\n"+line
             lines[i+1]=""
 
-        if "[$c0a0:" in line:
-            line = remove_instruction(lines,i)      # no need to set decimal here (credit add up to 9)
+        if "[$d9f8:" in line:
+            line = remove_instruction(lines,i)      # no need to set decimal here (credit adds up to 09 only)
 
         if "unsupported return from interrupt" in line:
             line = change_instruction("rts",lines,i)
@@ -109,6 +109,10 @@ with open(source_dir / "conv.s") as f:
 
         if "[$f23f" in line:
             line = change_instruction("jbra\tosd_wait_for_sync",lines,i)
+
+        if "[$f022:" in line or "[$f025:" in line:
+            # remove useless 2 second wait
+            line = remove_instruction(lines,i)
 
         if "GET_ADDRESS" in line:
             val = line.split()[1]
