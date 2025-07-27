@@ -41,6 +41,9 @@ with open(source_dir / "conv.s") as f:
             else:
                 lines[i+1] = ""
 
+        if "unsupported transfer to stack register" in line:
+            line = ""
+
         if "[indirect_jump]" in line:
             line = change_instruction("rts",lines,i)  # proper address already on stack
 
@@ -54,6 +57,9 @@ with open(source_dir / "conv.s") as f:
             # X flag set by lsr
             line = "\tSET_C_FROM_X\n"+line
             lines[i+1]=""
+
+        if "[$c0a0:" in line:
+            line = remove_instruction(lines,i)      # no need to set decimal here (credit add up to 9)
 
         if "unsupported return from interrupt" in line:
             line = change_instruction("rts",lines,i)
