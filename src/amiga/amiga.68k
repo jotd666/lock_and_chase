@@ -112,6 +112,12 @@ BIT_FIRE = 4
 	.endm
 	
 .macro	WAIT_BLIT
+	.ifndef	RELEASE
+	cmp.l	#_custom,a5
+	jeq		0f
+	BREAKPOINT	"custom should be set in A5"
+0:
+	.endif
 	move.w	#0x8400,(dmacon,a5)		| blitter high priority
 wait\@:
 	BTST	#6,(dmaconr,a5)
@@ -326,6 +332,9 @@ _user:
 	move.l	a0,playfield_drawed_screen_ptr
 	move.l	a0,playfield_displayed_screen_ptr
 
+	lea		bg_screen_buffer,a0
+	move.l	a0,background_screen_ptr
+	
 	st		music_track_start_number
 
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
@@ -356,6 +365,10 @@ _user:
 	move.w	#TOTAL_NB_COLORS,d0
 	lea		playfield_palette,a0
 	lea		game_colors,a1
+	bsr		load_palette
+	move.w	#TOTAL_NB_COLORS,d0
+	lea		playfield_palette,a0
+	lea		background_colors,a1
 	bsr		load_palette
 	move.w	#TOTAL_NB_COLORS,d0
 	lea		playfield_palette,a0
@@ -720,7 +733,7 @@ _vblank:
 	jeq		23f
 0:
 
-	*jbsr		really_update_sprites
+	jbsr		really_update_sprites
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	jbsr		switch_screen_buffers
@@ -805,13 +818,6 @@ osd_wait:
 
 
 	
-	
-osd_update_sprites:
-	movem.l	a0-a6/d0-d7,-(a7)
-	bsr		update_bobs_and_hw_sprites
-
-	movem.l	(a7)+,a0-a6/d0-d7
-	rts
 	
 
 	
@@ -915,8 +921,10 @@ blit_background:
 
 really_update_sprites:
 update_bobs_and_hw_sprites:
+	
 	* make a copy of the sprite memory
 	GET_RAM_START_IN_A6
+
 	lea	(MIRROR_ADDRESS,a6),a0   | crash!!!
 	lea	sprite_memory,a1
 	* super-quick copy of 32 bytes of memory
@@ -929,6 +937,7 @@ update_bobs_and_hw_sprites:
 	clr.l	(a0)+
 	dbf		D0,0b
 	
+
 	*****************************
 	* position hardware sprites *
 	*****************************
@@ -961,7 +970,8 @@ update_bobs_and_hw_sprites:
 	cmp.b	#4,d6
 	jne		11b
 2:
-
+	rts
+	
 	***********************
 	* erase previous BOBs *
 	***********************
@@ -971,7 +981,7 @@ update_bobs_and_hw_sprites:
 	
 
 	* clear previous positions
-	lea	restore_buffer,a0
+
 	move.l	playfield_drawed_screen_ptr(pc),a1
 	move.w	#NB_TARGET_SPRITES-1,d7
 1:
@@ -984,13 +994,14 @@ update_bobs_and_hw_sprites:
 	move.w	(a4),d4			| height
 	move.w	(2,a4),d2		| width
 	clr.l	(a4)+			| ack deletion
-	bsr		blit_background
+	**jbsr		blit_background
 	dbf		d7,1b	
 	bra.b	12f
 11:
 	addq	#PREVIOUS_SPRITE_SIZE,a4
 	dbf		d7,1b
 12:	
+
 
 	*********************
 	* draw current BOBs *
@@ -1003,7 +1014,7 @@ update_bobs_and_hw_sprites:
 	
 	moveq	#NB_TARGET_SPRITES-1,d7
 1:
-	jbsr	update_one_bob
+	*jbsr	update_one_bob
 	addq.w	#CURRENT_SPRITE_SIZE,a0
 	dbf		d7,1b
 
@@ -1167,7 +1178,7 @@ update_one_bob:
 
 	moveq	#NB_PLAYFIELD_PLANES,d3		| 3 planes
 
-	bsr		blit_planes_any_internal_cookie_cut
+	*jbsr		blit_planes_any_internal_cookie_cut
 2:
 	move.l	(a7)+,a0
 	rts
@@ -1789,7 +1800,7 @@ osd_video_byte_dirty:
 	lsl.w	#8,d1
 	add.w	d1,d0		| extended char code
 
-	jbsr	update_fg_tile
+	jbsr	update_bg_tile
 
 osd_w_videoram_out:
 	movem.l	(a7)+,d0-d7/a0-a2
@@ -1797,21 +1808,18 @@ osd_w_videoram_out:
 	
 	.macro	COPY_TILE8_PLANE_ROW
 	move.b	d0,(offset,a1)  | buffer
-	move.b	d0,(offset,a3)  | backbuffer
 	.endm
 	
 	.macro	CLEAR_TILE8_PLANE
 	.set	offset,0
 	.rept	8
 	clr.b	(offset,a1)
-	clr.b	(offset,a3)
 	.set	offset,offset+NB_BYTES_PER_ROW
 	.endr	
 	.endm
 	
 	.macro	TILE8_NEXT_PLANE
 	add.w	d5,a1
-	add.w	d5,a3
 	.endm
 
 	
@@ -1856,61 +1864,6 @@ compute_tile_xy:
 *	rts
 
 
-* < D0: X (in coords)
-* < D1: Y (in pixels)
-* < D2: tile code
-update_bg_tile:
-	.ifdef	xxxxx
-	lea		background_table,a0
-
-	
-	* updating bitplanes
-	move.l	#SCREEN_PLANE_SIZE,d5
-	move.w	#NB_PLAYFIELD_PLANES-1,d4
-	lea		bg_screen_buffer,a1
-
-
-	lea		mulNB_BYTES_PER_ROW_table,A2
-	add.w	d1,d1
-	move.w	(a2,d1.w),d1
-	add.w	d1,d0
-	add.w	d0,a1
-	
-	add.w	d2,d2
-	add.w	d2,d2	
-	move.l	(a0,d2.w),d0		| tile pointer
-	.ifndef	RELEASE
-	jne		12f
-	lsr.w	#2,d2
-	BREAKPOINT	"background tile (in D2) not registered"	
-	jra		0f
-	.endif
-
-12:
-	move.l	d0,a2		| directly pointer on tile bitplanes
-
-	* just copy
-
-4:
-	move.l	(a2)+,d0		| next plane
-	jeq		5f
-	move.l	d0,a0
-	.set	offset,0
-	.rept	16
-	move.w	(a0)+,d0
-	COPY_TILE16_PLANE_ROW
-	.set	offset,offset+NB_BYTES_PER_ROW
-	.endr
-41:
-	add.w	d5,a1
-	dbf		d4,4b
-0:
-	rts
-5:
-	CLEAR_TILE16_PLANE
-	jra		41b
-	.endif
-
 
 * each column has 0x20*8 = 256 pixels
 * each visible row has 28*8 = 244 pixels
@@ -1918,7 +1871,7 @@ update_bg_tile:
 * < D7: 0-0x400 address
 * < D0: extended tile code
 
-update_fg_tile:
+update_bg_tile:
 	move.w	d0,d2	| code
 	
 	bsr		compute_tile_xy
@@ -1929,8 +1882,7 @@ update_fg_tile:
 	* updating bitplanes
 	move.l	#SCREEN_PLANE_SIZE,d5
 	move.w	#NB_PLAYFIELD_PLANES-1,d4
-	move.l	playfield_drawed_screen_ptr,a1
-	lea		restore_buffer,a3
+	move.l	background_screen_ptr,a1
 
 
 	lea		mulNB_BYTES_PER_ROW_table,A2
@@ -1938,7 +1890,6 @@ update_fg_tile:
 	move.w	(a2,d1.w),d1
 	add.w	d1,d0
 	add.w	d0,a1
-	add.w	d0,a3
 	
 	add.w	d2,d2
 	jeq		11f				| optimize
@@ -2056,8 +2007,7 @@ HW_SpriteYTable_\height:
 
 set_background_bitplanes:
 	movem.l	a0-a1/d0-d2,-(a7)
-    lea		bg_screen_buffer,a0   | this isn't double-buffered, no need!
-	move.l	a0,d0
+	move.l	background_screen_ptr,d0
 	lea	background_bitplanes+2,a0
     moveq #NB_PLAYFIELD_PLANES-1,d1
  	move.l	#SCREEN_PLANE_SIZE,d2
@@ -2494,7 +2444,8 @@ playfield_screen_data_2:
 	.endif
 	
 	
-
+background_screen_ptr:
+	.long	0
 playfield_drawed_screen_ptr:
 	.long	0
 playfield_displayed_screen_ptr:
@@ -2667,9 +2618,7 @@ bg_screen_buffer:
 	.skip	SCREEN_SIZE
 	.skip	8
 	.skip	8	
-	
-restore_buffer:
-	.skip	SCREEN_SIZE
+
 		
 bobs_screen_buffer_1:
 	.skip	SCREEN_SIZE
