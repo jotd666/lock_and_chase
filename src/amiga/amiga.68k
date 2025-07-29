@@ -36,7 +36,7 @@ Y_MAX = 256
 BASE_BPLCON2_VALUE = 0x0064		| sprites above all playfields
 SPRITE_ADDRESS = 0x3C00
 MIRROR_ADDRESS = 0x7C00
-SCREEN_TILE_ADDRESS = 0x3c20
+SCREEN_TILE_ADDRESS = SPRITE_ADDRESS+0x21
 SCREEN_COLOR_ADDRESS = 0x7800
 
 
@@ -908,10 +908,6 @@ blit_background:
 	movem.l	(a7)+,d2-d6/a0-a5
 	rts
 
-osd_video_byte_dirty:
-	BREAKPOINT
-	rts
-	
 * we're going to scan for dirty tiles (0x400 array)
 * an optimization is to also have flags for 0x20-size regions
 * if the value is 0, then no need to try to refresh the next
@@ -1757,82 +1753,75 @@ sound_indirection_table:
 *    return (0x1000+(32*r)+q)
 
 mirrored_videoram:
-	.ifndef	RELEASE
-	cmp.w	#0x2000,d7
-	jcs		0f
-	BREAKPOINT	"write videoram out of 0x1000-0x1FFF range (D7)"
-	move.l	#osd_w_videoram_out,(a7)
-	rts
-0:
-	.endif
-	* compute valid 0x1000-0x17FF un-mirror
-	sub.w	#0x1800,d7
+	* compute valid 0x3C00-0x3FFF un-mirror
+	sub.w	#MIRROR_ADDRESS,d7
 	move.w	d7,d1		| save
 	lsr.w	#5,d7		| quotient
-	*add.w	#SCREEN_TILE_ADDRESS,d7
 	and.w	#0x1F,d1
 	lsl.w	#5,d1
 	add.w	d1,d7
 	* update A0 as well to unmirrored ram 
 	move.l	a6,a0
 	add.w	d7,a0
-	add.w	#0x1000,a0
+	add.w	#SPRITE_ADDRESS,a0
 	rts
 	
 * a0=screen address (preserved), d0=tile (preserved)
 * a6=ram base
 * should preserve all registers
+* allows 3C00-3FFF and 7C00-7FFF ranges
+* 3C00->3C20: sprites
+* 3C21: start of screen (+1 => next column)
+* 3FDF: last char (bottom right)
+*
+* 7C21: start of screen (+1 => next row, +$20 => next column)
 
-osd_w_videoram:
+
+osd_video_byte_dirty:
+
 	movem.l	d0/d1/d7/a0/a1,-(a7)
 	move.l	a0,d7		| save address
 	sub.l	a6,d7
 	.ifndef	RELEASE
 	jmi		2f
 	.endif
-	cmp.w	#SCREEN_TILE_ADDRESS,d7
+	* sprite area?
+	cmp.w	#MIRROR_ADDRESS+0x400,d7
 	jcs		0f
-	jbsr	mirrored_videoram
-	jra		1f
-0:
-	sub.w	#SCREEN_TILE_ADDRESS,d7
-	.ifndef	RELEASE
-	bmi.b	2f
-	cmp.w	#0x800,d7
-	bcs.b	1f
-
-2:
-	* should not happen
-	add.w	#SCREEN_TILE_ADDRESS,d7
+	* above mirror address: error
 	BREAKPOINT	"write videoram out of range (D7)"
-	bra.b	osd_w_videoram_out
-	.endif
-1:	
-*	move.b	(a0),d1
-*	cmp.b	d1,d0
-*	beq.b	osd_w_videoram_out		| already the proper value
-*3:
-	move.b	d0,(a0)	| update logical grid
+	bra.b	osd_w_videoram_out	
+0:
+	* we're below 8000. Are we in the mirror zone
+	cmp.w	#MIRROR_ADDRESS,d7
+	jcs		0f
+	move.b	(a0),d0			| read data that was just written
+	jbsr	mirrored_videoram		| "correct" address
+	* special operation: write data to "unmirrored"
+	move.b	d0,(a0)
+0:
+	* not in/back from the mirrored zone
+	* we now suppose that we're in 3C00-3FFF
+	* check that in debug mode
+	.ifndef		RELEASE
+	cmp.w	#SPRITE_ADDRESS,d7
+	jcc		0f
+1:
+	BREAKPOINT	"write videoram out of range (D7)"
+	bra.b	osd_w_videoram_out	
+0:
+	* we should update mirror zone now TODO
 	
-	cmp.w	#0x400,d7
-	jcc		4f
-	* special mirror to sprite area (1800-1820)
-	* 1000->1400 by steps of 0x20
-	move.w	d7,d1
-	and.w	#0x1F,d1
-	jne		4f
-
-	move.w	d7,d1	
-	lsr.w		#5,d1
-	move.l	a6,a0
-	add.w	#SPRITE_ADDRESS,a0
-	move.b	d0,(a0,d1.w)
-4:
-	* now set the flag for tile refresh in copper interrupt (so it doesn't
-	* interfere with blits. This game uses a lot of tile animation in the background
-	* as opposed to most games, so updating in real tile isn't an option and kills
-	* the smoothness even in double buffering mode)
-	and.w	#0x3FF,d7
+	cmp.w	#SPRITE_ADDRESS+0x400,d7
+	jcc		1b
+	.endif
+	* now check if not in sprite memory (start)
+	* else skip
+	
+	sub.w	#SCREEN_TILE_ADDRESS,d7
+	jmi		osd_w_videoram_out		| sprite memory: out
+	
+	* now set the flag for tile refresh in copper interrupt
 
 	lea		tiles_refresh_table(pc),a0
 	add.w	d7,a0

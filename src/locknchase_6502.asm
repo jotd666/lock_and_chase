@@ -2040,7 +2040,7 @@ D3D0: BC EF B3 ldy $d3ef, x
 D3D3: A9 02    lda #$02
 D3D5: 8D 03 80 sta inc_charbank_8003
 D3D8: A5 C3    lda $a3
-D3DA: 91 C5    sta ($a5), y
+D3DA: 91 C5    sta ($a5), y			; [video_address]
 D3DC: E6 C3    inc $a3
 D3DE: CA       dex
 D3DF: 10 EF    bpl $d3d0
@@ -2538,7 +2538,7 @@ D8DE: 48       pha
 D8DF: A0 00    ldy #$00
 D8E1: 84 76    sty $76
 D8E3: A9 0B    lda #$0b
-D8E5: 91 C5    sta ($a5), y
+D8E5: 91 C5    sta ($a5), y		; [video_address]
 D8E7: 20 7E BA jsr $da7e
 D8EA: 68       pla
 D8EB: 4C F2 B8 jmp $d8f2
@@ -2547,7 +2547,7 @@ D8F0: D0 EC    bne $d8de
 D8F2: 18       clc
 D8F3: 69 01    adc #$01
 D8F5: A0 00    ldy #$00
-D8F7: 91 C5    sta ($a5), y
+D8F7: 91 C5    sta ($a5), y		; [video_address]
 D8F9: 20 7E BA jsr $da7e
 D8FC: 60       rts
 
