@@ -1,12 +1,11 @@
+- E1B8 wrong, leads to wrong pointer loaded in A5
 
-- sprites not working, mirror probably not working
-  game reads in 7C00 for sprites not 3C00
-  using 7C00 causes mega crash :)
-  
+- sprites mirror probably not working (generate
+   hw sprites mirrored!)
+- hw sprites are flickering
+- erase bobs not implemented  
 - implement read_system atm returns FF, probably what prevents demo from starting
 - D494 lockup when inserting coin
-- implement sprites (inc. hw sprites attached for guards)
-- dual playfield tiles/sprites
 
 optim:
 

@@ -2971,6 +2971,7 @@ DCDD: 60       rts
 E1B8: 0A       asl a
 E1B9: 65 06    adc $06
 E1BB: AA       tax
+; load screen pointers
 E1BC: BC F1 E1 ldy $e1f1, x
 E1BF: B9 F7 E1 lda $e1f7, y
 E1C2: 85 C9    sta $a9

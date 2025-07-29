@@ -97,6 +97,9 @@ with open(source_dir / "conv.s") as f:
                 elif ",(a0,d2.w)" in next_line:
                     lines[j] = next_line+"\tadd.w\td2,a0 | [...]\n\tVIDEO_BYTE_DIRTY | [...]\n"
                     break
+                elif ",(a0,d1.w)" in next_line:
+                    lines[j] = next_line+"\tadd.w\td1,a0 | [...]\n\tVIDEO_BYTE_DIRTY | [...]\n"
+                    break
 
 
 
