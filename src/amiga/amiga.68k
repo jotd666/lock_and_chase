@@ -717,7 +717,7 @@ _vblank:
 0:
 
 	jbsr		really_update_tiles
-	jbsr		really_update_sprites
+	*jbsr		really_update_sprites
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	jbsr		switch_screen_buffers
@@ -1762,8 +1762,8 @@ mirrored_videoram:
 	add.w	d1,d7
 	* update A0 as well to unmirrored ram 
 	move.l	a6,a0
+	add.w	#SPRITE_ADDRESS,d7
 	add.w	d7,a0
-	add.w	#SPRITE_ADDRESS,a0
 	rts
 	
 * a0=screen address (preserved), d0=tile (preserved)
@@ -1784,14 +1784,14 @@ osd_video_byte_dirty:
 	sub.l	a6,d7
 	.ifndef	RELEASE
 	jmi		2f
-	.endif
-	* sprite area?
+	* sprite area? (seems like double check as would be minus)
 	cmp.w	#MIRROR_ADDRESS+0x400,d7
 	jcs		0f
 	* above mirror address: error
 	BREAKPOINT	"write videoram out of range (D7)"
 	bra.b	osd_w_videoram_out	
 0:
+	.endif
 	* we're below 8000. Are we in the mirror zone
 	cmp.w	#MIRROR_ADDRESS,d7
 	jcs		0f

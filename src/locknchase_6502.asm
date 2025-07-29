@@ -2069,14 +2069,14 @@ D41C: 85 CA    sta $aa
 D41E: A2 00    ldx #$00
 D420: A4 C3    ldy $a3
 D422: B9 8F B4 lda $d48f, y
-D425: 81 C5    sta ($a5, x)
+D425: 81 C5    sta ($a5, x)		; [video_address]
 D427: 20 7E BA jsr $da7e
 D42A: A9 C5    lda #$a5
-D42C: 81 C5    sta ($a5, x)
+D42C: 81 C5    sta ($a5, x)		; [video_address]
 D42E: 20 7E BA jsr $da7e
 D431: A0 03    ldy #$03
 D433: A1 C7    lda ($a7, x)
-D435: 81 C5    sta ($a5, x)
+D435: 81 C5    sta ($a5, x)		; [video_address]
 D437: 20 78 BA jsr $da78
 D43A: 88       dey
 D43B: D0 F6    bne $d433
@@ -2085,7 +2085,7 @@ D43F: 18       clc
 D440: 69 03    adc #$03
 D442: 85 C5    sta $a5
 D444: A9 EA    lda #$ea
-D446: 81 C5    sta ($a5, x)
+D446: 81 C5    sta ($a5, x)		; [video_address]
 D448: 20 7E BA jsr $da7e
 D44B: A0 03    ldy #$03
 D44D: A1 C9    lda ($a9, x)
@@ -2106,7 +2106,7 @@ D465: 68       pla
 D466: 29 0F    and #$0f
 D468: 18       clc
 D469: 69 81    adc #$81
-D46B: 81 C5    sta ($a5, x)
+D46B: 81 C5    sta ($a5, x)		; [video_address]
 D46D: 20 7E BA jsr $da7e
 D470: 60       rts
 
@@ -2118,6 +2118,7 @@ D49C: 85 38    sta enemy_y_58
 D49E: A9 0F    lda #$0f
 D4A0: 85 3C    sta $5c
 D4A2: 85 39    sta $59
+; write character to sprite memory
 D4A4: A9 F8    lda #$f8
 D4A6: 8D 02 7C sta $7c02
 D4A9: A9 94    lda #$94
