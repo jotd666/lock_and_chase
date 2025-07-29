@@ -256,7 +256,6 @@ get_address:
 	.endif
 	
 	.macro	PUSH_TABLE_X_ADDRESS	table
-	BREAKPOINT	"PUSH_TABLE_X_ADDRESS"
 	lea		\table,a0
 	and.w	#0xFF,d1
 	.ifdef	MC68020

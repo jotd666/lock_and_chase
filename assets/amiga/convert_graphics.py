@@ -7,7 +7,7 @@ src_dir = os.path.join(this_dir,"..","..","src","amiga")
 
 sprite_names = dict()
 
-NB_TILES = 256
+NB_TILES = 1024
 NB_SPRITES = 64
 
 TT_BOB = 1
@@ -131,28 +131,18 @@ def add_sprite(values,name):
     for v in values:
         sprite_names[v] = name
 
-add_sprite(0x2A,"points_900")
-add_sprite([0x2B,0x37],"points_500")
-add_sprite([0x2C,0x38],"points_1000")
-add_sprite(0x2D,"points_1500")
-add_sprite(0x39,"points_2000")
-add_sprite(0x28,"points_300")
-add_sprite(0x29,"points_600")
-add_sprite(0x34,"points_100")
-add_sprite(0x35,"points_200")
-add_sprite(0x36,"points_300")
-add_sprite(0x2E,"fries")
-add_sprite(0x2F,"ice_cream")
-add_sprite(0x30,"coffee")
-add_sprite(0x3A,"points_4000")
-add_sprite(0x3B,"points_8000")
-add_sprite(0x3C,"points_16000")
-add_sprite(0x17,"blank")
-add_sprite(range(0x20,0x28),"pepper")
-add_sprite(range(0x40,0x53),"player")
-add_sprite(range(0x58,0x64),"sausage")
-add_sprite(range(0x64,0x70),"green_blob")
-add_sprite(range(0x70,0x7C),"egg")
+add_sprite(0xb5,"points_100")
+add_sprite(0xb6,"points_300")
+add_sprite(0xB7,"points_1000")
+add_sprite(0xB8,"points_2000")
+
+
+add_sprite(range(0x81,0x8d),"player")
+add_sprite(range(0x8d,0x90),"angry_cop")
+add_sprite(range(0x90,0x96),"red_cop")
+add_sprite(range(0x96,0x9c),"yellow_cop")
+add_sprite(range(0x9c,0xa2),"blue_cop")
+add_sprite(range(0xa2,0xa8),"green_cop")
 
 sprites_path = os.path.join(this_dir,os.path.pardir,"sheets")
 

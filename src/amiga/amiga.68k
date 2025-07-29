@@ -179,6 +179,7 @@ start:
 	.global	osd_video_control
 	.global	osd_video_byte_dirty
 	.global	osd_set_charbank
+	.global	osd_read_system
 
 		.global	is_game_playing
 		
@@ -719,7 +720,7 @@ _vblank:
 	jeq		23f
 0:
 
-	*jbsr		really_update_sprites
+	jbsr		really_update_sprites
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	jbsr		switch_screen_buffers
@@ -916,7 +917,7 @@ really_update_sprites:
 update_bobs_and_hw_sprites:
 	* make a copy of the sprite memory
 	GET_RAM_START_IN_A6
-	lea	(SPRITE_ADDRESS,a6),a0
+	lea	(MIRROR_ADDRESS,a6),a0   | crash!!!
 	lea	sprite_memory,a1
 	* super-quick copy of 32 bytes of memory
 	movem.l	(a0),d0-d7
@@ -1735,7 +1736,6 @@ osd_set_charbank:
 *
 * 7C21: start of screen (+1 => next row, +$20 => next column)
 
-
 osd_video_byte_dirty:
 
 	movem.l	d0-d7/a0-a2,-(a7)
@@ -1780,12 +1780,13 @@ osd_video_byte_dirty:
 	sub.w	#SCREEN_TILE_ADDRESS,d7
 	jmi		osd_w_videoram_out		| sprite memory: out
 	
-	moveq	#0,d1
+
+
 	move.b	charbank_value,d1		| char bank
 	* update "color" table in write only memory, this is not needed
 	*move.b	d1,(0x7800,a0,d7)	
-	and.b	#3,d1
-	lsl.b	#8,d1
+	and.w	#3,d1
+	lsl.w	#8,d1
 	add.w	d1,d0		| extended char code
 	
 	jbsr	update_fg_tile
@@ -1919,8 +1920,6 @@ update_bg_tile:
 
 update_fg_tile:
 	move.w	d0,d2	| code
-	*and.w	#0x3FF,d2	| no attributes
-
 
 	bsr		compute_tile_xy
 	
@@ -1940,10 +1939,9 @@ update_fg_tile:
 	add.w	d1,d0
 	add.w	d0,a1
 	add.w	d0,a3
-
-
 	
 	add.w	d2,d2
+	jeq		11f				| optimize
 	add.w	d2,d2	
 	move.l	(a0,d2.w),d0		| tile pointer
 	
@@ -1958,8 +1956,6 @@ update_fg_tile:
 *	jra		11f
 12:
 	move.l	d0,a2		| directly pointer on tile bitplanes
-
-
 	
 	
 standard_tile:
@@ -1991,13 +1987,15 @@ standard_tile:
 	rts
 
 	* clear tile
-	nop
 11:
 	CLEAR_TILE8_PLANE
 	TILE8_NEXT_PLANE
 	dbf		d4,11b
 2:
 	rts
+	
+
+
 	
 * < d0.w: x
 * < d1.w: y
@@ -2167,7 +2165,12 @@ direction_table:
 	.byte	0x00,0x01,0x01,0x00,0x01,0xff,0xff,0x00	| 0x0000
 	.byte	0x01,0xff,0xff,0x00,0x00,0x00,0x00,0x00	| 0x0008	
 
+
+osd_read_system:
+	move.b	#0xFF,d0
+	rts
 	
+
 osd_read_dsw1:
 	* actual dipswitches
 	move.b	dip_switches_1(pc),d0

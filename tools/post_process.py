@@ -8,6 +8,7 @@ input_read_dict = {
 "player_1_controls_9000":"read_inputs",
 "dsw1_8000":"read_dsw1",
 "dsw2_8001":"read_dsw2",
+"system_9002":"read_system"
 }
 
 input_write_dict = {
@@ -67,10 +68,10 @@ with open(source_dir / "conv.s") as f:
         if any(x in line for x in ("GET_ADDRESS","GET_INDIRECT_ADDRESS","or.","move.","addq.","clr.")):
             if "POP_SR" in lines[i-1]:
                 # optimize: no need to restore SR, it won't be used
-                lines[i-1] = ""
                 for j in range(i-1,i-10,-1):
                     if j>=0 and "PUSH_SR" in lines[j]:
                         lines[j] = ""
+                        lines[i-1] = ""
                         break
 
         # pre-add video_address tag if we find a store instruction to an explicit 3000-3FFF address
@@ -81,9 +82,6 @@ with open(source_dir / "conv.s") as f:
             line = "\tINVERT_XC_FLAGS\n"+line       # cmp invert before RTS
             lines[i+1] = ""
 
-        if "road_row_counter_0830" in line and ":" in line:
-            # special case: not really a video address
-            line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
 
         if "[video_address" in line:
             # give me the original instruction
