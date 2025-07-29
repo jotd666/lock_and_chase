@@ -1,19 +1,16 @@
 
-- 3D83 (written in D3DA) cop 98 99  doesn't display
-  (char bank 2) debug!
 - sprites not working, mirror probably not working
   game reads in 7C00 for sprites not 3C00
   using 7C00 causes mega crash :)
   
-- implement read_system atm returns FF
+- implement read_system atm returns FF, probably what prevents demo from starting
 - D494 lockup when inserting coin
-- char erase doesn't work
 - implement sprites (inc. hw sprites attached for guards)
 - dual playfield tiles/sprites
 
 optim:
 
-- last post_processing phase: change move.b dx,(a0) / move.b (a0),dx after a GET_ADDRESS or such
+- last post_processing phase / directly in converter: change move.b dx,(a0) / move.b (a0),dx after a GET_ADDRESS or such
   by direct (a6,a0.w) in zero page
 - review/remove all useless push/pop sr (290 occurrences) manually
   then keep only the ones useful (automatic)

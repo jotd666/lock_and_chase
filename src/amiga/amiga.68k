@@ -720,7 +720,7 @@ _vblank:
 	jeq		23f
 0:
 
-	jbsr		really_update_sprites
+	*jbsr		really_update_sprites
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
 	jbsr		switch_screen_buffers
@@ -1788,7 +1788,7 @@ osd_video_byte_dirty:
 	and.w	#3,d1
 	lsl.w	#8,d1
 	add.w	d1,d0		| extended char code
-	
+
 	jbsr	update_fg_tile
 
 osd_w_videoram_out:
@@ -1920,7 +1920,7 @@ update_bg_tile:
 
 update_fg_tile:
 	move.w	d0,d2	| code
-
+	
 	bsr		compute_tile_xy
 	
 	lea		character_table,a0

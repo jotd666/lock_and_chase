@@ -91,12 +91,13 @@ with open(source_dir / "conv.s") as f:
                 next_line = lines[j]
                 if "[...]" not in next_line:
                     break
-                if ",(a0)" in next_line or "clr" in next_line or "MOVE_W_FROM_REG" in next_line:
-                    if any(x in next_line for x in ["address_word","MOVE_W_FROM_REG"]):
-                        lines[j] = next_line+"\tVIDEO_WORD_DIRTY | [...]\n"
-                    else:
-                        lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
+                if ",(a0)" in next_line or "clr" in next_line:
+                    lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
                     break
+                elif ",(a0,d2.w)" in next_line:
+                    lines[j] = next_line+"\tadd.w\td2,a0 | [...]\n\tVIDEO_BYTE_DIRTY | [...]\n"
+                    break
+
 
 
         line = re.sub(tablere,subt,line)
