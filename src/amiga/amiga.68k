@@ -65,7 +65,7 @@ OPT_ENABLE_LOGGING = 0
 	.endif
 	
 
-OPT_ENABLE_DOUBLE_BUFFERING = 1
+OPT_ENABLE_DOUBLE_BUFFERING = 0
 
 _custom = 0xDFF000
 
@@ -178,6 +178,7 @@ start:
 	.global	osd_wait_for_sync
 	.global	osd_video_control
 	.global	osd_video_byte_dirty
+	.global	osd_set_charbank
 
 		.global	is_game_playing
 		
@@ -380,7 +381,7 @@ _user:
 	BTST	#1,d0
 	sne		infinite_lives_flag
 	btst	#2,d0
-	sne		infinite_pepper_flag
+	*sne		infinite_pepper_flag
 
 0:
 1:
@@ -617,6 +618,8 @@ demo_game:
 	move.l	(a0)+,(a1)+
 	dbf		d0,0b
 	
+	clr.b	charbank_value
+	
 	* enable interrupts. Game doesn't use them
 	* but relies on vbl sync flags
 	jbsr	cpu_init		| zero all registers
@@ -716,7 +719,6 @@ _vblank:
 	jeq		23f
 0:
 
-	jbsr		really_update_tiles
 	*jbsr		really_update_sprites
 	
 	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
@@ -908,54 +910,7 @@ blit_background:
 	movem.l	(a7)+,d2-d6/a0-a5
 	rts
 
-* we're going to scan for dirty tiles (0x400 array)
-* an optimization is to also have flags for 0x20-size regions
-* if the value is 0, then no need to try to refresh the next
-* 0x20 tiles. If screen tiles don't change, we read 0x20 bytes
-* instead of 0x400 each frame.
 
-really_update_tiles:
-	GET_RAM_START_IN_A6
-	add.w	#SCREEN_TILE_ADDRESS,a6 | LSB
-	lea		_custom,a5
-	WAIT_BLIT
-
-	lea		(0x400,a6),a5			| attributes/MSB
-	lea		tiles_row_flags(pc),a1
-	moveq	#0,d3
-	
-
-3:
-	tst.b	(a1)+
-	jeq		2f
-	
-	lea		tiles_refresh_table(pc),a0
-	subq.b	#1,(-1,a1)
-	move.w	#0x1F,d2
-	move.w	d3,d7
-	lsl.w	#5,d7		| times 32, get offset for big dirty table
-	add.w	d7,a0
-0:
-	tst.b	(a0)+
-	jeq		1f
-	subq.b	#1,(-1,a0)	| decrease dirty counter
-	* read tile & color codes from RAM
-	moveq	#0,d0
-	move.b	(a5,d7.w),d0
-	lsl.w	#8,d0
-	move.b	(a6,d7.w),d0
-	movem.l	d2/d3/d7/a0/a1/a5,-(a7)
-	jbsr	update_fg_tile
-	movem.l	(a7)+,d2/d3/d7/a0/a1/a5
-1:
-	addq	#1,d7
-	dbf	d2,0b
-2:
-	addq	#1,d3
-	cmp.w	#0x20,d3
-	jne		3b
-	rts
-	
 
 really_update_sprites:
 update_bobs_and_hw_sprites:
@@ -1766,6 +1721,10 @@ mirrored_videoram:
 	add.w	d7,a0
 	rts
 	
+osd_set_charbank:
+	move.b	d0,charbank_value
+	rts
+	
 * a0=screen address (preserved), d0=tile (preserved)
 * a6=ram base
 * should preserve all registers
@@ -1779,7 +1738,7 @@ mirrored_videoram:
 
 osd_video_byte_dirty:
 
-	movem.l	d0/d1/d7/a0/a1,-(a7)
+	movem.l	d0-d7/a0-a2,-(a7)
 	move.l	a0,d7		| save address
 	sub.l	a6,d7
 	.ifndef	RELEASE
@@ -1821,24 +1780,18 @@ osd_video_byte_dirty:
 	sub.w	#SCREEN_TILE_ADDRESS,d7
 	jmi		osd_w_videoram_out		| sprite memory: out
 	
-	* now set the flag for tile refresh in copper interrupt
-
-	lea		tiles_refresh_table(pc),a0
-	add.w	d7,a0
-	lsr.w	#5,d7	| divide by 32
-	lea		tiles_row_flags(pc),a1
-	add.w	d7,a1
-	* now a0 points on the tiles refresh table, mark it dirty
-	.ifne	OPT_ENABLE_DOUBLE_BUFFERING
-	moveq	#2,d7
-	.else
-	moveq	#1,d7
-	.endif
-	move.b	d7,(a0)
-	move.b	d7,(a1)
+	moveq	#0,d1
+	move.b	charbank_value,d1		| char bank
+	* update "color" table in write only memory, this is not needed
+	*move.b	d1,(0x7800,a0,d7)	
+	and.b	#3,d1
+	lsl.b	#8,d1
+	add.w	d1,d0		| extended char code
+	
+	jbsr	update_fg_tile
 
 osd_w_videoram_out:
-	movem.l	(a7)+,d0/d1/d7/a0/a1
+	movem.l	(a7)+,d0-d7/a0-a2
 	rts	
 	
 	.macro	COPY_TILE8_PLANE_ROW

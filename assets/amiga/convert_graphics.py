@@ -174,8 +174,7 @@ tile_palette = set()
 def rset(a,b):
     return set(range(a,b))
 
-lost_tiles = {0x31,0x32,0x33}
-used_tiles = rset(0,0x6E) | rset(0xa0,0xF2) | rset(0x11C,0x120) | rset(0x200,0x380) | lost_tiles
+used_tiles = rset(0,0x400)  # rset(0,0x6E) | rset(0xa0,0xF2) | rset(0x11C,0x120) | rset(0x200,0x380) | lost_tiles
 tp,tile_set = load_tileset(os.path.join(sprites_path,"tiles.png"),8,"tiles",used_tiles,dump_dir,dump=dump_it,name_dict=None)
 
 

@@ -1,5 +1,6 @@
-- implement video dirty
-- figure out mirroring
+- stray push sr at d496
+- character sets completely off (dump memory check with MAME?)
+
 
 optim:
 

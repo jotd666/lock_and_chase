@@ -95,7 +95,7 @@ player_1_controls_9000 = $9000
 system_9002 = $9002
 dsw1_8000 = $8000
 dsw2_8001 = $8001
-inc_charbank_8003 = $8003
+charbank_8003 = $8003
 
 insert_coin_irq_c000:
 C000: 4C 4F A0 jmp insert_coin_c02f
@@ -366,7 +366,7 @@ C232: 60       rts
 
 
 C23B: A9 00    lda #$00
-C23D: 8D 03 80 sta inc_charbank_8003
+C23D: 8D 03 80 sta charbank_8003
 C240: A5 5B    lda player_state_3b
 C242: 30 17    bmi $c25b
 C244: 2C 68 A2 bit $c268
@@ -973,7 +973,7 @@ C7D4: 60       rts
 
 
 C809: A9 00    lda #$00                                            
-C80B: 8D 03 80 sta inc_charbank_8003
+C80B: 8D 03 80 sta charbank_8003
 C80E: A5 C1    lda $a1
 C810: 0A       asl a
 C811: AA       tax
@@ -1000,7 +1000,7 @@ C835: 10 F0    bpl $c827
 C837: 60       rts
 
 C8B4: A9 00    lda #$00
-C8B6: 8D 03 80 sta inc_charbank_8003
+C8B6: 8D 03 80 sta charbank_8003
 C8B9: A5 96    lda $96
 C8BB: D0 5D    bne $c8fa
 C8BD: A6 58    ldx $38
@@ -1065,7 +1065,7 @@ C93E: C6 98    dec $98
 C940: 60       rts
 
 C950: A9 00    lda #$00
-C952: 8D 03 80 sta inc_charbank_8003
+C952: 8D 03 80 sta charbank_8003
 C955: A5 99    lda $99
 C957: D0 47    bne $c980
 C959: A6 5A    ldx $3a
@@ -2038,7 +2038,7 @@ D3CC: 85 C3    sta $a3
 D3CE: A2 03    ldx #$03
 D3D0: BC EF B3 ldy $d3ef, x
 D3D3: A9 02    lda #$02
-D3D5: 8D 03 80 sta inc_charbank_8003
+D3D5: 8D 03 80 sta charbank_8003
 D3D8: A5 C3    lda $a3
 D3DA: 91 C5    sta ($a5), y			; [video_address]
 D3DC: E6 C3    inc $a3
@@ -2048,7 +2048,7 @@ D3E1: 60       rts
 
 
 D3F3: A9 01    lda #$01
-D3F5: 8D 03 80 sta inc_charbank_8003
+D3F5: 8D 03 80 sta charbank_8003
 D3F8: A9 04    lda #$04
 D3FA: 85 C3    sta $a3
 D3FC: A5 C3    lda $a3
@@ -2070,14 +2070,14 @@ D41E: A2 00    ldx #$00
 D420: A4 C3    ldy $a3
 D422: B9 8F B4 lda $d48f, y
 D425: 81 C5    sta ($a5, x)		; [video_address]
-D427: 20 7E BA jsr $da7e
+D427: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D42A: A9 C5    lda #$a5
 D42C: 81 C5    sta ($a5, x)		; [video_address]
-D42E: 20 7E BA jsr $da7e
+D42E: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D431: A0 03    ldy #$03
 D433: A1 C7    lda ($a7, x)
 D435: 81 C5    sta ($a5, x)		; [video_address]
-D437: 20 78 BA jsr $da78
+D437: 20 78 BA jsr inc_a7_16_bit_pointer_da78
 D43A: 88       dey
 D43B: D0 F6    bne $d433
 D43D: A5 C5    lda $a5
@@ -2086,11 +2086,11 @@ D440: 69 03    adc #$03
 D442: 85 C5    sta $a5
 D444: A9 EA    lda #$ea
 D446: 81 C5    sta ($a5, x)		; [video_address]
-D448: 20 7E BA jsr $da7e
+D448: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D44B: A0 03    ldy #$03
 D44D: A1 C9    lda ($a9, x)
 D44F: 20 3D B4 jsr $d45d
-D452: 20 85 BA jsr $da85
+D452: 20 85 BA jsr inc_a9_16_bit_pointer_da85
 D455: 88       dey
 D456: D0 F5    bne $d44d
 D458: C6 C3    dec $a3
@@ -2107,7 +2107,7 @@ D466: 29 0F    and #$0f
 D468: 18       clc
 D469: 69 81    adc #$81
 D46B: 81 C5    sta ($a5, x)		; [video_address]
-D46D: 20 7E BA jsr $da7e
+D46D: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D470: 60       rts
 
 D494: A9 00    lda #$00                                            
@@ -2185,7 +2185,7 @@ D536: A2 0B    ldx #$0b
 D538: 20 37 B5 jsr $d557
 D53B: 60       rts
 D53C: A9 01    lda #$01
-D53E: 8D 03 80 sta inc_charbank_8003
+D53E: 8D 03 80 sta charbank_8003
 D541: C6 39    dec $59
 D543: A5 39    lda $59
 D545: 29 7F    and #$7f
@@ -2209,7 +2209,7 @@ D567: 85 C3    sta $a3
 D569: A2 05    ldx #$05
 D56B: A4 C3    ldy $a3
 D56D: A9 00    lda #$00
-D56F: 8D 03 80 sta inc_charbank_8003
+D56F: 8D 03 80 sta charbank_8003
 D572: B9 CA B5 lda $d5aa, y
 D575: BC A8 B5 ldy $d5c8, x
 D578: 99 6E 5E sta $3e6e, y
@@ -2221,7 +2221,7 @@ D580: 60       rts
 
 D5CE: A0 06    ldy #$06
 D5D0: A9 01    lda #$01
-D5D2: 8D 03 80 sta inc_charbank_8003
+D5D2: 8D 03 80 sta charbank_8003
 D5D5: A9 11    lda #$11
 D5D7: 85 C5    sta $a5
 D5D9: A9 5E    lda #$3e
@@ -2279,7 +2279,7 @@ D652: C9 02    cmp #$02
 D654: 90 10    bcc $d666
 D656: A0 02    ldy #$02
 D658: A9 01    lda #$01
-D65A: 8D 03 80 sta inc_charbank_8003
+D65A: 8D 03 80 sta charbank_8003
 D65D: B9 4D B7 lda $d72d, y
 D660: 99 6E 5E sta $3e6e, y
 D663: 88       dey
@@ -2346,7 +2346,7 @@ D6F0: 85 3C    sta $5c
 D6F2: A0 11    ldy #$11
 D6F4: BE 50 B7 ldx $d730, y
 D6F7: A5 3A    lda $5a
-D6F9: 8D 03 80 sta inc_charbank_8003
+D6F9: 8D 03 80 sta charbank_8003
 D6FC: B1 3B    lda ($5b), y
 D6FE: 9D 2D 5E sta $3e4d, x
 D701: 88       dey
@@ -2399,7 +2399,7 @@ D7A0: 29 0F    and #$0f
 D7A2: 18       clc
 D7A3: 48       pha
 D7A4: A9 01    lda #$01
-D7A6: 8D 03 80 sta inc_charbank_8003
+D7A6: 8D 03 80 sta charbank_8003
 D7A9: 68       pla
 D7AA: 69 01    adc #$01
 D7AC: 99 BA 5F sta $3fda, y
@@ -2445,7 +2445,7 @@ D7F5: B9 10 B8 lda $d810, y
 D7F8: 85 CC    sta $ac
 D7FA: A0 02    ldy #$02
 D7FC: A9 00    lda #$00
-D7FE: 8D 03 80 sta inc_charbank_8003
+D7FE: 8D 03 80 sta charbank_8003
 D801: BD 17 B8 lda $d817, x
 D804: 91 CB    sta ($ab), y
 D806: E8       inx
@@ -2456,7 +2456,7 @@ D80C: 10 BE    bpl $d7ec
 D80E: 60       rts
 
 D83B: A9 00    lda #$00
-D83D: 8D 03 80 sta inc_charbank_8003
+D83D: 8D 03 80 sta charbank_8003
 D840: A5 CF    lda $af
 D842: 29 7F    and #$7f
 D844: D0 4E    bne $d874
@@ -2506,7 +2506,7 @@ D8A0: A5 06    lda $06
 D8A2: 29 01    and #$01
 D8A4: A8       tay
 D8A5: A9 00    lda #$00
-D8A7: 8D 03 80 sta inc_charbank_8003
+D8A7: 8D 03 80 sta charbank_8003
 D8AA: B9 AF B8 lda $d8cf, y
 D8AD: 85 C5    sta $a5
 D8AF: A9 5C    lda #$3c
@@ -2540,7 +2540,7 @@ D8DF: A0 00    ldy #$00
 D8E1: 84 76    sty $76
 D8E3: A9 0B    lda #$0b
 D8E5: 91 C5    sta ($a5), y		; [video_address]
-D8E7: 20 7E BA jsr $da7e
+D8E7: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D8EA: 68       pla
 D8EB: 4C F2 B8 jmp $d8f2
 D8EE: A4 76    ldy $76
@@ -2549,7 +2549,7 @@ D8F2: 18       clc
 D8F3: 69 01    adc #$01
 D8F5: A0 00    ldy #$00
 D8F7: 91 C5    sta ($a5), y		; [video_address]
-D8F9: 20 7E BA jsr $da7e
+D8F9: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D8FC: 60       rts
 
 D8FD: AA       tax
@@ -2674,9 +2674,10 @@ DA43: 85 C5    sta $a5
 DA45: A9 5C    lda #$3c
 DA47: 85 C6    sta $a6		; $3C00
 DA49: A0 00    ldy #$00
+
 clear_part_of_screen_da4b:
 DA4B: A9 00    lda #$00
-DA4D: 8D 03 80 sta inc_charbank_8003
+DA4D: 8D 03 80 sta charbank_8003
 DA50: 91 C5    sta ($a5), y		; [video_address]
 DA52: C8       iny
 DA53: D0 FB    bne $da50
@@ -2702,13 +2703,17 @@ DA72: A0 60    ldy #$60
 DA74: 20 2B BA jsr clear_part_of_screen_da4b
 DA77: 60       rts
 
+inc_a7_16_bit_pointer_da78:
 DA78: E6 C7    inc $a7
-DA7A: D0 02    bne $da7e
+DA7A: D0 02    bne inc_a5_16_bit_pointer_da7e
 DA7C: E6 C8    inc $a8
+inc_a5_16_bit_pointer_da7e:
 DA7E: E6 C5    inc $a5
 DA80: D0 02    bne $da84
 DA82: E6 C6    inc $a6
 DA84: 60       rts
+
+inc_a9_16_bit_pointer_da85:
 DA85: E6 C9    inc $a9
 DA87: D0 02    bne $da8b
 DA89: E6 CA    inc $aa
@@ -2726,8 +2731,9 @@ DA9F: 20 CC BA jsr $daac
 DAA2: C6 C1    dec $a1
 DAA4: 10 EC    bpl $da92
 DAA6: 60       rts
+
 DAAC: A2 00    ldx #$00
-DAAE: 8E 03 80 stx inc_charbank_8003
+DAAE: 8E 03 80 stx charbank_8003
 DAB1: A2 03    ldx #$03
 DAB3: BC DF BA ldy $dabf, x
 DAB6: 91 CB    sta ($ab), y
@@ -2753,7 +2759,7 @@ DAD7: 60       rts
 
 DAD8: A6 50    ldx $30
 DADA: A9 00    lda #$00
-DADC: 8D 03 80 sta inc_charbank_8003
+DADC: 8D 03 80 sta charbank_8003
 DADF: 8A       txa
 DAE0: 0A       asl a
 DAE1: A8       tay
@@ -2785,7 +2791,7 @@ DB0C: C8       iny
 DB0D: 99 9C 5F sta $3f9c, y  ; [video_address]
 DB10: 60       rts
 DB2F: A9 00    lda #$00
-DB31: 8D 03 80 sta inc_charbank_8003
+DB31: 8D 03 80 sta charbank_8003
 DB34: 20 16 A9 jsr $c916
 DB37: 20 97 A9 jsr $c997
 DB3A: A9 05    lda #$05
@@ -2919,15 +2925,14 @@ DC4A: C9 FE    cmp #$fe
 DC4C: F0 EF    beq $dc3d
 DC4E: C9 FF    cmp #$ff
 DC50: F0 0E    beq $dc60
-DC52: 8D 03 80 sta inc_charbank_8003
+DC52: 8D 03 80 sta charbank_8003
 DC55: B1 C9    lda ($a9), y
 DC57: 81 C5    sta ($a5, x)		; [video_address]
 DC59: C8       iny
-DC5A: 20 7E BA jsr $da7e
+DC5A: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 DC5D: 4C 27 BC jmp $dc47
-
 DC60: A9 00    lda #$00
-DC62: 8D 03 80 sta inc_charbank_8003
+DC62: 8D 03 80 sta charbank_8003
 DC65: 60       rts
 DC9C: A5 02    lda nb_credits_02
 DC9E: F0 18    beq $dcb8
@@ -2976,12 +2981,12 @@ E1D1: 85 C6    sta $a6
 E1D3: B9 FB E1 lda $e1fb, y
 E1D6: 85 C1    sta $a1
 E1D8: A0 00    ldy #$00
-E1DA: 8C 03 80 sty inc_charbank_8003
+E1DA: 8C 03 80 sty charbank_8003
 E1DD: A2 1F    ldx #$1f
 E1DF: B1 C9    lda ($a9), y
 E1E1: 91 C5    sta ($a5), y
-E1E3: 20 85 BA jsr $da85
-E1E6: 20 7E BA jsr $da7e
+E1E3: 20 85 BA jsr inc_a9_16_bit_pointer_da85
+E1E6: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 E1E9: CA       dex
 E1EA: 10 F3    bpl $e1df
 E1EC: C6 C1    dec $a1
@@ -3101,7 +3106,7 @@ E667: 85 38    sta enemy_y_58
 E669: A0 60    ldy #$60
 E66B: 20 07 E8 jsr $e807
 E66E: A9 01    lda #$01
-E670: 8D 03 80 sta inc_charbank_8003
+E670: 8D 03 80 sta charbank_8003
 E673: 20 26 E7 jsr $e746
 E676: 20 55 E8 jsr $e835
 E679: 20 61 E8 jsr $e861
@@ -3895,7 +3900,7 @@ F226: C9 80    cmp #$80
 F228: D0 F1    bne $f21b
 F22A: 60       rts
 F22B: A9 01    lda #$01
-F22D: 8D 03 80 sta inc_charbank_8003
+F22D: 8D 03 80 sta charbank_8003
 F230: A0 00    ldy #$00
 F232: BD F4 F7 lda $f7f4, x
 F235: 99 46 5D sta $3d26, y
@@ -3944,7 +3949,7 @@ F27B: 20 11 F2 jsr $f211
 F27E: A2 00    ldx #$00
 F280: 20 4B F2 jsr $f22b
 F283: A9 01    lda #$01
-F285: 8D 03 80 sta inc_charbank_8003
+F285: 8D 03 80 sta charbank_8003
 F288: A9 82    lda #$82
 F28A: 8D 2F 5E sta $3e4f
 F28D: A9 0F    lda #$0f
@@ -4277,7 +4282,7 @@ F560: 85 44    sta $24
 F562: 20 11 F2 jsr $f211
 F565: A2 35    ldx #$55
 F567: A9 01    lda #$01
-F569: 8D 03 80 sta inc_charbank_8003
+F569: 8D 03 80 sta charbank_8003
 F56C: A0 00    ldy #$00
 F56E: BD F4 F7 lda $f7f4, x
 F571: 99 66 5C sta $3c66, y
@@ -4302,7 +4307,7 @@ F59A: 8D CD 5E sta $3ead
 F59D: A9 89    lda #$89
 F59F: 8D ED 5E sta $3eed
 F5A2: A9 02    lda #$02
-F5A4: 8D 03 80 sta inc_charbank_8003
+F5A4: 8D 03 80 sta charbank_8003
 F5A7: A9 01    lda #$01
 F5A9: 85 00    sta $00
 F5AB: A9 00    lda #$00
@@ -4371,7 +4376,7 @@ F61D: F0 BE    beq $f5fd
 F61F: 20 6F F2 jsr wait_1_second_f26f
 F622: 20 11 F2 jsr $f211
 F625: A9 00    lda #$00
-F627: 8D 03 80 sta inc_charbank_8003
+F627: 8D 03 80 sta charbank_8003
 F62A: 85 00    sta $00
 F62C: A9 5C    lda #$3c
 F62E: 85 01    sta $01
@@ -4387,7 +4392,7 @@ F63D: A5 01    lda $01
 F63F: C9 5D    cmp #$3d
 F641: D0 F1    bne $f634
 F643: A9 01    lda #$01
-F645: 8D 03 80 sta inc_charbank_8003
+F645: 8D 03 80 sta charbank_8003
 F648: 8A       txa
 F649: 91 00    sta ($00), y
 F64B: C8       iny
@@ -4398,7 +4403,7 @@ F651: A5 01    lda $01
 F653: C9 5E    cmp #$3e
 F655: D0 F1    bne $f648
 F657: A9 02    lda #$02
-F659: 8D 03 80 sta inc_charbank_8003
+F659: 8D 03 80 sta charbank_8003
 F65C: 8A       txa
 F65D: 91 00    sta ($00), y
 F65F: C8       iny
@@ -4409,7 +4414,7 @@ F665: A5 01    lda $01
 F667: C9 5F    cmp #$3f
 F669: D0 F1    bne $f65c
 F66B: A9 03    lda #$03
-F66D: 8D 03 80 sta inc_charbank_8003
+F66D: 8D 03 80 sta charbank_8003
 F670: 8A       txa
 F671: 91 00    sta ($00), y
 F673: C8       iny
@@ -4424,7 +4429,7 @@ F681: 85 00    sta $00
 F683: A9 5D    lda #$3d
 F685: 85 01    sta $01
 F687: A9 01    lda #$01
-F689: 8D 03 80 sta inc_charbank_8003
+F689: 8D 03 80 sta charbank_8003
 F68C: A0 00    ldy #$00
 F68E: A2 4D    ldx #$2d
 F690: 8A       txa
@@ -4452,7 +4457,7 @@ F6BD: 85 0F    sta nb_lives_p1_0f
 F6BF: A9 5F    lda #$3f
 F6C1: 85 10    sta $10
 F6C3: A9 02    lda #$02
-F6C5: 8D 03 80 sta inc_charbank_8003
+F6C5: 8D 03 80 sta charbank_8003
 F6C8: A0 00    ldy #$00
 F6CA: A9 00    lda #$00
 F6CC: 85 0D    sta $0d

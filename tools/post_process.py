@@ -15,7 +15,7 @@ input_write_dict = {
 "dsw1_8000":"",
 "dsw2_8001":"video_control",
 "system_9002":"",   # sound_start
-"inc_charbank_8003":"",  # inc charbank
+"charbank_8003":"set_charbank",  # inc charbank
 }
 
 
