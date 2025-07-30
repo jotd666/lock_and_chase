@@ -748,6 +748,11 @@ _vblank:
     rte
 	
 osd_wait_for_sync:
+	tst.b	insert_coin_requested
+	jeq		0f
+	clr.b	insert_coin_requested
+	jbsr	insert_coin
+0:
 	tst.b	bof_sync_flag
 	jeq		osd_wait_for_sync
 	clr.b	bof_sync_flag
@@ -2110,7 +2115,6 @@ update_controls:
 	jne		0f
 	jbsr	insert_coin
 0:
-
 	rts
 	
 direction_table:
@@ -2164,16 +2168,19 @@ osd_read_dsw0:
 osd_read_dsw2:
 	* actual dipswitches
 	*move.b	dip_switches_2(pc),d0
-	move.b	#0xEB,d0		| default lives, etc..
+	move.b	#0xFE,d0		| default lives, etc..
 
 	rts
 
 insert_coin:
 	movem.l	d0-a6,-(a7)
 	GET_RAM_START_IN_A6
+	jbsr 	cpu_init
+
 	move.b	#0x40,dsw0_value_high_bit	| COIN 1
 	jbsr	insert_coin_irq_f000
 	move.b	#0,dsw0_value_high_bit
+
 	movem.l (a7)+,d0-a6
 	rts	
 
@@ -2216,7 +2223,7 @@ handle_keyboard:
 
 	cmp.b	#5,d0
 	jne	0f
-	jbsr	insert_coin
+	st.b	insert_coin_requested
 0:
 	* cheat keys are always active in dev mode
 	.ifdef	RELEASE
@@ -2383,7 +2390,8 @@ dip_switches_1:
 		.byte	0
 dip_switches_0:
 		.byte	0
-
+insert_coin_requested:
+	.byte	0
 dsw0_value_high_bit:
 	.byte	0
 
@@ -2573,23 +2581,23 @@ bobs_bitplanes:
 background_bitplanes:
 	DECL_EVEN_BITPLANES	0,3
 
-sprite_colors:
-	DECL_COLORS	16,16
-game_sprites:
-	DECL_SPRITES
-game_sprites_end:
+	* priority: BOBs playfield on top
+	.word	bplcon2,BASE_BPLCON2_VALUE
 
 background_colors:
 	DECL_COLORS	0,8
 game_colors:
 	DECL_COLORS	8,8
-
-	* priority: BOBs playfield on top
-	.word	bplcon2,BASE_BPLCON2_VALUE
-
-
-
 	
+sprite_colors:
+	DECL_COLORS	16,16
+	.word	0x0801,0xFFFE
+game_sprites:
+	DECL_SPRITES
+game_sprites_end:
+
+
+
 	* mid-line wait & extra interrupt
 	.word	0x8001,0xFFFE
 pal_intreq_block_game:

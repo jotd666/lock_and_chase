@@ -131,11 +131,14 @@ with open(source_dir / "conv.s") as f:
                 else:
                     line = remove_instruction(lines,i)
                 lines[i+1] = remove_instruction(lines,i+1)
+                if "stx" in line:
+                    line = f"\texg\td0,d1\n{line}\texg\td0,d1\n"
+                if "sty" in line:
+                    line = f"\texg\td0,d2\n{line}\texg\td0,d2\n"
             if "read_dsw1" in line and "sta" in line:
                 line = remove_instruction(lines,i)
             if "read_dsw2" in line and "sta" in line:
                 line = change_instruction("jbsr\tosd_video_control",lines,i)
-
 
         elif "unsupported instruction rti" in line:
             line = change_instruction("rts",lines,i)

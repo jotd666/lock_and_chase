@@ -149,7 +149,7 @@ C061: 25 00    and $00
 C063: F0 4B    beq $c090
 C065: E6 03    inc $03
 C067: A9 01    lda #$01
-C069: 8D 02 90 sta system_9002
+C069: 8D 02 90 sta system_9002		; play credit sound
 C06C: A2 00    ldx #$00
 C06E: AD 00 80 lda dsw1_8000
 C071: 49 FF    eor #$ff

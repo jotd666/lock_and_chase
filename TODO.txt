@@ -1,15 +1,9 @@
-- maze displaying, but no main character, and enemies
-  not moving
+- maze displaying, but no main character,gate not opening
+  no game demo, stops after a few seconds
 
-- sprites mirror probably not working (generate
-   hw sprites mirrored!) ??
-- hw sprites are flickering: change 
+- hw sprites are flickering
 - erase bobs not implemented  
-- implement read_system atm returns FF, probably what prevents demo from starting
-- D494 lockup when inserting coin: keyboard not working
-  anymore!!!!
 
-FR76 3000 3003 0900 0560 0133 368
 
 optim:
 
