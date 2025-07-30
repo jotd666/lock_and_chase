@@ -86,20 +86,24 @@ with open(source_dir / "conv.s") as f:
         if "[video_address" in line:
             # give me the original instruction
             line = line.replace("_ADDRESS","_UNCHECKED_ADDRESS")
+
+            vbd_macro =  "MAYBE_VIDEO_BYTE_DIRTY" if "[video_address_maybe]" in line else "VIDEO_BYTE_DIRTY"
+
             # if it's a write, insert a "VIDEO_DIRTY" macro after the write
             for j in range(i+1,len(lines)):
                 next_line = lines[j]
                 if "[...]" not in next_line:
                     break
                 if ",(a0)" in next_line or "clr" in next_line:
-                    lines[j] = next_line+"\tVIDEO_BYTE_DIRTY | [...]\n"
+                    lines[j] = next_line+f"\t{vbd_macro} | [...]\n"
                     break
                 elif ",(a0,d2.w)" in next_line:
-                    lines[j] = next_line+"\tadd.w\td2,a0 | [...]\n\tVIDEO_BYTE_DIRTY | [...]\n"
+                    lines[j] = next_line+f"\tadd.w\td2,a0 | [...]\n\t{vbd_macro} | [...]\n"
                     break
                 elif ",(a0,d1.w)" in next_line:
-                    lines[j] = next_line+"\tadd.w\td1,a0 | [...]\n\tVIDEO_BYTE_DIRTY | [...]\n"
+                    lines[j] = next_line+f"\tadd.w\td1,a0 | [...]\n\t{vbd_macro} | [...]\n"
                     break
+
 
 
 

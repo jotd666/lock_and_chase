@@ -239,14 +239,14 @@ C10D: A9 00    lda #$00
 C10F: 85 58    sta $38
 C111: 85 59    sta $39
 C113: 85 5A    sta $3a
-C115: 20 D8 E1 jsr $e1b8
+C115: 20 D8 E1 jsr run_length_uncompress_e1b8
 C118: 20 A3 BA jsr $dac3
 C11B: A5 06    lda $06
 C11D: 8D 01 80 sta dsw2_8001
 C120: A5 57    lda $37
 C122: 85 9F    sta $9f
 C124: A9 01    lda #$01
-C126: 20 D8 E1 jsr $e1b8
+C126: 20 D8 E1 jsr run_length_uncompress_e1b8
 C129: A9 01    lda #$01
 C12B: 20 E0 B7 jsr $d7e0
 C12E: 20 8C BA jsr $da8c
@@ -292,7 +292,7 @@ C194: A5 04    lda $04
 C196: F0 40    beq $c1b8
 C198: 20 E3 A1 jsr $c1e3
 C19B: A9 02    lda #$02
-C19D: 20 D8 E1 jsr $e1b8
+C19D: 20 D8 E1 jsr run_length_uncompress_e1b8
 C1A0: A5 4D    lda $2d
 C1A2: 30 14    bmi $c1b8
 C1A4: A5 05    lda $05
@@ -2967,11 +2967,11 @@ DCD8: A9 0F    lda #$0f
 DCDA: 8D 00 80 sta dsw1_8000
 DCDD: 60       rts
 
-
+run_length_uncompress_e1b8:
 E1B8: 0A       asl a
 E1B9: 65 06    adc $06
 E1BB: AA       tax
-; load screen pointers
+; load pointers
 E1BC: BC F1 E1 ldy $e1f1, x
 E1BF: B9 F7 E1 lda $e1f7, y
 E1C2: 85 C9    sta $a9
@@ -2987,7 +2987,8 @@ E1D8: A0 00    ldy #$00
 E1DA: 8C 03 80 sty charbank_8003
 E1DD: A2 1F    ldx #$1f
 E1DF: B1 C9    lda ($a9), y
-E1E1: 91 C5    sta ($a5), y		; [video_address]
+; writes to video but also to regular memory
+E1E1: 91 C5    sta ($a5), y		; [video_address_maybe]
 E1E3: 20 85 BA jsr inc_a9_16_bit_pointer_da85
 E1E6: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 E1E9: CA       dex

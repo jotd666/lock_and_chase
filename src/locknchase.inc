@@ -155,6 +155,16 @@ skip\@:
 	.macro	VIDEO_BYTE_DIRTY
 	jbsr	osd_video_byte_dirty
 	.endm
+	.macro	MAYBE_VIDEO_BYTE_DIRTY
+	move.l	a0,a5
+	sub.l	a6,a5
+	cmp.w	#0x3c00,a5
+	jcs		skip\@
+	cmp.w	#0x4000,a5
+	jcc		skip\@
+	VIDEO_BYTE_DIRTY
+skip\@:
+	.endm
 
 	.macro GET_ADDRESS	offset
 	lea	\offset,a0

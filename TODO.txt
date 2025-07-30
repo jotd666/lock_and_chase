@@ -1,11 +1,15 @@
-- E1B8 wrong, leads to wrong pointer loaded in A5
+- maze displaying, but no main character, and enemies
+  not moving
 
 - sprites mirror probably not working (generate
-   hw sprites mirrored!)
-- hw sprites are flickering
+   hw sprites mirrored!) ??
+- hw sprites are flickering: change 
 - erase bobs not implemented  
 - implement read_system atm returns FF, probably what prevents demo from starting
-- D494 lockup when inserting coin
+- D494 lockup when inserting coin: keyboard not working
+  anymore!!!!
+
+FR76 3000 3003 0900 0560 0133 368
 
 optim:
 
