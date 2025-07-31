@@ -131,6 +131,7 @@ def add_sprite(values,name):
     for v in values:
         sprite_names[v] = name
 
+add_sprite(0x80,"blank")
 add_sprite(0xb5,"points_100")
 add_sprite(0xb6,"points_300")
 add_sprite(0xB7,"points_1000")

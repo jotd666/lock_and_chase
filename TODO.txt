@@ -1,5 +1,8 @@
-- character not entering: CE07 trace cpu (gate opening)
-
+- character can cross walls, when not aligned, doesn't eat dots
+- bag of money in the middle sprite is wrong (333333)
+  and cannot be collected
+- score has strange chars
+- game seems too slow
 
 - hw sprites are flickering
 - erase bobs not implemented  

@@ -88,6 +88,7 @@ player_x_3e = $3e
 player_y_3f = $3f
 player_x_copy_40 = $40
 player_y_copy_41 = $41
+counter_0to4_4f = $4f
 enemy_x_57 = $57
 enemy_y_58 = $58
  
@@ -371,17 +372,14 @@ C23B: A9 00    lda #$00
 C23D: 8D 03 80 sta charbank_8003
 C240: A5 5B    lda player_state_3b
 C242: 30 17    bmi $c25b
-; this is always false... testing rom bits???
-; maybe it was to test the game in dev phase?
-C244: 2C 68 A2 bit $c268		; [disable]
-C247: D0 13    bne $c25c		; [disable]
-C249: 2C 69 A2 bit $c269		; [disable]
-C24C: D0 11    bne $c25f		; [disable]
-C24E: 2C 6A A2 bit $c26a		; [disable]
-C251: D0 0F    bne $c262		; [disable]
-C253: 2C 6B A2 bit $c26b		; [disable]
-C256: D0 0D    bne $c265		; [disable]
-; always lands here
+C244: 2C 68 A2 bit $c268
+C247: D0 13    bne $c25c
+C249: 2C 69 A2 bit $c269
+C24C: D0 11    bne $c25f
+C24E: 2C 6A A2 bit $c26a
+C251: D0 0F    bne $c262
+C253: 2C 6B A2 bit $c26b
+C256: D0 0D    bne $c265
 C258: 20 6C A2 jsr $c26c
 C25B: 60       rts
 
@@ -478,6 +476,7 @@ C324: A9 60    lda #$60
 C326: 85 29    sta $49
 C328: 20 B8 B9 jsr $d9d8
 C32B: 60       rts
+
 C32C: A5 29    lda $49
 C32E: F0 10    beq $c340
 C330: C6 29    dec $49
@@ -488,10 +487,13 @@ C339: 4A       lsr a
 C33A: 90 03    bcc $c33f
 C33C: 20 BB A5 jsr $c5db
 C33F: 60       rts
+
 C340: 20 FE A4 jsr $c4fe
 C343: A5 5F    lda player_y_3f
 C345: C9 B2    cmp #$d2
 C347: B0 55    bcs $c37e
+; here player is just out of the gate,
+; entering the maze, reaching Y=0xD2 coordinate
 C349: A9 00    lda #$00
 C34B: 85 5C    sta $3c
 C34D: A5 5B    lda player_state_3b
@@ -1263,18 +1265,18 @@ CB14: BD 5D AB lda $cb3d, x
 CB17: 85 CE    sta $ae
 CB19: A9 02    lda #$02
 CB1B: 85 31    sta $51
-CB1D: A6 2F    ldx $4f
+CB1D: A6 2F    ldx counter_0to4_4f
 CB1F: BC 24 AB ldy $cb44, x
 CB22: 20 F4 B2 jsr $d2f4
 CB25: 6C CD 00 jmp ($00ad)		; [indirect_jump]
 
 CB28: 20 04 B3 jsr $d304
-CB2B: E6 2F    inc $4f
-CB2D: A5 2F    lda $4f
+CB2B: E6 2F    inc counter_0to4_4f
+CB2D: A5 2F    lda counter_0to4_4f
 CB2F: C9 04    cmp #$04
 CB31: 90 04    bcc $cb37
 CB33: A9 00    lda #$00
-CB35: 85 2F    sta $4f
+CB35: 85 2F    sta counter_0to4_4f
 CB37: C6 31    dec $51
 CB39: D0 E2    bne $cb1d
 CB3B: 60       rts
@@ -1302,6 +1304,7 @@ CB7A: 20 0A B0 jsr player_enemy_collision_d00a
 CB7D: 20 CB B0 jsr $d0ab
 CB80: 20 48 B1 jsr $d128
 CB83: 4C 48 AB jmp $cb28
+
 CB86: 20 52 B0 jsr $d032
 CB89: A9 04    lda #$04
 CB8B: 20 D3 B0 jsr $d0b3
@@ -1337,14 +1340,14 @@ CBCC: A5 35    lda $55
 CBCE: 29 F8    and #$f8
 CBD0: 09 02    ora #$02
 CBD2: 85 35    sta $55
-CBD4: A5 2F    lda $4f
+CBD4: A5 2F    lda counter_0to4_4f
 CBD6: 0A       asl a
 CBD7: AA       tax
 CBD8: BD 02 AC lda $cc02, x
 CBDB: 85 39    sta $59
 CBDD: BD 03 AC lda $cc03, x
 CBE0: 85 3A    sta $5a
-CBE2: A6 2F    ldx $4f
+CBE2: A6 2F    ldx counter_0to4_4f
 CBE4: BD 0A AC lda $cc0a, x
 CBE7: 85 3F    sta $5f
 CBE9: A9 00    lda #$00
@@ -1409,7 +1412,7 @@ CC7E: 20 82 AC jsr $cc82
 CC81: 60       rts
 CC82: A9 00    lda #$00
 CC84: 85 6E    sta $6e
-CC86: A5 2F    lda $4f
+CC86: A5 2F    lda counter_0to4_4f
 CC88: 0A       asl a
 CC89: AA       tax
 CC8A: BD D2 AC lda $ccb2, x
@@ -1752,7 +1755,7 @@ D02B: B0 02    bcs $d02f
 D02D: 49 FF    eor #$ff
 D02F: C9 05    cmp #$05
 D031: 60       rts
-D032: A5 2F    lda $4f
+D032: A5 2F    lda counter_0to4_4f
 D034: 0A       asl a
 D035: AA       tax
 D036: BD 2B B0 lda $d04b, x
@@ -1925,7 +1928,7 @@ D2A5: E9 9C    sbc #$9c
 D2A7: A8       tay
 D2A8: 09 80    ora #$80
 D2AA: 85 65    sta $65
-D2AC: A6 2F    ldx $4f
+D2AC: A6 2F    ldx counter_0to4_4f
 D2AE: B9 68 02 lda $0268, y
 D2B1: 1D EC B2 ora $d2ec, x
 D2B4: 99 68 02 sta $0268, y
@@ -1945,7 +1948,7 @@ D2CF: A5 68    lda $68
 D2D1: 30 04    bmi $d2d7
 D2D3: C9 0E    cmp #$0e
 D2D5: 90 14    bcc $d2eb
-D2D7: A6 2F    ldx $4f
+D2D7: A6 2F    ldx counter_0to4_4f
 D2D9: A5 65    lda $65
 D2DB: 29 5F    and #$3f
 D2DD: A8       tay
@@ -2856,6 +2859,7 @@ DB9D: 85 2E    sta $4e
 DB9F: 60       rts
 DBA0: 20 BA EA jsr $eada
 DBA3: 4C 8D BB jmp $db8d
+
 DBA6: 4A       lsr a
 DBA7: 4A       lsr a
 DBA8: 4A       lsr a
@@ -3006,7 +3010,7 @@ E1D6: 85 C1    sta $a1
 E1D8: A0 00    ldy #$00
 E1DA: 8C 03 80 sty charbank_8003
 E1DD: A2 1F    ldx #$1f
-E1DF: B1 C9    lda ($a9), y
+E1DF: B1 C9    lda ($a9), y		; [video_address_maybe]
 ; writes to video but also to regular memory
 E1E1: 91 C5    sta ($a5), y		; [video_address_maybe]
 E1E3: 20 85 BA jsr inc_a9_16_bit_pointer_da85

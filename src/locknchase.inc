@@ -83,6 +83,11 @@
 	INVERT_XC_FLAGS
 	.endm
 	
+	.macro	BIT	arg
+	move.b	d0,d6
+	and.b	\arg,d6
+	.endm
+	
 	.macro	SBC_IMM	param
 	INVERT_XC_FLAGS
 	move.b	#\param,d4
