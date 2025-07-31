@@ -249,15 +249,17 @@ C124: A9 01    lda #$01
 C126: 20 D8 E1 jsr run_length_uncompress_e1b8
 C129: A9 01    lda #$01
 C12B: 20 E0 B7 jsr $d7e0
-C12E: 20 8C BA jsr $da8c
+C12E: 20 8C BA jsr display_nb_lives_da8c
 C131: 20 B8 BA jsr $dad8
 C134: 20 F6 A1 jsr $c1f6
 C137: 20 A6 B9 jsr $d9c6
 C13A: A2 5B    ldx #$3b
 C13C: 20 DC B9 jsr $d9bc
 C13F: 20 59 B1 jsr $d139
+; game mainloop
+game_mainloop_c142:
 C142: 20 D7 BB jsr sync_dbb7
-C145: 20 B1 BC jsr $dcd1
+C145: 20 B1 BC jsr special_writes_dcd1
 C148: 20 5B A2 jsr $c23b
 C14B: 20 B6 AA jsr $cad6
 C14E: 20 F0 A6 jsr $c6f0
@@ -275,7 +277,7 @@ C16D: 20 5B B8 jsr $d83b
 C170: A5 06    lda $06
 C172: 8D 01 80 sta dsw2_8001
 C175: A5 5B    lda player_state_3b
-C177: 10 A9    bpl $c142
+C177: 10 A9    bpl game_mainloop_c142
 C179: 29 08    and #$08
 C17B: F0 06    beq $c183
 C17D: A5 4C    lda $2c
@@ -369,23 +371,29 @@ C23B: A9 00    lda #$00
 C23D: 8D 03 80 sta charbank_8003
 C240: A5 5B    lda player_state_3b
 C242: 30 17    bmi $c25b
-C244: 2C 68 A2 bit $c268
-C247: D0 13    bne $c25c
-C249: 2C 69 A2 bit $c269
-C24C: D0 11    bne $c25f
-C24E: 2C 6A A2 bit $c26a
-C251: D0 0F    bne $c262
-C253: 2C 6B A2 bit $c26b
-C256: D0 0D    bne $c265
+; this is always false... testing rom bits???
+; maybe it was to test the game in dev phase?
+C244: 2C 68 A2 bit $c268		; [disable]
+C247: D0 13    bne $c25c		; [disable]
+C249: 2C 69 A2 bit $c269		; [disable]
+C24C: D0 11    bne $c25f		; [disable]
+C24E: 2C 6A A2 bit $c26a		; [disable]
+C251: D0 0F    bne $c262		; [disable]
+C253: 2C 6B A2 bit $c26b		; [disable]
+C256: D0 0D    bne $c265		; [disable]
+; always lands here
 C258: 20 6C A2 jsr $c26c
 C25B: 60       rts
+
 C25C: 4C 91 A3 jmp $c391
 C25F: 4C ED A3 jmp $c3ed
 C262: 4C 2D A4 jmp $c44d
 C265: 4C 8F A4 jmp $c48f
+
 C26C: A5 4E    lda $2e
 C26D: 4E F0 03 lsr $03f0
 C270: 4C 01 A3 jmp $c301
+
 C273: A5 5C    lda $3c
 C275: 30 2D    bmi $c2c4
 C277: 09 80    ora #$80
@@ -409,7 +417,7 @@ C2A0: 85 CB    sta $ab
 C2A2: A9 5F    lda #$3f
 C2A4: 85 CC    sta $ac
 C2A6: A9 9F    lda #$9f
-C2A8: 20 CC BA jsr $daac
+C2A8: 20 CC BA jsr display_one_life_daac
 C2AB: A9 10    lda #$10
 C2AD: 85 29    sta $49
 C2AF: A5 4C    lda $2c
@@ -450,6 +458,7 @@ C2FA: A9 00    lda #$00
 C2FC: 85 5C    sta $3c
 C2FE: E6 4E    inc $2e
 C300: 60       rts
+
 C301: A5 5C    lda $3c
 C303: 30 47    bmi $c32c
 C305: 09 80    ora #$80
@@ -1222,6 +1231,7 @@ CACF: A5 5B    lda player_state_3b
 CAD1: 29 EF    and #$ef
 CAD3: 85 5B    sta player_state_3b
 CAD5: 60       rts
+
 CAD6: A5 30    lda $50
 CAD8: 30 54    bmi $cb0e
 CADA: A2 00    ldx #$00
@@ -1492,7 +1502,7 @@ CD89: F0 06    beq $cd91
 CD8B: A5 3F    lda $5f
 CD8D: 25 75    and $75
 CD8F: D0 4A    bne $cdbb
-CD91: 20 84 B8 jsr $d884
+CD91: 20 84 B8 jsr pseudo_random_d884
 CD94: A0 03    ldy #$03
 CD96: 29 0F    and #$0f
 CD98: AA       tax
@@ -2124,7 +2134,7 @@ D4A6: 8D 02 7C sta $7c02
 D4A9: A9 94    lda #$94
 D4AB: 8D 03 7C sta $7c03
 D4AE: 20 D7 BB jsr sync_dbb7
-D4B1: 20 B1 BC jsr $dcd1
+D4B1: 20 B1 BC jsr special_writes_dcd1
 D4B4: 20 9C BC jsr $dc9c
 D4B7: 20 5C B5 jsr $d53c
 D4BA: A5 36    lda $56
@@ -2257,7 +2267,7 @@ D61E: A9 94    lda #$94
 D620: 8D 03 7C sta $7c03
 D623: 8D 07 7C sta $7c07
 D626: 20 D7 BB jsr sync_dbb7
-D629: 20 B1 BC jsr $dcd1
+D629: 20 B1 BC jsr special_writes_dcd1
 D62C: 20 9C BC jsr $dc9c
 D62F: 20 5C B5 jsr $d53c
 D632: A5 36    lda $56
@@ -2486,6 +2496,7 @@ D872: 10 F7    bpl $d86b
 D874: C6 CF    dec $af
 D876: 60       rts
 
+pseudo_random_d884:
 D884: A6 56    ldx $36
 D886: BD B6 AA lda $cad6, x
 D889: 18       clc
@@ -2498,6 +2509,7 @@ D891: 2A       rol a
 D892: 55 00    eor $00, x
 D894: E6 56    inc $36
 D896: 60       rts
+
 D897: A2 0A    ldx #$0a
 D899: A0 02    ldy #$02
 D89B: 4C C5 B8 jmp $d8a5
@@ -2594,7 +2606,7 @@ D946: A5 4C    lda $2c
 D948: 09 01    ora #$01
 D94A: 85 4C    sta $2c
 D94C: E6 4D    inc $2d
-D94E: 20 8C BA jsr $da8c
+D94E: 20 8C BA jsr display_nb_lives_da8c
 D951: A9 0B    lda #$0b
 D953: 20 E7 B9 jsr $d9e7
 D956: 20 D7 BB jsr sync_dbb7
@@ -2718,6 +2730,8 @@ DA85: E6 C9    inc $a9
 DA87: D0 02    bne $da8b
 DA89: E6 CA    inc $aa
 DA8B: 60       rts
+
+display_nb_lives_da8c:
 DA8C: A5 4D    lda $2d
 DA8E: 30 16    bmi $daa6
 DA90: 85 C1    sta $a1
@@ -2727,11 +2741,12 @@ DA97: 85 CB    sta $ab
 DA99: A9 5F    lda #$3f
 DA9B: 85 CC    sta $ac
 DA9D: A9 1D    lda #$1d
-DA9F: 20 CC BA jsr $daac
+DA9F: 20 CC BA jsr display_one_life_daac
 DAA2: C6 C1    dec $a1
 DAA4: 10 EC    bpl $da92
 DAA6: 60       rts
 
+display_one_life_daac:
 DAAC: A2 00    ldx #$00
 DAAE: 8E 03 80 stx charbank_8003
 DAB1: A2 03    ldx #$03
@@ -2960,6 +2975,10 @@ DCC7: E6 05    inc $05
 DCC9: A5 06    lda $06
 DCCB: 8D 01 80 sta dsw2_8001
 DCCE: 4C B9 A0 jmp $c0d9
+
+; not sure of what this does...
+; seems to serve no purpose at all
+special_writes_dcd1:
 DCD1: A9 08    lda #$08
 DCD3: 05 06    ora $06
 DCD5: 8D 01 80 sta dsw2_8001
@@ -3126,7 +3145,7 @@ E68D: 85 60    sta $60
 E68F: 85 61    sta $61
 E691: 85 62    sta $62
 E693: 20 FC E7 jsr $e7fc
-E696: 20 B1 BC jsr $dcd1
+E696: 20 B1 BC jsr special_writes_dcd1
 E699: 20 17 E8 jsr $e817
 E69C: A5 61    lda $61
 E69E: 29 0F    and #$0f

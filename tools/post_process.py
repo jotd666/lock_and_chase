@@ -48,6 +48,9 @@ with open(source_dir / "conv.s") as f:
         if "[indirect_jump]" in line:
             line = change_instruction("rts",lines,i)  # proper address already on stack
 
+        if "[disable]" in line:
+            line = remove_instruction(lines,i)
+
         elif "nop" in line.split():
             line = remove_instruction(lines,i)
 
