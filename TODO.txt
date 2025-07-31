@@ -1,5 +1,5 @@
-- maze displaying, but no main character,gate not opening
-  no game demo, stops after a few seconds
+- character not entering: CE07 trace cpu (gate opening)
+
 
 - hw sprites are flickering
 - erase bobs not implemented  

@@ -176,7 +176,6 @@ start:
 	.global osd_interrupt_control
 	.global osd_break		| for debug	
 	.global osd_blitz		| for debug
-	.global osd_read_dsw0
 	.global osd_read_dsw1
 	.global osd_read_dsw2
 	.global	osd_sound_command
@@ -756,6 +755,9 @@ osd_wait_for_sync:
 	tst.b	bof_sync_flag
 	jeq		osd_wait_for_sync
 	clr.b	bof_sync_flag
+	.ifndef	RELEASE
+	move.b	#0x3F,d0 	| same value as MAME
+	.endif
 	rts
 	
 osd_blitz:
@@ -2122,10 +2124,6 @@ direction_table:
 	.byte	0x01,0xff,0xff,0x00,0x00,0x00,0x00,0x00	| 0x0008	
 
 
-osd_read_system:
-	move.b	#0xFF,d0
-	rts
-	
 
 osd_read_dsw1:
 	* actual dipswitches
@@ -2134,7 +2132,7 @@ osd_read_dsw1:
 	move.b	#0xBF,d0	| what MAME returns
 	rts
 	
-osd_read_dsw0:
+osd_read_system:
 	move.b	#0x3F,d0
 	movem.l	a0/d1,-(a7)
 	lea		keyboard_table(pc),a0
@@ -2242,6 +2240,13 @@ handle_keyboard:
 	st.b	cheat_used
 	
 0:
+	cmp.b	#34,d0
+	bne		0f
+	* 'D': dump all logging buffers to data dir
+	jbsr	osd_dump_logs
+0:
+
+
 	cmp.b	#0x51,d0	| F2 key
 	bne.b	0f
 	st.b	cheat_used

@@ -250,7 +250,7 @@ C126: 20 D8 E1 jsr run_length_uncompress_e1b8
 C129: A9 01    lda #$01
 C12B: 20 E0 B7 jsr $d7e0
 C12E: 20 8C BA jsr display_nb_lives_da8c
-C131: 20 B8 BA jsr $dad8
+C131: 20 B8 BA jsr display_current_bonus_and_level_dad8
 C134: 20 F6 A1 jsr $c1f6
 C137: 20 A6 B9 jsr $d9c6
 C13A: A2 5B    ldx #$3b
@@ -391,9 +391,8 @@ C262: 4C 2D A4 jmp $c44d
 C265: 4C 8F A4 jmp $c48f
 
 C26C: A5 4E    lda $2e
-C26D: 4E F0 03 lsr $03f0
+C26E: F0 03    beq $c273              
 C270: 4C 01 A3 jmp $c301
-
 C273: A5 5C    lda $3c
 C275: 30 2D    bmi $c2c4
 C277: 09 80    ora #$80
@@ -784,7 +783,7 @@ C5FA: 60       rts
 C617: E6 57    inc $37
 C619: A0 00    ldy #$00
 C61B: 98       tya
-C61C: 91 CB    sta ($ab), y
+C61C: 91 CB    sta ($ab), y		; [video_address]
 C61E: A9 03    lda #$03
 C620: 20 FD B8 jsr $d8fd
 C623: 20 A2 A6 jsr $c6c2
@@ -1002,7 +1001,7 @@ C82A: D0 05    bne $c831
 C82C: A5 C1    lda $a1
 C82E: 18       clc
 C82F: 69 9C    adc #$9c
-C831: 91 CB    sta ($ab), y
+C831: 91 CB    sta ($ab), y	; [video_address]
 C833: E8       inx
 C834: 88       dey
 C835: 10 F0    bpl $c827
@@ -1555,6 +1554,7 @@ CDFC: 18       clc
 CDFD: 79 05 AE adc $ce05, y
 CE00: 95 39    sta $59, x
 CE02: 60       rts
+
 CE07: A6 76    ldx $76
 CE09: BC 66 AE ldy $ce66, x
 CE0C: A5 3F    lda $5f
@@ -1582,14 +1582,14 @@ CE36: 79 79 AE adc $ce79, y
 CE39: 20 C6 BB jsr $dba6
 CE3C: A6 76    ldx $76
 CE3E: A0 00    ldy #$00
-CE40: B1 CB    lda ($ab), y
+CE40: B1 CB    lda ($ab), y		; [video_address]
 CE42: A8       tay
 CE43: B9 BE BC lda $dcde, y
 CE46: 08       php
 CE47: C9 05    cmp #$05
 CE49: D0 04    bne $ce4f
 CE4B: 28       plp
-CE4C: A9 80    lda #$80
+CE4C: A9 80    lda #$80		  ; to set minus flag
 CE4E: 08       php
 CE4F: 28       plp
 CE50: 95 7B    sta $7b, x
@@ -2772,6 +2772,7 @@ DAD4: 85 4F    sta $2f
 DAD6: D8       cld
 DAD7: 60       rts
 
+display_current_bonus_and_level_dad8:
 DAD8: A6 50    ldx $30
 DADA: A9 00    lda #$00
 DADC: 8D 03 80 sta charbank_8003

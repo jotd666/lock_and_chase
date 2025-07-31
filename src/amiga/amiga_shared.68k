@@ -8,6 +8,7 @@
 		.global music_tick
 		.global	music_track_start_number
 		.global	osd_get_last_known_pc
+		.global	osd_dump_logs
 		.global	osd_log_cpu
 		.global	osd_cpu_logging_control
 	
@@ -21,6 +22,8 @@
 .include "sounds.inc"
 
 SCORE_FILE_SIZE = 0x23
+
+LOG_BUFFER_SIZE = 0x20000
 
 .macro	GET_RAM_START_IN_A6	
 	.ifdef	RELEASE
@@ -210,7 +213,7 @@ osd_sound_start:
 	move.w	(2,a0,d0.w),d1	| pattern number in .mod file
 	* since it's not zero, next vbl tick will play the music
 	
-	cmp.b	music_track_start_number(pc),d1
+	cmp.b	music_track_start_number,d1
 	beq.b	10b		| same track, skip
 
     movem.l d0-a6,-(a7)
@@ -235,7 +238,7 @@ osd_sound_start:
 	move.w	d2,music_tick
 
     moveq	#0,d0
-	move.b	music_volume(pc),d0
+	move.b	music_volume,d0
     jsr	_mt_mastervol
 	st.b	music_playing
     jsr _mt_start
@@ -244,15 +247,10 @@ osd_sound_start:
 6:
 	jra	10b
 
-	
+	.ifndef	RELEASE
 
 osd_get_last_known_pc:
 	move.w	last_known_m6502_pc,d6
-	rts
-	
-osd_log_cpu:
-	move.w	(6,a7),last_known_m6502_pc
-	move.w	(6,a7),0x100
 	rts
 	
 	
@@ -261,16 +259,96 @@ osd_cpu_logging_control:
 	move.b	d6,cpu_log_enable
 	rts
 	
+
+osd_log_cpu:
+
+	move.w	(6,a7),last_known_m6502_pc
+
+	move.l	a6,-(a7)
+	* check if cpu log is enabled
+	tst.b	cpu_log_enable
+	jeq		445f
+	move.l	log_ptr,a6
+	move.w	(10,a7),(a6)+	| the PC
+	move.l	d1,-(a7)
+	move.w	d0,(a6)+
+	move.w	d1,(a6)+
+	move.w	d2,(a6)+
+	move.w	#0xDEAD,(a6)+
+	move.l	a6,log_ptr
+	cmp.w	#0xCAFE,(a6)  | hitting the protection buffer
+	jne		444f
+	BREAKPOINT	"cpu log buffer full, dumping and exiting!"
+	jbsr	osd_dump_logs
+	illegal
+444:
+	move.l	(a7)+,d1
+445:
+	move.l	(a7)+,a6
+	rts
+	
+	
+
+
+
+osd_dump_logs:
+	move.w	sr,-(a7)
+	move.w	#0x2700,SR
+	movem.l	d0-a6,-(a7)
+	
+	jbsr	save_cpu_log
+	
+    movem.l (a7)+,d0-a6
+	move.w	(a7)+,SR
+	rts
+
+save_cpu_log:
+	move.l	_resload,a2
+	lea		log_buffer,a1
+	move.l	log_ptr,d0
+	sub.l	a1,d0
+	jeq		0f
+	move.l	log_ptr,a0
+	* add RAM & ROM base in the end
+	move.l	a6,(a0)+
+	move.l	#rom_base,(a0)+
+	addq	#8,d0
+	lea		cpu_log_name(pc),a0
+	jbsr	resload_SaveFile(a2)
+0:	
+	rts
+
+
+cpu_log_name:
+	.asciz	"cpu_log"
+	.align	2
+	.endif	
+
+
+	.ifndef	RELEASE
+log_ptr:
+	.long	log_buffer
+
+log_buffer:
+	.skip	LOG_BUFFER_SIZE
+	.rept	20
+	.long	0xCAFECAFE
+	.endr
+
+cpu_log_enable:
+	.word	0
+	.endif
+
 music_playing:
 	.byte	0
 looped_sound_enabled:
 	.byte	0
-cpu_log_enable:
-	.byte 0
+
 music_loops:
 	.byte	0
 music_volume:
 	.byte	0
+	.align	2
 music_track_start_number:
 	.word	-1
 music_pattern:

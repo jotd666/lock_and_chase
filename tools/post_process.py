@@ -69,10 +69,10 @@ with open(source_dir / "conv.s") as f:
             line = change_instruction("rts",lines,i)
 
         if any(x in line for x in ("GET_ADDRESS","GET_INDIRECT_ADDRESS","or.","move.","addq.","clr.")):
-            if "POP_SR" in lines[i-1]:
+            if "POP_SR" in lines[i-1] and "plp" not in lines[i-1]:
                 # optimize: no need to restore SR, it won't be used
                 for j in range(i-1,i-10,-1):
-                    if j>=0 and "PUSH_SR" in lines[j]:
+                    if j>=0 and "PUSH_SR" in lines[j] and "php" not in lines[j]:
                         lines[j] = ""
                         lines[i-1] = ""
                         break

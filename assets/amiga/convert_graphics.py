@@ -136,7 +136,9 @@ add_sprite(0xb6,"points_300")
 add_sprite(0xB7,"points_1000")
 add_sprite(0xB8,"points_2000")
 
+add_sprite(0xac,"money_bag")
 
+add_sprite(range(0xA8,0xAC),"player_car")
 add_sprite(range(0x81,0x8d),"player")
 add_sprite(range(0x8d,0x90),"angry_cop")
 add_sprite(range(0x90,0x96),"red_cop")
