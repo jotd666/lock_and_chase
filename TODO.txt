@@ -6,7 +6,7 @@
 
 - hw sprites are flickering
 - erase bobs not implemented  
-
+- manually remove useless cmp.b #0,d0 (not all!)
 
 optim:
 

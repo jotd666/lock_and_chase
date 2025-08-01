@@ -89,6 +89,7 @@ player_x_3e = $3e
 player_y_3f = $3f
 player_x_copy_40 = $40
 player_y_copy_41 = $41
+tile_facing_player_4b = $4b
 counter_0to4_4f = $4f
 enemy_x_57 = $57
 enemy_y_58 = $58
@@ -687,10 +688,10 @@ C4EF: 20 E7 B9 jsr $d9e7
 C4F2: A4 2D    ldy $4d
 C4F4: BE 59 A5 ldx $c539, y
 C4F7: 30 05    bmi $c4fe
-C4F9: 20 6D A5 jsr $c56d
+C4F9: 20 6D A5 jsr check_player_vs_maze_bounds_c56d
 C4FC: 90 08    bcc $c506
 C4FE: A6 23    ldx $43
-C500: 20 6D A5 jsr $c56d
+C500: 20 6D A5 jsr check_player_vs_maze_bounds_c56d
 C503: 90 07    bcc $c50c
 C505: 60       rts
 C506: 86 23    stx $43
@@ -719,17 +720,22 @@ C531: BD 3E A5 lda $c55e, x
 C534: 85 CE    sta $ae
 C536: 6C CD 00 jmp ($00ad)		; [indirect_jump]
 
+; y: 0 or 1 which orientation to check
+; y=0: check X
+; y=1: check Y
+check_player_vs_maze_bounds_c56d:
 C56D: A5 5E    lda player_x_3e
 C56F: 85 20    sta player_x_copy_40
 C571: A5 5F    lda player_y_3f
 C573: 85 21    sta player_y_copy_41
 C575: BC CB A5 ldy $c5ab, x
 C578: B9 20 00 lda $0040, y
-C57B: 18       clc
-C57C: 69 00    adc #$00
+C57B: 18       clc				; [disable]
+C57C: 69 00    adc #$00			; [disable] useless add with 0
 C57E: 29 07    and #$07
-C580: C9 00    cmp #$00
+C580: C9 00    cmp #$00			; seems useless but actually sets/clear carry
 C582: D0 46    bne $c5aa
+; character aligned on tile grid Y wise: check next tile
 C584: B9 20 00 lda $0040, y
 C587: 29 F8    and #$f8
 C589: 99 20 00 sta $0040, y
@@ -743,11 +749,12 @@ C597: 7D D4 A5 adc $c5b4, x
 C59A: 20 C6 BB jsr $dba6
 C59D: A0 00    ldy #$00
 C59F: B1 CB    lda ($ab), y		; [video_address]
-C5A1: 85 2B    sta $4b
+C5A1: 85 2B    sta tile_facing_player_4b
 C5A3: A8       tay
 C5A4: B9 BE BC lda $dcde, y
 C5A7: 0A       asl a
 C5A8: 85 2C    sta $4c
+; returns carry, caller checks it
 C5AA: 60       rts
 
 C5BB: A6 23    ldx $43
@@ -844,7 +851,7 @@ C6A0: 20 E7 B9 jsr $d9e7
 C6A3: 60       rts
 C6A4: A5 26    lda $46
 C6A6: 30 1A    bmi $c6c2
-C6A8: A5 2B    lda $4b
+C6A8: A5 2B    lda tile_facing_player_4b
 C6AA: 38       sec
 C6AB: E9 9C    sbc #$9c
 C6AD: A8       tay
@@ -3846,7 +3853,7 @@ F178: 20 6F F2 jsr wait_1_second_f26f
 F17B: 20 6F F2 jsr wait_1_second_f26f
 F17E: AD 00 80 lda dsw1_8000
 F181: 29 50    and #$30
-F183: C9 00    cmp #$00
+F183: C9 00    cmp #$00		; [disabled]
 F185: D0 03    bne $f18a
 F187: 4C 62 F3 jmp $f362
 F18A: C9 40    cmp #$20

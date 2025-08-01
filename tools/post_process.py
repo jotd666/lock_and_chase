@@ -48,6 +48,14 @@ with open(source_dir / "conv.s") as f:
         if "[indirect_jump]" in line:
             line = change_instruction("rts",lines,i)  # proper address already on stack
 
+        if "[$f1e3:" in line:
+            lines[i-1] = ""
+        if "[$f183:" in line:
+            lines[i-1] = ""
+
+        if "[$c580:" in line:
+            line = change_instruction("cmp.b\t#0,d0",lines,i) + "\tINVERT_XC_FLAGS\n"
+            lines[i-1] = ""
         if "[disable]" in line:
             line = remove_instruction(lines,i)
 
