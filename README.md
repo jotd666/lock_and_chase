@@ -1,5 +1,5 @@
-# Burger Time
-transcode of Burger Time arcade version for 68000/020 amiga machines
+# Lock'n'Chase
+transcode of Lock'n'Chase arcade version for 68000/020 amiga machines
 
 Credits:
 
@@ -20,8 +20,7 @@ Features:
 Controls:
 
 - joystick left/right/up/down: move character
-- joystick fire: pepper
-- "M": toggle annoying in-game music
+- joystick fire: close gate
 
 To start a game (when game not running):
 
@@ -30,6 +29,6 @@ To start a game (when game not running):
 - start game (2 players): down/2
 
 Cheat keys:
-- F1: complete level
+- F1: opens the exits
 - F3: add 10000 points
 - F4: toggle invincibility

@@ -83,6 +83,7 @@
 nb_credits_02 = $02
 nb_lives_p1_0f = $0f
 nb_lives_p2_1e = $1e
+nb_pellets_picked_37 = $37 
 player_state_3b = $3b
 player_x_3e = $3e
 player_y_3f = $3f
@@ -91,6 +92,7 @@ player_y_copy_41 = $41
 counter_0to4_4f = $4f
 enemy_x_57 = $57
 enemy_y_58 = $58
+exit_open_flag_b0 = $b0
  
 player_1_controls_9000 = $9000
 system_9002 = $9002
@@ -235,7 +237,7 @@ C103: 30 16    bmi $c11b
 C105: 09 80    ora #$80
 C107: 85 4C    sta $2c
 C109: A9 00    lda #$00
-C10B: 85 57    sta $37
+C10B: 85 57    sta nb_pellets_picked_37
 C10D: A9 00    lda #$00
 C10F: 85 58    sta $38
 C111: 85 59    sta $39
@@ -244,7 +246,7 @@ C115: 20 D8 E1 jsr run_length_uncompress_e1b8
 C118: 20 A3 BA jsr $dac3
 C11B: A5 06    lda $06
 C11D: 8D 01 80 sta dsw2_8001
-C120: A5 57    lda $37
+C120: A5 57    lda nb_pellets_picked_37
 C122: 85 9F    sta $9f
 C124: A9 01    lda #$01
 C126: 20 D8 E1 jsr run_length_uncompress_e1b8
@@ -782,14 +784,14 @@ C5F4: BD FF A5 lda $c5ff, x
 C5F7: 8D 01 7C sta $7c01
 C5FA: 60       rts
 
-C617: E6 57    inc $37
+C617: E6 57    inc nb_pellets_picked_37
 C619: A0 00    ldy #$00
 C61B: 98       tya
 C61C: 91 CB    sta ($ab), y		; [video_address]
 C61E: A9 03    lda #$03
 C620: 20 FD B8 jsr $d8fd
 C623: 20 A2 A6 jsr $c6c2
-C626: A5 57    lda $37
+C626: A5 57    lda nb_pellets_picked_37
 C628: 29 01    and #$01
 C62A: AA       tax
 C62B: BD 52 A6 lda $c632, x
@@ -1014,7 +1016,7 @@ C8B6: 8D 03 80 sta charbank_8003
 C8B9: A5 96    lda $96
 C8BB: D0 5D    bne $c8fa
 C8BD: A6 58    ldx $38
-C8BF: A5 57    lda $37
+C8BF: A5 57    lda nb_pellets_picked_37
 C8C1: DD 21 A9 cmp $c941, x
 C8C4: D0 7A    bne $c940
 C8C6: E6 58    inc $38
@@ -1079,7 +1081,7 @@ C952: 8D 03 80 sta charbank_8003
 C955: A5 99    lda $99
 C957: D0 47    bne $c980
 C959: A6 5A    ldx $3a
-C95B: A5 57    lda $37
+C95B: A5 57    lda nb_pellets_picked_37
 C95D: DD CE A9 cmp $c9ae, x
 C960: D0 2B    bne $c9ad
 C962: A9 80    lda #$80
@@ -1199,7 +1201,7 @@ CA6F: 60       rts
 CA8C: A5 5B    lda player_state_3b
 CA8E: 29 01    and #$01
 CA90: F0 23    beq $cad5
-CA92: A5 57    lda $37
+CA92: A5 57    lda nb_pellets_picked_37
 CA94: C5 9E    cmp $9e
 CA96: F0 10    beq $caa8
 CA98: 85 9E    sta $9e
@@ -2423,23 +2425,24 @@ D7B4: F0 49    beq $d7df
 D7B6: A5 5B    lda player_state_3b
 D7B8: 29 08    and #$08
 D7BA: D0 43    bne $d7df
-D7BC: A5 57    lda $37
+D7BC: A5 57    lda nb_pellets_picked_37
 D7BE: C9 89    cmp #$89
 D7C0: D0 1D    bne $d7df
-D7C2: A5 D0    lda $b0
+D7C2: A5 D0    lda exit_open_flag_b0
 D7C4: 30 0F    bmi $d7d5
+; all pellets have been picked: open the exits
 D7C6: 09 80    ora #$80
 D7C8: 49 02    eor #$02
-D7CA: 85 D0    sta $b0
+D7CA: 85 D0    sta exit_open_flag_b0
 D7CC: 29 02    and #$02
 D7CE: 20 E0 B7 jsr $d7e0
 D7D1: A9 04    lda #$04
 D7D3: 85 D1    sta $b1
 D7D5: C6 D1    dec $b1
 D7D7: D0 06    bne $d7df
-D7D9: A5 D0    lda $b0
+D7D9: A5 D0    lda exit_open_flag_b0
 D7DB: 29 7F    and #$7f
-D7DD: 85 D0    sta $b0
+D7DD: 85 D0    sta exit_open_flag_b0
 D7DF: 60       rts
 D7E0: 85 C1    sta $a1
 D7E2: 0A       asl a

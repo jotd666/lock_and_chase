@@ -2229,12 +2229,12 @@ handle_keyboard:
 	jeq		10f
 	.endif
 	* cheat keys
-	cmp.b	#0x50,d0	| F1 key: level skip
+	cmp.b	#0x50,d0	| F1 key: open gates
 	bne.b	0f
 	move.w	#0x0FF,_custom+color
 	movem.l	d0-a6,-(a7)
 	GET_RAM_START_IN_A6
-	move.b	#0x80,(0x6F,a6)
+	move.b	#0x89,(0x37,a6)	| set the number of pellets: opens exit
 	movem.l (a7)+,d0-a6
 
 	st.b	cheat_used
