@@ -1,12 +1,8 @@
-- character can cross walls, when not aligned, doesn't eat dots
-- bag of money in the middle sprite is wrong (333333)
-  and cannot be collected
-- score has strange chars
-- game seems too slow
-
-- hw sprites are flickering
-- erase bobs not implemented  
-- manually remove useless cmp.b #0,d0 (not all!)
+- SPRITE_X_CORRECTION = 0 and use bplcon to scroll tiles playfield by 8
+- score has strange chars: wrong abcd?
+- hw sprites are flickering/main character disappearing
+- erase bobs implemented but only working for main character 
+- save highscores
 
 optim:
 

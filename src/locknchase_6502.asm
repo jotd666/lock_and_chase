@@ -84,6 +84,7 @@ nb_credits_02 = $02
 nb_lives_p1_0f = $0f
 nb_lives_p2_1e = $1e
 nb_pellets_picked_37 = $37 
+nb_times_bag_appeared_38 = $38
 player_state_3b = $3b
 player_x_3e = $3e
 player_y_3f = $3f
@@ -240,7 +241,7 @@ C107: 85 4C    sta $2c
 C109: A9 00    lda #$00
 C10B: 85 57    sta nb_pellets_picked_37
 C10D: A9 00    lda #$00
-C10F: 85 58    sta $38
+C10F: 85 58    sta nb_times_bag_appeared_38
 C111: 85 59    sta $39
 C113: 85 5A    sta $3a
 C115: 20 D8 E1 jsr run_length_uncompress_e1b8
@@ -268,7 +269,7 @@ C148: 20 5B A2 jsr $c23b
 C14B: 20 B6 AA jsr $cad6
 C14E: 20 F0 A6 jsr $c6f0
 C151: 20 63 A7 jsr $c763
-C154: 20 D4 A8 jsr $c8b4
+C154: 20 D4 A8 jsr handle_bonus_appearances_c8b4
 C157: 20 30 A9 jsr $c950
 C15A: 20 A5 A9 jsr $c9c5
 C15D: 20 8C AA jsr $ca8c
@@ -1018,15 +1019,18 @@ C834: 88       dey
 C835: 10 F0    bpl $c827
 C837: 60       rts
 
+handle_bonus_appearances_c8b4:
 C8B4: A9 00    lda #$00
 C8B6: 8D 03 80 sta charbank_8003
 C8B9: A5 96    lda $96
 C8BB: D0 5D    bne $c8fa
-C8BD: A6 58    ldx $38
+C8BD: A6 58    ldx nb_times_bag_appeared_38
 C8BF: A5 57    lda nb_pellets_picked_37
 C8C1: DD 21 A9 cmp $c941, x
 C8C4: D0 7A    bne $c940
-C8C6: E6 58    inc $38
+; trigger central money bag when a given number
+; of pellets are picked: $28, $46, $64, $82
+C8C6: E6 58    inc nb_times_bag_appeared_38
 C8C8: 20 B8 B9 jsr $d9d8
 C8CB: 20 D7 BB jsr sync_dbb7
 C8CE: A9 45    lda #$25
@@ -2646,11 +2650,11 @@ D9D3: E0 FF    cpx #$ff
 D9D5: D0 F6    bne $d9cd
 D9D7: 60       rts
 
-D9D8: A6 58    ldx $38
+D9D8: A6 58    ldx nb_times_bag_appeared_38
 D9DA: BD F3 B9 lda $d9f3, x
 D9DD: 4C E7 B9 jmp $d9e7
 
-D9E0: A6 58    ldx $38
+D9E0: A6 58    ldx nb_times_bag_appeared_38
 D9E2: BD F3 B9 lda $d9f3, x
 D9E5: 09 80    ora #$80
 D9E7: 86 D2    stx $b2

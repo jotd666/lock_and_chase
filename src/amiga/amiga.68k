@@ -23,8 +23,8 @@ CURRENT_SPRITE_SIZE = 4
 
 
 
-SPRITE_X_CORRECTION = 0
-SPRITE_Y_CORRECTION = -1
+SPRITE_X_CORRECTION = -8
+SPRITE_Y_CORRECTION = -8
 HW_SPRITE_X_CORRECTION = -8
 HW_SPRITE_Y_CORRECTION = 0
 
@@ -957,7 +957,7 @@ update_bobs_and_hw_sprites:
 	moveq	#0,d6
 	moveq	#NB_TARGET_SPRITES-1,d7
 1:
-	jbsr	update_one_sprite
+	*jbsr	update_one_sprite
 	cmp.b	#4,d6
 	jeq		2f		| used all the slots: exit!
 	addq.w	#CURRENT_SPRITE_SIZE,a0
@@ -1000,7 +1000,8 @@ update_bobs_and_hw_sprites:
 	move.w	(a4),d4			| height
 	move.w	(2,a4),d2		| width
 	clr.l	(a4)+			| ack deletion
-	**jbsr		blit_background
+	move.w	#NB_PLAYFIELD_PLANES,d3
+	jbsr		clear_planes_any_blitter_internal
 	dbf		d7,1b	
 	bra.b	12f
 11:
@@ -1187,11 +1188,82 @@ update_one_bob:
 
 	moveq	#NB_PLAYFIELD_PLANES,d3		| 3 planes
 
-	*jbsr		blit_planes_any_internal_cookie_cut
+	jbsr		blit_planes_any_internal_cookie_cut
 2:
 	move.l	(a7)+,a0
 	rts
 
+
+* < D0,D1: x,y
+* < A1: foreground plane pointer (often first plane!)
+* < D2: width in bytes (inc. 2 extra for shifting)
+* < D3: nb planes to clear
+* < D4: blit height
+
+
+* trashes D0-D6/A2
+clear_planes_any_blitter_internal:
+    * pre-compute the maximum of shit here
+	move.w	d1,d6
+    beq.b   1f    | optim
+	* check if y start + height > Y_MAX
+	* (ignores case where y = 0, no risk)
+	add.w	d4,d6
+	sub.w	#Y_MAX,d6
+	bmi.b	0f
+	* y start + height > Y_MAX: clip height
+	sub.w	d6,d4
+	beq.b	10f
+	bpl.b	0f
+10:
+	* null or negative height after clipping: out
+	rts
+0:
+    lea mulNB_BYTES_PER_ROW_table(pc),a2
+    add.w   d1,d1
+    move.w  (a2,d1.w),d1
+1:
+    and.w   #0x1F0,d0
+    beq.b   2f				| zero X optimization
+    lsr.w   #3,d0
+    add.w   d0,d1
+2:   
+    add.w   d1,a1       | plane position (always even)
+
+	* reuse d1 for bltcon0
+	moveq	#1,d1
+	ror.l	#8,d1     | AKA move.l  #0x01000000,d1   | minterm useD & rect clear (0xA) 
+
+	move.w #NB_BYTES_PER_ROW,d0
+	bclr	#0,d2		| make sure D2 is even (else strange things occur!)
+    sub.w   d2,d0       | blit width
+
+	move.w	d4,d6		| save height
+    lsl.w   #6,d4
+    lsr.w   #1,d2
+    add.w   d2,d4       | blit height+width
+	moveq	#-1,d2
+    * now just wait for blitter ready to write all registers
+	WAIT_BLIT
+    
+	move.l	d2,bltafwm(a5)
+	move.l d1,bltcon0(a5)	
+    move.w  d0,bltdmod(a5)	|D modulo
+	
+	subq	#1,d3
+	jeq		4f
+3:
+	WAIT_BLIT
+	move.l a1,bltdpt(a5)	|destination top left corner
+	move.w  d4,bltsize(a5)	|rectangle size, starts blit
+32:
+	lea		(SCREEN_PLANE_SIZE,a1),a1
+	dbf		d3,3b
+4:
+	rts
+	
+	
+	
 * what: blits 16x? data on one plane, cookie cut
 * args:
 * < A0: pointers on 16x? data
@@ -1746,7 +1818,7 @@ osd_set_charbank:
 	move.b	d0,charbank_value
 	rts
 	
-* a0=screen address (preserved), d0=tile (preserved)
+* a0=screen address (preserved)
 * a6=ram base
 * should preserve all registers
 * allows 3C00-3FFF and 7C00-7FFF ranges
@@ -1759,6 +1831,7 @@ osd_set_charbank:
 osd_video_byte_dirty:
 
 	movem.l	d0-d7/a0-a2,-(a7)
+	move.b	(a0),d0
 	move.l	a0,d7		| save address
 	sub.l	a6,d7
 	.ifndef	RELEASE
