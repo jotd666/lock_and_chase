@@ -29,6 +29,7 @@ To start a game (when game not running):
 - start game (2 players): down/2
 
 Cheat keys:
-- F1: opens the exits
+- F1: skip current level
+- F2: opens the exits
 - F3: add 10000 points
 - F4: toggle invincibility

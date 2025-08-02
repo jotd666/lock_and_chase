@@ -14,7 +14,7 @@ input_read_dict = {
 input_write_dict = {
 "player_1_controls_9000":"",
 "dsw1_8000":"",
-"dsw2_8001":"video_control",
+"dsw2_8001":"",    # video control is useless here
 "system_9002":"",   # sound_start
 "charbank_8003":"set_charbank",  # inc charbank
 }

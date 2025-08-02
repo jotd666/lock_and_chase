@@ -635,8 +635,9 @@ C48A: 60       rts
 
 C48D: 88       dey
 C48E: 88       dey
-C48F: 20 79 BB jsr $db79
+C48F: 20 79 BB jsr read_controls_db79
 C492: F0 3E    beq $c4f2
+; Z=0: fire was just pressed
 C494: A2 00    ldx #$00
 C496: B5 80    lda $80, x
 C498: F0 0E    beq $c4a8
@@ -920,6 +921,7 @@ C737: 99 68 02 sta $0268, y
 C73A: A9 00    lda #$00
 C73C: 95 80    sta $80, x
 C73E: 4C 2F A7 jmp $c74f
+
 C741: A9 20    lda #$40
 C743: 95 83    sta $83, x
 C745: B5 82    lda $82, x
@@ -928,7 +930,8 @@ C749: 29 01    and #$01
 C74B: A8       tay
 C74C: B9 37 A7 lda $c757, y
 C74F: 85 C2    sta $a2
-C751: 20 09 A8 jsr $c809
+; draw "chance" red fence
+C751: 20 09 A8 jsr draw_fence_c809
 C754: 60       rts
 
 C763: A5 5B    lda player_state_3b
@@ -982,10 +985,11 @@ C7C8: 99 68 02 sta $0268, y
 C7CB: A9 00    lda #$00
 C7CD: 95 8A    sta $8a, x
 C7CF: 85 C2    sta $a2
-C7D1: 20 09 A8 jsr $c809
+; draw automatic green fences
+C7D1: 20 09 A8 jsr draw_fence_c809
 C7D4: 60       rts
 
-
+draw_fence_c809:
 C809: A9 00    lda #$00                                            
 C80B: 8D 03 80 sta charbank_8003
 C80E: A5 C1    lda $a1
@@ -2860,7 +2864,7 @@ DB47: B5 00    lda $00, x
 DB49: F0 07    beq $db52
 DB4B: 29 5F    and #$3f
 DB4D: 85 C1    sta $a1
-DB4F: 20 09 A8 jsr $c809
+DB4F: 20 09 A8 jsr draw_fence_c809
 DB52: C6 C3    dec $a3
 DB54: 10 EC    bpl $db42
 DB56: A2 02    ldx #$02
@@ -2874,6 +2878,8 @@ DB68: 10 EE    bpl $db58
 DB6A: A9 01    lda #$01
 DB6C: 20 E0 B7 jsr $d7e0
 DB6F: 60       rts
+
+read_controls_db79:
 DB79: A5 04    lda actual_game_04
 DB7B: F0 43    beq $dba0
 DB7D: A0 00    ldy #$00
@@ -2889,10 +2895,13 @@ DB91: 85 2D    sta $4d
 DB93: A5 C1    lda $a1
 DB95: 29 10    and #$10
 DB97: F0 04    beq $db9d
+; fire pressed
 DB99: 45 2E    eor $4e
 DB9B: F0 02    beq $db9f
 DB9D: 85 2E    sta $4e
+; returns Z flag
 DB9F: 60       rts
+
 DBA0: 20 BA EA jsr $eada
 DBA3: 4C 8D BB jmp $db8d
 
