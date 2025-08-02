@@ -76,10 +76,16 @@ player_y_3f = $3f
 player_x_copy_40 = $40
 player_y_copy_41 = $41
 tile_facing_player_4b = $4b
-counter_0to4_4f = $4f
+current_active_enemy_4f = $4f
+nb_enemies_to_update_51 = $51   | nb per frame
+work_enemy_struct_55 = $55
 enemy_x_57 = $57
 enemy_y_58 = $58
+enemy_x_59 = $59
+enemy_y_5a = $5a
+enemy_struct_offset_a4 = $a4
 exit_open_flag_b0 = $b0
+enemy_structures_0200 = $200
  
 player_1_controls_9000 = $9000
 system_9002 = $9002
@@ -1154,7 +1160,7 @@ CA04: 85 C3    sta $a3
 CA06: A4 C3    ldy $a3
 CA08: B9 70 AA lda $ca70, y
 CA0B: A8       tay
-CA0C: B9 00 02 lda $0200, y
+CA0C: B9 00 02 lda enemy_structures_0200, y
 CA0F: DD 74 AA cmp $ca74, x
 CA12: 90 14    bcc $ca28
 CA14: DD 75 AA cmp $ca75, x
@@ -1260,29 +1266,31 @@ CB0A: A9 FF    lda #$ff
 CB0C: 85 30    sta $50
 CB0E: 60       rts
 
-CB0F: BD 5C AB lda table_cb3c, x		; [jump_table]
+CB0F: BD 5C AB lda enemy_behaviour_table_cb3c, x		; [jump_table]
 CB12: 85 CD    sta $ad
 CB14: BD 5D AB lda $cb3d, x
 CB17: 85 CE    sta $ae
-CB19: A9 02    lda #$02
-CB1B: 85 31    sta $51
-CB1D: A6 2F    ldx counter_0to4_4f
-CB1F: BC 24 AB ldy $cb44, x
-CB22: 20 F4 B2 jsr $d2f4
+CB19: A9 02    lda #$02		; update 2 enemies at each call
+CB1B: 85 31    sta nb_enemies_to_update_51
+update_one_enemy_cb1d:
+CB1D: A6 2F    ldx current_active_enemy_4f
+CB1F: BC 24 AB ldy $cb44, x		; struct offset table
+CB22: 20 F4 B2 jsr copy_enemy_struct_to_work_data_d2f4
 CB25: 6C CD 00 jmp ($00ad)		; [indirect_jump]
 
+return_from_jump_table_cb28:
 CB28: 20 04 B3 jsr $d304
-CB2B: E6 2F    inc counter_0to4_4f
-CB2D: A5 2F    lda counter_0to4_4f
+CB2B: E6 2F    inc current_active_enemy_4f
+CB2D: A5 2F    lda current_active_enemy_4f
 CB2F: C9 04    cmp #$04
 CB31: 90 04    bcc $cb37
 CB33: A9 00    lda #$00
-CB35: 85 2F    sta counter_0to4_4f
-CB37: C6 31    dec $51
-CB39: D0 E2    bne $cb1d
+CB35: 85 2F    sta current_active_enemy_4f
+CB37: C6 31    dec nb_enemies_to_update_51
+CB39: D0 E2    bne update_one_enemy_cb1d
 CB3B: 60       rts
 
-CB4C: A5 35    lda $55
+CB4C: A5 35    lda work_enemy_struct_55
 CB4E: 29 07    and #$07
 CB50: 4A       lsr a
 CB51: 90 06    bcc $cb59
@@ -1303,8 +1311,8 @@ CB74: 20 38 B2 jsr $d258
 CB77: 20 EE AE jsr $ceee
 CB7A: 20 0A B0 jsr player_enemy_collision_d00a
 CB7D: 20 CB B0 jsr $d0ab
-CB80: 20 48 B1 jsr $d128
-CB83: 4C 48 AB jmp $cb28
+CB80: 20 48 B1 jsr copy_enemy_coordinates_d128
+CB83: 4C 48 AB jmp return_from_jump_table_cb28
 
 CB86: 20 52 B0 jsr $d032
 CB89: A9 04    lda #$04
@@ -1314,17 +1322,18 @@ CB90: D0 06    bne $cb98
 CB92: A5 5B    lda player_state_3b
 CB94: 29 BF    and #$df
 CB96: 85 5B    sta player_state_3b
-CB98: 4C 48 AB jmp $cb28
+CB98: 4C 48 AB jmp return_from_jump_table_cb28
 CB9B: 20 CB B0 jsr $d0ab
-CB9E: 4C 48 AB jmp $cb28
+CB9E: 4C 48 AB jmp return_from_jump_table_cb28
 CBA1: A5 5B    lda player_state_3b
 CBA3: 09 40    ora #$20
 CBA5: 85 5B    sta player_state_3b
 CBA7: A9 7C    lda #$7c
 CBA9: 85 33    sta $53
 CBAB: 60       rts
-CBAC: 20 17 B1 jsr $d117
-CBAF: 20 F7 B0 jsr $d0f7
+
+CBAC: 20 17 B1 jsr copy_enemy_coordinates_d117
+CBAF: 20 F7 B0 jsr move_enemy_d0f7
 CBB2: 20 CB B0 jsr $d0ab
 CBB5: A5 61    lda $61
 CBB7: 29 03    and #$03
@@ -1337,18 +1346,18 @@ CBC4: 29 01    and #$01
 CBC6: F0 47    beq $cbef
 CBC8: C6 67    dec $67
 CBCA: D0 43    bne $cbef
-CBCC: A5 35    lda $55
+CBCC: A5 35    lda work_enemy_struct_55
 CBCE: 29 F8    and #$f8
 CBD0: 09 02    ora #$02
-CBD2: 85 35    sta $55
-CBD4: A5 2F    lda counter_0to4_4f
+CBD2: 85 35    sta work_enemy_struct_55
+CBD4: A5 2F    lda current_active_enemy_4f
 CBD6: 0A       asl a
 CBD7: AA       tax
 CBD8: BD 02 AC lda $cc02, x
-CBDB: 85 39    sta $59
+CBDB: 85 39    sta enemy_x_59
 CBDD: BD 03 AC lda $cc03, x
-CBE0: 85 3A    sta $5a
-CBE2: A6 2F    ldx counter_0to4_4f
+CBE0: 85 3A    sta enemy_y_5a
+CBE2: A6 2F    ldx current_active_enemy_4f
 CBE4: BD 0A AC lda $cc0a, x
 CBE7: 85 3F    sta $5f
 CBE9: A9 00    lda #$00
@@ -1356,9 +1365,9 @@ CBEB: 85 3D    sta $5d
 CBED: 85 3E    sta $5e
 CBEF: 60       rts
 
-CC0E: 20 17 B1 jsr $d117
-CC11: A5 39    lda $59
-CC13: 05 3A    ora $5a
+CC0E: 20 17 B1 jsr copy_enemy_coordinates_d117
+CC11: A5 39    lda enemy_x_59
+CC13: 05 3A    ora enemy_y_5a
 CC15: 29 07    and #$07
 CC17: D0 10    bne $cc29
 CC19: A0 00    ldy #$00
@@ -1381,11 +1390,11 @@ CC3C: A6 76    ldx $76
 CC3E: B5 7B    lda $7b, x
 CC40: 30 07    bmi $cc49
 CC42: 20 93 B2 jsr $d293
-CC45: 20 F7 B0 jsr $d0f7
+CC45: 20 F7 B0 jsr move_enemy_d0f7
 CC48: 60       rts
-CC49: A5 35    lda $55
+CC49: A5 35    lda work_enemy_struct_55
 CC4B: 29 F8    and #$f8
-CC4D: 85 35    sta $55
+CC4D: 85 35    sta work_enemy_struct_55
 CC4F: A4 3F    ldy $5f
 CC51: B9 F9 AB lda $cbf9, y
 CC54: 85 3F    sta $5f
@@ -1396,9 +1405,9 @@ CC5C: 20 82 AC jsr $cc82
 CC5F: 60       rts
 CC60: C6 67    dec $67
 CC62: D0 09    bne $cc6d
-CC64: A5 35    lda $55
+CC64: A5 35    lda work_enemy_struct_55
 CC66: 29 F8    and #$f8
-CC68: 85 35    sta $55
+CC68: 85 35    sta work_enemy_struct_55
 CC6A: 20 CB B0 jsr $d0ab
 CC6D: 60       rts
 CC6E: E6 69    inc $69
@@ -1413,7 +1422,7 @@ CC7E: 20 82 AC jsr $cc82
 CC81: 60       rts
 CC82: A9 00    lda #$00
 CC84: 85 6E    sta $6e
-CC86: A5 2F    lda counter_0to4_4f
+CC86: A5 2F    lda current_active_enemy_4f
 CC88: 0A       asl a
 CC89: AA       tax
 CC8A: BD D2 AC lda $ccb2, x
@@ -1440,7 +1449,7 @@ CCB1: 60       rts
 CCEA: A9 00    lda #$00
 CCEC: 85 75    sta $75
 CCEE: 85 32    sta $52
-CCF0: 20 17 B1 jsr $d117
+CCF0: 20 17 B1 jsr copy_enemy_coordinates_d117
 CCF3: 20 BF AD jsr $cddf
 CCF6: A9 03    lda #$03
 CCF8: 85 76    sta $76
@@ -1453,8 +1462,8 @@ CD06: 49 FF    eor #$ff
 CD08: 25 75    and $75
 CD0A: 85 75    sta $75
 CD0C: A4 63    ldy $63
-CD0E: A5 39    lda $59
-CD10: 05 3A    ora $5a
+CD0E: A5 39    lda enemy_x_59
+CD10: 05 3A    ora enemy_y_5a
 CD12: 29 07    and #$07
 CD14: F0 02    beq $cd18
 CD16: A0 04    ldy #$04
@@ -1467,9 +1476,9 @@ CD20: BD 49 AD lda $cd29, x
 CD23: 85 70    sta $70
 CD25: 6C 6F 00 jmp ($006f)		; [indirect_jump]
 
-CD32: A5 39    lda $59
+CD32: A5 39    lda enemy_x_59
 CD34: 85 77    sta $77
-CD36: A5 3A    lda $5a
+CD36: A5 3A    lda enemy_y_5a
 CD38: 85 78    sta $78
 CD3A: A5 5E    lda player_x_3e
 CD3C: 85 79    sta $79
@@ -1480,9 +1489,9 @@ CD45: 85 3F    sta $5f
 CD47: 60       rts
 CD48: A4 22    ldy $42
 CD4A: BE 7E AD ldx $cd7e, y
-CD4D: A5 39    lda $59
+CD4D: A5 39    lda enemy_x_59
 CD4F: 85 77    sta $77
-CD51: A5 3A    lda $5a
+CD51: A5 3A    lda enemy_y_5a
 CD53: 85 78    sta $78
 CD55: A5 5E    lda player_x_3e
 CD57: 18       clc
@@ -1549,14 +1558,14 @@ CDEB: 68       pla
 CDEC: 29 06    and #$06
 CDEE: D0 01    bne $cdf1
 CDF0: C8       iny
-CDF1: B5 39    lda $59, x
+CDF1: B5 39    lda enemy_x_59, x
 CDF3: 29 07    and #$07
 CDF5: D9 03 AE cmp $ce03, y
 CDF8: D0 08    bne $ce02
-CDFA: B5 39    lda $59, x
+CDFA: B5 39    lda enemy_x_59, x
 CDFC: 18       clc
 CDFD: 79 05 AE adc $ce05, y
-CE00: 95 39    sta $59, x
+CE00: 95 39    sta enemy_x_59, x
 CE02: 60       rts
 
 CE07: A6 76    ldx $76
@@ -1565,22 +1574,22 @@ CE0C: A5 3F    lda $5f
 CE0E: 3D 6A AE and $ce6a, x
 CE11: F0 18    beq $ce2b
 CE13: BE 6E AE ldx $ce6e, y
-CE16: B5 39    lda $59, x
+CE16: B5 39    lda enemy_x_59, x
 CE18: 18       clc
 CE19: 69 01    adc #$01
 CE1B: 29 07    and #$07
 CE1D: C9 03    cmp #$03
 CE1F: B0 0A    bcs $ce2b
-CE21: B5 39    lda $59, x
+CE21: B5 39    lda enemy_x_59, x
 CE23: 29 F8    and #$f8
-CE25: 95 39    sta $59, x
+CE25: 95 39    sta enemy_x_59, x
 CE27: A9 00    lda #$00
 CE29: 95 3D    sta $5d, x
-CE2B: A5 39    lda $59
+CE2B: A5 39    lda enemy_x_59
 CE2D: 18       clc
 CE2E: 79 78 AE adc $ce78, y
 CE31: 85 CB    sta $ab
-CE33: A5 3A    lda $5a
+CE33: A5 3A    lda enemy_y_5a
 CE35: 18       clc
 CE36: 79 79 AE adc $ce79, y
 CE39: 20 C6 BB jsr $dba6
@@ -1674,7 +1683,7 @@ CF05: BD 87 AF lda $cf87, x
 CF08: 85 70    sta $70
 CF0A: A4 3F    ldy $5f
 CF0C: BE 7E AD ldx $cd7e, y
-CF0F: A5 35    lda $55
+CF0F: A5 35    lda work_enemy_struct_55
 CF11: 29 04    and #$04
 CF13: F0 02    beq $cf17
 CF15: A2 00    ldx #$00
@@ -1690,36 +1699,36 @@ CF32: A5 3D    lda $5d
 CF34: 18       clc
 CF35: 65 77    adc $77
 CF37: 85 3D    sta $5d
-CF39: A5 39    lda $59
+CF39: A5 39    lda enemy_x_59
 CF3B: 65 78    adc $78
-CF3D: 85 39    sta $59
+CF3D: 85 39    sta enemy_x_59
 CF3F: 60       rts
 CF40: 20 73 AF jsr $cf73
 CF43: A5 3D    lda $5d
 CF45: 38       sec
 CF46: E5 77    sbc $77
 CF48: 85 3D    sta $5d
-CF4A: A5 39    lda $59
+CF4A: A5 39    lda enemy_x_59
 CF4C: E5 78    sbc $78
-CF4E: 85 39    sta $59
+CF4E: 85 39    sta enemy_x_59
 CF50: 60       rts
 CF51: 20 73 AF jsr $cf73
 CF54: A5 3E    lda $5e
 CF56: 38       sec
 CF57: E5 77    sbc $77
 CF59: 85 3E    sta $5e
-CF5B: A5 3A    lda $5a
+CF5B: A5 3A    lda enemy_y_5a
 CF5D: E5 78    sbc $78
-CF5F: 85 3A    sta $5a
+CF5F: 85 3A    sta enemy_y_5a
 CF61: 60       rts
 CF62: 20 73 AF jsr $cf73
 CF65: A5 3E    lda $5e
 CF67: 18       clc
 CF68: 65 77    adc $77
 CF6A: 85 3E    sta $5e
-CF6C: A5 3A    lda $5a
+CF6C: A5 3A    lda enemy_y_5a
 CF6E: 65 78    adc $78
-CF70: 85 3A    sta $5a
+CF70: 85 3A    sta enemy_y_5a
 CF72: 60       rts
 CF73: A9 00    lda #$00
 CF75: 85 78    sta $78
@@ -1757,7 +1766,8 @@ D02B: B0 02    bcs $d02f
 D02D: 49 FF    eor #$ff
 D02F: C9 05    cmp #$05
 D031: 60       rts
-D032: A5 2F    lda counter_0to4_4f
+
+D032: A5 2F    lda current_active_enemy_4f
 D034: 0A       asl a
 D035: AA       tax
 D036: BD 2B B0 lda $d04b, x
@@ -1787,7 +1797,7 @@ D0BE: 18       clc
 D0BF: 65 78    adc $78
 D0C1: 85 78    sta $78
 D0C3: A6 77    ldx $77
-D0C5: A5 35    lda $55
+D0C5: A5 35    lda work_enemy_struct_55
 D0C7: 29 04    and #$04
 D0C9: F0 02    beq $d0cd
 D0CB: A2 05    ldx #$05
@@ -1799,50 +1809,54 @@ D0D6: B1 71    lda ($71), y
 D0D8: A0 01    ldy #$01
 D0DA: 91 6F    sta ($6f), y		; [video_address]
 D0DC: C8       iny
-D0DD: A5 39    lda $59
+D0DD: A5 39    lda enemy_x_59
 D0DF: 18       clc
 D0E0: 69 0C    adc #$0c
 D0E2: 49 FF    eor #$ff
 D0E4: 91 6F    sta ($6f), y		; [video_address]
 D0E6: C8       iny
-D0E7: A5 3A    lda $5a
+D0E7: A5 3A    lda enemy_y_5a
 D0E9: 38       sec
 D0EA: E9 04    sbc #$04
 D0EC: 91 6F    sta ($6f), y		; [video_address]
 D0EE: E6 61    inc $61
 D0F0: 60       rts
 
+move_enemy_d0f7:
 D0F7: A4 3F    ldy $5f
 D0F9: BE 7E AD ldx $cd7e, y
-D0FC: A5 39    lda $59
+D0FC: A5 39    lda enemy_x_59
 D0FE: 18       clc
-D0FF: 7D 0D B1 adc $d10d, x
-D102: 85 39    sta $59
-D104: A5 3A    lda $5a
+D0FF: 7D 0D B1 adc $d10d, x		; direction table
+D102: 85 39    sta enemy_x_59
+D104: A5 3A    lda enemy_y_5a
 D106: 18       clc
-D107: 7D 0E B1 adc $d10e, x
-D10A: 85 3A    sta $5a
+D107: 7D 0E B1 adc $d10e, x		; direction table
+D10A: 85 3A    sta enemy_y_5a
 D10C: 60       rts
 
+copy_enemy_coordinates_d117:
 D117: A5 37    lda enemy_x_57
-D119: 85 39    sta $59
+D119: 85 39    sta enemy_x_59
 D11B: A5 38    lda enemy_y_58
-D11D: 85 3A    sta $5a
+D11D: 85 3A    sta enemy_y_5a
 D11F: A5 3B    lda $5b
 D121: 85 3D    sta $5d
 D123: A5 3C    lda $5c
 D125: 85 3E    sta $5e
 D127: 60       rts
 
-D128: A5 39    lda $59
+copy_enemy_coordinates_d128:
+D128: A5 39    lda enemy_x_59
 D12A: 85 37    sta enemy_x_57
-D12C: A5 3A    lda $5a
+D12C: A5 3A    lda enemy_y_5a
 D12E: 85 38    sta enemy_y_58
 D130: A5 3D    lda $5d
 D132: 85 3B    sta $5b
 D134: A5 3E    lda $5e
 D136: 85 3C    sta $5c
 D138: 60       rts
+
 D139: A9 03    lda #$03
 D13B: 85 C3    sta $a3
 D13D: A5 C3    lda $a3
@@ -1898,21 +1912,21 @@ D265: 29 03    and #$03
 D267: F0 45    beq $d28e
 D269: 4A       lsr a
 D26A: AA       tax
-D26B: A5 39    lda $59
+D26B: A5 39    lda enemy_x_59
 D26D: 38       sec
 D26E: FD 8F B2 sbc $d28f, x
 D271: B0 02    bcs $d275
 D273: 49 FF    eor #$ff
 D275: C9 04    cmp #$04
 D277: B0 15    bcs $d28e
-D279: A5 35    lda $55
+D279: A5 35    lda work_enemy_struct_55
 D27B: 29 F8    and #$f8
 D27D: 09 04    ora #$04
-D27F: 85 35    sta $55
+D27F: 85 35    sta work_enemy_struct_55
 D281: A9 10    lda #$10
 D283: 85 67    sta $67
 D285: BD 91 B2 lda $d291, x
-D288: 85 39    sta $59
+D288: 85 39    sta enemy_x_59
 D28A: A9 00    lda #$00
 D28C: 85 3D    sta $5d
 D28E: 60       rts
@@ -1930,7 +1944,7 @@ D2A5: E9 9C    sbc #$9c
 D2A7: A8       tay
 D2A8: 09 80    ora #$80
 D2AA: 85 65    sta $65
-D2AC: A6 2F    ldx counter_0to4_4f
+D2AC: A6 2F    ldx current_active_enemy_4f
 D2AE: B9 68 02 lda $0268, y
 D2B1: 1D EC B2 ora $d2ec, x
 D2B4: 99 68 02 sta $0268, y
@@ -1950,7 +1964,7 @@ D2CF: A5 68    lda $68
 D2D1: 30 04    bmi $d2d7
 D2D3: C9 0E    cmp #$0e
 D2D5: 90 14    bcc $d2eb
-D2D7: A6 2F    ldx counter_0to4_4f
+D2D7: A6 2F    ldx current_active_enemy_4f
 D2D9: A5 65    lda $65
 D2DB: 29 5F    and #$3f
 D2DD: A8       tay
@@ -1960,19 +1974,30 @@ D2E2: B9 68 02 lda $0268, y
 D2E5: 3D F0 B2 and $d2f0, x
 D2E8: 99 68 02 sta $0268, y
 D2EB: 60       rts
-D2F4: 84 C4    sty $a4                                             
+
+; copies enemy data to zero page data
+; successively for each enemy
+; Y=0, 0x1A, 0x34, 0x4E: offset for enemy structs
+; 0x200: contains enemy structs (size = 0x1A)
+;
+; offset 04: X
+; offset 05: Y
+copy_enemy_struct_to_work_data_d2f4:
+D2F4: 84 C4    sty enemy_struct_offset_a4                                             
 D2F6: A2 00    ldx #$00                                            
-D2F8: B9 00 02 lda $0200, y
-D2FB: 95 35    sta $55, x
+D2F8: B9 00 02 lda enemy_structures_0200, y
+D2FB: 95 35    sta work_enemy_struct_55, x
 D2FD: C8       iny
 D2FE: E8       inx
-D2FF: E0 1A    cpx #$1a
+D2FF: E0 1A    cpx #$1a		; size of enemy struct
 D301: 90 F5    bcc $d2f8
 D303: 60       rts
-D304: A4 C4    ldy $a4
+
+copy_work_data_to_enemy_struct_d304:
+D304: A4 C4    ldy enemy_struct_offset_a4
 D306: A2 00    ldx #$00
-D308: B5 35    lda $55, x
-D30A: 99 00 02 sta $0200, y
+D308: B5 35    lda work_enemy_struct_55, x
+D30A: 99 00 02 sta enemy_structures_0200, y
 D30D: C8       iny
 D30E: E8       inx
 D30F: E0 1A    cpx #$1a
@@ -2126,13 +2151,13 @@ D46D: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D470: 60       rts
 
 D494: A9 00    lda #$00                                            
-D496: 85 35    sta $55
+D496: 85 35    sta work_enemy_struct_55
 D498: 85 36    sta $56
 D49A: 85 37    sta enemy_x_57
 D49C: 85 38    sta enemy_y_58
 D49E: A9 0F    lda #$0f
 D4A0: 85 3C    sta $5c
-D4A2: 85 39    sta $59
+D4A2: 85 39    sta enemy_x_59
 ; write character to sprite memory
 D4A4: A9 F8    lda #$f8
 D4A6: 8D 02 7C sta $7c02
@@ -2157,7 +2182,7 @@ D4D2: 8D 70 5E sta $3e70
 D4D5: A5 36    lda $56
 D4D7: C9 04    cmp #$04
 D4D9: B0 36    bcs $d531
-D4DB: A6 35    ldx $55
+D4DB: A6 35    ldx work_enemy_struct_55
 D4DD: BD 81 B5 lda $d581, x
 D4E0: 8D 00 7C sta $7c00
 D4E3: A5 37    lda enemy_x_57
@@ -2173,9 +2198,9 @@ D4F5: 7D 87 B5 adc $d587, x
 D4F8: 8D 02 7C sta $7c02
 D4FB: DD 89 B5 cmp $d589, x
 D4FE: D0 09    bne $d509
-D500: A5 35    lda $55
+D500: A5 35    lda work_enemy_struct_55
 D502: 49 01    eor #$01
-D504: 85 35    sta $55
+D504: 85 35    sta work_enemy_struct_55
 D506: 4C CE B4 jmp $d4ae
 D509: DD 8B B5 cmp $d58b, x
 D50C: D0 08    bne $d516
@@ -2201,15 +2226,15 @@ D538: 20 37 B5 jsr $d557
 D53B: 60       rts
 D53C: A9 01    lda #$01
 D53E: 8D 03 80 sta charbank_8003
-D541: C6 39    dec $59
-D543: A5 39    lda $59
+D541: C6 39    dec enemy_x_59
+D543: A5 39    lda enemy_x_59
 D545: 29 7F    and #$7f
 D547: D0 1A    bne $d563
-D549: A5 39    lda $59
+D549: A5 39    lda enemy_x_59
 D54B: 49 8F    eor #$8f
-D54D: 85 39    sta $59
+D54D: 85 39    sta enemy_x_59
 D54F: A2 0B    ldx #$0b
-D551: A5 39    lda $59
+D551: A5 39    lda enemy_x_59
 D553: 10 02    bpl $d557
 D555: A2 17    ldx #$17
 D557: A0 0B    ldy #$0b
@@ -2258,13 +2283,13 @@ D5FB: CA       dex
 D5FC: 10 F7    bpl $d5f5
 D5FE: 60       rts
 D606: A9 00    lda #$00
-D608: 85 35    sta $55
+D608: 85 35    sta work_enemy_struct_55
 D60A: 85 36    sta $56
 D60C: 85 37    sta enemy_x_57
 D60E: 85 38    sta enemy_y_58
 D610: 85 3B    sta $5b
 D612: A9 0F    lda #$0f
-D614: 85 39    sta $59
+D614: 85 39    sta enemy_x_59
 D616: A9 F8    lda #$f8
 D618: 8D 02 7C sta $7c02
 D61B: 8D 06 7C sta $7c06
@@ -2282,14 +2307,14 @@ D638: A5 36    lda $56
 D63A: 29 7F    and #$7f
 D63C: D0 E8    bne $d626
 D63E: 85 36    sta $56
-D640: 85 3A    sta $5a
+D640: 85 3A    sta enemy_y_5a
 D642: A2 00    ldx #$00
 D644: 20 E8 B6 jsr $d6e8
 D647: 20 22 B7 jsr $d742
 D64A: A9 A0    lda #$c0
 D64C: 85 3B    sta $5b
-D64E: E6 35    inc $55
-D650: A5 35    lda $55
+D64E: E6 35    inc work_enemy_struct_55
+D650: A5 35    lda work_enemy_struct_55
 D652: C9 02    cmp #$02
 D654: 90 10    bcc $d666
 D656: A0 02    ldy #$02
@@ -2326,13 +2351,13 @@ D699: A5 3B    lda $5b
 D69B: 29 7F    and #$7f
 D69D: D0 87    bne $d626
 D69F: 85 3B    sta $5b
-D6A1: A5 35    lda $55
+D6A1: A5 35    lda work_enemy_struct_55
 D6A3: C9 02    cmp #$02
 D6A5: 90 DF    bcc $d666
 D6A7: A5 06    lda current_player_06
 D6A9: 8D 01 80 sta dsw2_8001
 D6AC: A9 00    lda #$00
-D6AE: 85 3A    sta $5a
+D6AE: 85 3A    sta enemy_y_5a
 D6B0: AA       tax
 D6B1: 20 E8 B6 jsr $d6e8
 D6B4: A9 20    lda #$40
@@ -2340,7 +2365,7 @@ D6B6: 20 A4 BB jsr wait_dbc4
 D6B9: 60       rts
 D6BA: CE 06 7C dec $7c06
 D6BD: CE 02 7C dec $7c02
-D6C0: A6 35    ldx $55
+D6C0: A6 35    ldx work_enemy_struct_55
 D6C2: AD 02 7C lda $7c02
 D6C5: DD E2 B6 cmp $d6e2, x
 D6C8: D0 15    bne $d6df
@@ -2348,7 +2373,7 @@ D6CA: A9 00    lda #$00
 D6CC: 8D 00 7C sta $7c00
 D6CF: 8D 04 7C sta $7c04
 D6D2: A9 01    lda #$01
-D6D4: 85 3A    sta $5a
+D6D4: 85 3A    sta enemy_y_5a
 D6D6: A2 02    ldx #$02
 D6D8: 20 E8 B6 jsr $d6e8
 D6DB: A9 A0    lda #$c0
@@ -2360,7 +2385,7 @@ D6ED: BD 06 B7 lda $d706, x
 D6F0: 85 3C    sta $5c
 D6F2: A0 11    ldy #$11
 D6F4: BE 50 B7 ldx $d730, y
-D6F7: A5 3A    lda $5a
+D6F7: A5 3A    lda enemy_y_5a
 D6F9: 8D 03 80 sta charbank_8003
 D6FC: B1 3B    lda ($5b), y
 D6FE: 9D 2D 5E sta $3e4d, x
@@ -2369,7 +2394,7 @@ D702: 10 F0    bpl $d6f4
 D704: 60       rts
 
 
-D742: A5 35    lda $55                                             
+D742: A5 35    lda work_enemy_struct_55                                             
 D744: 0A       asl a                                               
 D745: AA       tax
 D746: BD 3B B7 lda $d75b, x
@@ -2641,7 +2666,7 @@ D9C8: 4C AD B9 jmp $d9cd
 clear_page_2_d9cb:
 D9CB: A2 FF    ldx #$ff
 D9CD: A9 00    lda #$00
-D9CF: 9D 00 02 sta $0200, x
+D9CF: 9D 00 02 sta enemy_structures_0200, x
 D9D2: CA       dex
 D9D3: E0 FF    cpx #$ff
 D9D5: D0 F6    bne $d9cd
@@ -3080,7 +3105,7 @@ E5DF: A6 7C    ldx $7c
 E5E1: BD 19 E6 lda $e619, x
 E5E4: 18       clc
 E5E5: 69 94    adc #$94
-E5E7: 85 35    sta $55
+E5E7: 85 35    sta work_enemy_struct_55
 E5E9: A9 02    lda #$02
 E5EB: 85 36    sta $56
 E5ED: A9 02    lda #$02
@@ -3095,7 +3120,7 @@ E5FD: A6 7C    ldx $7c
 E5FF: BD 1F E6 lda $e61f, x
 E602: 18       clc
 E603: 69 94    adc #$94
-E605: 85 35    sta $55
+E605: 85 35    sta work_enemy_struct_55
 E607: A9 02    lda #$02
 E609: 85 36    sta $56
 E60B: A9 02    lda #$02
@@ -3128,8 +3153,8 @@ E649: A6 37    ldx enemy_x_57
 E64B: E8       inx
 E64C: 8A       txa
 E64D: 18       clc
-E64E: 65 35    adc $55
-E650: 85 35    sta $55
+E64E: 65 35    adc work_enemy_struct_55
+E650: 85 35    sta work_enemy_struct_55
 E652: A5 36    lda $56
 E654: 69 00    adc #$00
 E656: 85 36    sta $56
@@ -3138,7 +3163,7 @@ E658: 4C 45 E6 jmp $e625
 E65B: A9 5C    lda #$3c
 E65D: 85 36    sta $56
 E65F: A9 00    lda #$00
-E661: 85 35    sta $55
+E661: 85 35    sta work_enemy_struct_55
 E663: 85 37    sta enemy_x_57
 E665: A9 20    lda #$40
 E667: 85 38    sta enemy_y_58
@@ -3243,12 +3268,12 @@ E742: 8D 05 7C sta $7c05
 E745: 60       rts
 
 E746: A9 06    lda #$06
-E748: 85 3A    sta $5a
-E74A: A5 3A    lda $5a
+E748: 85 3A    sta enemy_y_5a
+E74A: A5 3A    lda enemy_y_5a
 E74C: 0A       asl a
 E74D: AA       tax
 E74E: BD 75 E7 lda $e775, x
-E751: 85 35    sta $55
+E751: 85 35    sta work_enemy_struct_55
 E753: BD 83 E7 lda $e783, x
 E756: 85 37    sta enemy_x_57
 E758: E8       inx
@@ -3256,14 +3281,14 @@ E759: BD 75 E7 lda $e775, x
 E75C: 85 36    sta $56
 E75E: BD 83 E7 lda $e783, x
 E761: 85 38    sta enemy_y_58
-E763: A6 3A    ldx $5a
+E763: A6 3A    ldx enemy_y_5a
 E765: BD 91 E7 lda $e791, x
 E768: A8       tay
 E769: B1 35    lda ($55), y
 E76B: 91 37    sta ($57), y		; [video_address]
 E76D: 88       dey
 E76E: 10 F9    bpl $e769
-E770: C6 3A    dec $5a
+E770: C6 3A    dec enemy_y_5a
 E772: 10 B6    bpl $e74a
 E774: 60       rts
 
@@ -3302,7 +3327,7 @@ E830: A9 00    lda #$00
 E832: 85 60    sta $60
 E834: 60       rts
 E835: A9 8B    lda #$8b
-E837: 85 35    sta $55
+E837: 85 35    sta work_enemy_struct_55
 E839: A9 5E    lda #$3e
 E83B: 85 36    sta $56
 E83D: A2 00    ldx #$00
@@ -3316,16 +3341,16 @@ E84B: 60       rts
 E84C: C8       iny
 E84D: C0 03    cpy #$03
 E84F: D0 F0    bne $e841
-E851: A5 35    lda $55
+E851: A5 35    lda work_enemy_struct_55
 E853: 18       clc
 E854: 69 20    adc #$40
-E856: 85 35    sta $55
+E856: 85 35    sta work_enemy_struct_55
 E858: A5 36    lda $56
 E85A: 69 00    adc #$00
 E85C: 85 36    sta $56
 E85E: 4C 5F E8 jmp $e83f
 E861: A9 92    lda #$92
-E863: 85 35    sta $55
+E863: 85 35    sta work_enemy_struct_55
 E865: A9 5E    lda #$3e
 E867: 85 36    sta $56
 E869: A2 00    ldx #$00
@@ -3352,10 +3377,10 @@ E88B: 60       rts
 E88C: C8       iny
 E88D: C0 06    cpy #$06
 E88F: D0 BC    bne $e86d
-E891: A5 35    lda $55
+E891: A5 35    lda work_enemy_struct_55
 E893: 18       clc
 E894: 69 20    adc #$40
-E896: 85 35    sta $55
+E896: 85 35    sta work_enemy_struct_55
 E898: A5 36    lda $56
 E89A: 69 00    adc #$00
 E89C: 85 36    sta $56
@@ -3466,7 +3491,7 @@ E980: E9 1E    sbc #$1e
 E982: 0A       asl a
 E983: AA       tax
 E984: BD BB E9 lda table_e9db, x	; [jump_table]
-E987: 85 35    sta $55
+E987: 85 35    sta work_enemy_struct_55
 E989: BD BC E9 lda $e9dc, x
 E98C: 85 36    sta $56
 E98E: A9 5F    lda #$3f
@@ -3479,16 +3504,16 @@ E99B: A5 62    lda $62
 E99D: 29 40    and #$20
 E99F: D0 F9    bne $e99a
 E9A1: A9 00    lda #$00
-E9A3: 85 35    sta $55
+E9A3: 85 35    sta work_enemy_struct_55
 E9A5: A9 6A    lda #$6a
 E9A7: 85 36    sta $56
 E9A9: A6 7D    ldx $7d
 E9AB: A9 30    lda #$50
-E9AD: 85 35    sta $55
-E9AF: A5 35    lda $55
+E9AD: 85 35    sta work_enemy_struct_55
+E9AF: A5 35    lda work_enemy_struct_55
 E9B1: 18       clc
 E9B2: 69 08    adc #$08
-E9B4: 85 35    sta $55
+E9B4: 85 35    sta work_enemy_struct_55
 E9B6: A5 36    lda $56
 E9B8: 69 00    adc #$00
 E9BA: 85 36    sta $56
@@ -3539,21 +3564,21 @@ EA17: AD 07 7C lda $7c07
 EA1A: 85 36    sta $56
 EA1C: AD 06 7C lda $7c06
 EA1F: 49 FF    eor #$ff
-EA21: 85 35    sta $55
+EA21: 85 35    sta work_enemy_struct_55
 EA23: 46 36    lsr $56
 EA25: 46 36    lsr $56
 EA27: 46 36    lsr $56
 EA29: 46 36    lsr $56
-EA2B: 66 35    ror $55
+EA2B: 66 35    ror work_enemy_struct_55
 EA2D: 46 36    lsr $56
-EA2F: 66 35    ror $55
+EA2F: 66 35    ror work_enemy_struct_55
 EA31: 46 36    lsr $56
-EA33: 66 35    ror $55
+EA33: 66 35    ror work_enemy_struct_55
 EA35: A5 36    lda $56
 EA37: 18       clc
 EA38: 69 A0    adc #$c0
 EA3A: 85 36    sta $56
-EA3C: C6 35    dec $55
+EA3C: C6 35    dec work_enemy_struct_55
 EA3E: 60       rts
 EA3F: A5 61    lda $61
 EA41: 29 E0    and #$e0
@@ -3561,21 +3586,21 @@ EA43: C9 20    cmp #$40
 EA45: F0 01    beq $ea48
 EA47: 60       rts
 EA48: A9 9C    lda #$9c
-EA4A: 85 35    sta $55
+EA4A: 85 35    sta work_enemy_struct_55
 EA4C: A5 61    lda $61
 EA4E: 29 0F    and #$0f
 EA50: F0 0B    beq $ea5d
 EA52: AA       tax
-EA53: A5 35    lda $55
+EA53: A5 35    lda work_enemy_struct_55
 EA55: 38       sec
 EA56: E9 08    sbc #$08
-EA58: 85 35    sta $55
+EA58: 85 35    sta work_enemy_struct_55
 EA5A: CA       dex
 EA5B: D0 F6    bne $ea53
 EA5D: A6 7C    ldx $7c
 EA5F: BD 8A EA lda $ea8a, x
 EA62: 85 36    sta $56
-EA64: A5 35    lda $55
+EA64: A5 35    lda work_enemy_struct_55
 EA66: CD 02 7C cmp $7c02
 EA69: F0 0A    beq $ea75
 EA6B: 90 05    bcc $ea72
@@ -3587,7 +3612,7 @@ EA77: CD 03 7C cmp $7c03
 EA7A: F0 04    beq $ea80
 EA7C: EE 03 7C inc $7c03
 EA7F: 60       rts
-EA80: A5 35    lda $55
+EA80: A5 35    lda work_enemy_struct_55
 EA82: CD 02 7C cmp $7c02
 EA85: F0 09    beq $ea90
 EA87: 4C 7F EA jmp $ea7f
@@ -3603,7 +3628,7 @@ EA96: 85 61    sta $61
 EA98: BD 1F E6 lda $e61f, x
 EA9B: 18       clc
 EA9C: 69 94    adc #$94
-EA9E: 85 35    sta $55
+EA9E: 85 35    sta work_enemy_struct_55
 EAA0: A9 02    lda #$02
 EAA2: 85 36    sta $56
 EAA4: A5 61    lda $61
@@ -4648,7 +4673,7 @@ table_c55d:
 	dc.w	$c672	; $c565
 	dc.w	$c68d	; $c567
 	dc.w	$c6a4	; $c569
-table_cb3c:
+enemy_behaviour_table_cb3c:
 	dc.w	$cb4c	; $cb3c
 	dc.w	$cb86	; $cb3e
 	dc.w	$cba1	; $cb40

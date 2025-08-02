@@ -1,11 +1,11 @@
-
+- clock is 56,75HZ!
 - find "game is playing" flag to insert coin with fire
 - hw sprites are flickering/main character disappearing
 - rip sounds
 - cannot use action to close gate anymore??
 - highscore entry sprite wrong location, then locks
   up when entering letter
-- enemies are super-slow
+- enemies are super-slow: trace CB0F CB3B 51 is not taken into account??
 - rip music
 - save highscores
 
