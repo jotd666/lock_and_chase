@@ -1276,7 +1276,7 @@ update_one_enemy_cb1d:
 CB1D: A6 2F    ldx current_active_enemy_4f
 CB1F: BC 24 AB ldy $cb44, x		; struct offset table
 CB22: 20 F4 B2 jsr copy_enemy_struct_to_work_data_d2f4
-CB25: 6C CD 00 jmp ($00ad)		; [indirect_jump]
+CB25: 6C CD 00 jmp ($00ad)		; indirect jump (not tagged, special case)
 
 return_from_jump_table_cb28:
 CB28: 20 04 B3 jsr $d304

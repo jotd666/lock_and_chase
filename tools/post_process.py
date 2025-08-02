@@ -57,6 +57,17 @@ with open(source_dir / "conv.s") as f:
             line = change_instruction("cmp.b\t#0,d0",lines,i) + "\tINVERT_XC_FLAGS\n"
             lines[i-1] = ""
 
+        elif "[$cb12:" in line:
+            # rework jump table: save jump address in A4
+            # also remove the rest of the code (setting zero page pointer)
+            lines[i-1]=lines[i+2]=""
+            line = change_instruction("move.l\t(a7)+,a4",lines,i)
+            for j in range(i,i+7):
+                lines[j] = remove_instruction(lines,j)
+
+        elif "[$cb25:" in line:
+            line = change_instruction("jmp\t(a4)",lines,i)  # proper address already in A4
+
         elif "[$d90a:" in line or "[$d911:" in line:
             # not detected by converter, highscore carry propagation
             # in bcd
@@ -74,7 +85,7 @@ with open(source_dir / "conv.s") as f:
         elif "stray b" in line:
             line = ""       # when disabling this, make sure that false alarms have been reviewed
 
-        if "[$f7df:" in line or "[$f7df:" in line or "[$f7eb:" in line:
+        if "[$f7df:" in line or "[$f7eb:" in line:
             # X flag set by lsr
             line = "\tSET_C_FROM_X\n"+line
             lines[i+1]=""
