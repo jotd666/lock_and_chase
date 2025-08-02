@@ -1,12 +1,13 @@
-- score has strange chars: wrong abcd?
+
+- find "game is playing" flag to insert coin with fire
 - hw sprites are flickering/main character disappearing
 - rip sounds
 - cannot use action to close gate anymore??
-- implement fast/slow game mode (option)
+- highscore entry sprite wrong location, then locks
+  up when entering letter
 - enemies are super-slow
 - rip music
 - save highscores
-- find "game is playing" flag to insert coin with fire
 
 optim:
 

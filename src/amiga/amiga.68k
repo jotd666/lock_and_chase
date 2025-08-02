@@ -414,8 +414,19 @@ _user:
 	btst	#31,d1
 	sne		break_at_startup_flag
 	.endif
-	
-	**move.b	d0,dip_switches_2
+	st.b	d1
+	move.l	dsw_options,d0
+	btst	#0,d0
+	jeq		0f
+	bclr	#3,d1	| fast game
+0:
+	btst	#1,d0
+	jeq		0f
+	bclr	#0,d1	| 5 lives
+0:
+	* bits 1 and 2 at 0: bonus life at 15000 (else 20000, 30000)
+
+	move.b	d1,dip_switches_2
 
 
 	
@@ -424,7 +435,6 @@ _user:
 	btst	#0,d0
 	beq.b	0f
 	st		cheat_used
-	*bset	#6,dip_switches_2
 0:
 	btst	#1,d0
 	beq.b	0f
@@ -439,7 +449,7 @@ _user:
 	btst	#3,d0
 	beq.b	0f
 	st		cheat_used
-	*bset	#5,dip_switches_2
+
 0:
 	
 	move	#0x80,d1	| demo sounds
@@ -835,30 +845,33 @@ osd_wait:
 is_game_playing:
 	move.l	a6,-(a7)
 	GET_RAM_START_IN_A6
-	tst.b	(0x1B,a6)
+	tst.b	(actual_game_04,a6)
 	movem.l	(a7)+,a6
 	rts
 	
 lose_all_lives:
 	move.l	a6,-(a7)
 	GET_RAM_START_IN_A6
-	st.b	(0x0029,a6)		| no more lives
-	st.b	(0x00C6,a6)		| died
+	st.b	(nb_lives_current_player_2d,a6)		| no more lives
+	bset.b	#2,(player_state_3b,a6)		| died
 	move.l	(a7)+,a6
 	rts
 
-add_1000_points:
+skip_level:
+	move.l	a6,-(a7)
+	GET_RAM_START_IN_A6
+	st.b	(player_state_3b,a6)		| found by mistake :)
+	move.l	(a7)+,a6
+	rts
+
+add_10000_points:
 	move.l	a6,-(a7)
 	GET_RAM_START_IN_A6
 	movem.w	d0/d7,-(a7)
-	move.b	(0x2E,a6),d0
-	MOVE.b	#0x10,d7
+	move.b	(0x33,a6),d0
+	MOVE.b	#0x01,d7
 	abcd	d7,d0
-	move.b	d0,(0x2E,a6)
-	move.b	(0x2F,a6),d0
-	moveq	#0,d7
-	abcd	d7,d0
-	move.b	d0,(0x2F,a6)
+	move.b	d0,(0x33,a6)
 	movem.w	(a7)+,d0/d7
 	move.l	(a7)+,a6
 	rts
@@ -2245,9 +2258,8 @@ osd_read_system:
 	
 osd_read_dsw2:
 	* actual dipswitches
-	*move.b	dip_switches_2(pc),d0
-	move.b	#0xFE,d0		| default lives, etc..
-
+	move.b	dip_switches_2(pc),d0
+	
 	rts
 
 insert_coin:
@@ -2309,12 +2321,12 @@ handle_keyboard:
 	jeq		10f
 	.endif
 	* cheat keys
-	cmp.b	#0x50,d0	| F1 key: open gates
+	cmp.b	#0x51,d0	| F2 key: open gates
 	bne.b	0f
 	move.w	#0x0FF,_custom+color
 	movem.l	d0-a6,-(a7)
 	GET_RAM_START_IN_A6
-	move.b	#0x89,(0x37,a6)	| set the number of pellets: opens exit
+	move.b	#0x89,(nb_pellets_picked_37,a6)	| set the number of pellets: opens exit
 	movem.l (a7)+,d0-a6
 
 	st.b	cheat_used
@@ -2327,18 +2339,19 @@ handle_keyboard:
 0:
 
 
-	cmp.b	#0x51,d0	| F2 key
+	cmp.b	#0x50,d0	| F1 key: skip level
 	bne.b	0f
 	st.b	cheat_used
+	jbsr	skip_level
 	move.w	#0x0FF,_custom+color
 	
 0:
 	cmp.b	#0x52,d0	| F3 key
 	bne.b	0f
 	st.b	cheat_used
-	* add 1000 points
+	* add 10000 points
 	move.w	#0x0FF,_custom+color
-	jbsr	add_1000_points
+	jbsr	add_10000_points
 	
 0:
 	cmp.b	#0x53,d0	| F4 key
@@ -2459,6 +2472,9 @@ chiprevbits:
 cheat_flags:
 		.long	0
 
+		.long	WHDLTAG_CUSTOM2_GET
+dsw_options:
+		.long	0
 		.long	WHDLTAG_CUSTOM3_GET
 misc_options:
 		.long	0
@@ -2479,7 +2495,8 @@ insert_coin_requested:
 	.byte	0
 dsw0_value_high_bit:
 	.byte	0
-
+dip_switches_2:
+	.byte	0
 ntsc_flag:
 	.byte 	0
 mid_screen_interrupt_count:

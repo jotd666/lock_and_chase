@@ -61,28 +61,13 @@
 ;//  PORT_DIPSETTING(    0x80, "Invert" )
 ;	PORT_BIT( 0x80, IP_ACTIVE_HIGH, IPT_CUSTOM  ) PORT_VBLANK("screen")  // Schematics show this is connected to DIP SW2.8
 ;
-;	PORT_START("DSW2") // At location 14D on sound PCB
-;	PORT_DIPNAME( 0x01, 0x01, DEF_STR( Lives ) )      PORT_DIPLOCATION("SW2:1")
-;	PORT_DIPSETTING(    0x01, "3" )
-;	PORT_DIPSETTING(    0x00, "5" )
-;	PORT_DIPNAME( 0x06, 0x02, DEF_STR( Bonus_Life ) ) PORT_DIPLOCATION("SW2:2,3")
-;	PORT_DIPSETTING(    0x06, "10000" )
-;	PORT_DIPSETTING(    0x04, "15000" )
-;	PORT_DIPSETTING(    0x02, "20000"  )
-;	PORT_DIPSETTING(    0x00, "30000"  )
-;	PORT_DIPNAME( 0x08, 0x08, "Enemies" )             PORT_DIPLOCATION("SW2:4")
-;	PORT_DIPSETTING(    0x08, "4" )
-;	PORT_DIPSETTING(    0x00, "6" )
-;	PORT_DIPNAME( 0x10, 0x00, "End of Level Pepper" ) PORT_DIPLOCATION("SW2:5")
-;	PORT_DIPSETTING(    0x10, DEF_STR( No ) )
-;	PORT_DIPSETTING(    0x00, DEF_STR( Yes ) )
-;	PORT_DIPUNUSED_DIPLOC( 0x20, 0x20, "SW2:6" )  // should be OFF according to the manual
-;	PORT_DIPUNUSED_DIPLOC( 0x40, 0x40, "SW2:7" )  // should be OFF according to the manual
-;	PORT_DIPUNUSED_DIPLOC( 0x80, 0x80, "SW2:8" )  // should be OFF according to the manual
 
 nb_credits_02 = $02
+actual_game_04 = $04
+current_player_06 = $06
 nb_lives_p1_0f = $0f
 nb_lives_p2_1e = $1e
+nb_lives_current_player_2d = $2d
 nb_pellets_picked_37 = $37 
 nb_times_bag_appeared_38 = $38
 player_state_3b = $3b
@@ -133,7 +118,7 @@ C032: 98       tya
 C033: 48       pha
 C034: 58       cli
 C035: D8       cld
-C036: A5 06    lda $06
+C036: A5 06    lda current_player_06
 C038: 8D 01 80 sta dsw2_8001
 C03B: 20 A1 A0 jsr $c0c1
 C03E: AD 02 90 lda system_9002
@@ -196,11 +181,11 @@ C0A9: A9 09    lda #$09		; max credits, nop that it will allow to insert 99 cred
 C0AB: 85 02    sta nb_credits_02
 C0AD: D8       cld
 C0AE: C6 03    dec $03
-C0B0: A5 04    lda $04
+C0B0: A5 04    lda actual_game_04
 C0B2: D0 BC    bne $c090
 C0B4: 8D 00 90 sta player_1_controls_9000
 C0B7: A9 01    lda #$01
-C0B9: 85 04    sta $04
+C0B9: 85 04    sta actual_game_04
 C0BB: A2 FF    ldx #$ff
 C0BD: 9A       txs
 C0BE: 4C B0 A0 jmp $c0d0
@@ -225,8 +210,8 @@ C0E4: A5 07    lda $07
 C0E6: 85 0F    sta nb_lives_p1_0f
 C0E8: 85 1E    sta nb_lives_p2_1e
 C0EA: A9 00    lda #$00
-C0EC: 85 06    sta $06
-C0EE: A5 04    lda $04
+C0EC: 85 06    sta current_player_06
+C0EE: A5 04    lda actual_game_04
 C0F0: F0 0C    beq $c0fe
 C0F2: 20 AE BB jsr $dbce
 C0F5: A5 05    lda $05
@@ -246,7 +231,7 @@ C111: 85 59    sta $39
 C113: 85 5A    sta $3a
 C115: 20 D8 E1 jsr run_length_uncompress_e1b8
 C118: 20 A3 BA jsr $dac3
-C11B: A5 06    lda $06
+C11B: A5 06    lda current_player_06
 C11D: 8D 01 80 sta dsw2_8001
 C120: A5 57    lda nb_pellets_picked_37
 C122: 85 9F    sta $9f
@@ -273,16 +258,17 @@ C154: 20 D4 A8 jsr handle_bonus_appearances_c8b4
 C157: 20 30 A9 jsr $c950
 C15A: 20 A5 A9 jsr $c9c5
 C15D: 20 8C AA jsr $ca8c
-C160: A5 04    lda $04
-C162: F0 06    beq $c16a
-C164: 20 9E B8 jsr $d89e
+C160: A5 04    lda actual_game_04
+C162: F0 06    beq $c16a		; don't update scores in demo
+C164: 20 9E B8 jsr update_player_score_d89e
 C167: 20 97 B8 jsr update_high_score_d897
 C16A: 20 D0 B7 jsr $d7b0
 C16D: 20 5B B8 jsr $d83b
-C170: A5 06    lda $06
+C170: A5 06    lda current_player_06
 C172: 8D 01 80 sta dsw2_8001
 C175: A5 5B    lda player_state_3b
 C177: 10 A9    bpl game_mainloop_c142
+; player died
 C179: 29 08    and #$08
 C17B: F0 06    beq $c183
 C17D: A5 4C    lda $2c
@@ -295,34 +281,34 @@ C18B: A9 30    lda #$50
 C18D: 20 A4 BB jsr wait_dbc4
 C190: A5 4C    lda $2c
 C192: 10 41    bpl $c1b5
-C194: A5 04    lda $04
+C194: A5 04    lda actual_game_04
 C196: F0 40    beq $c1b8
-C198: 20 E3 A1 jsr $c1e3
+C198: 20 E3 A1 jsr copy_current_player_data_c1e3
 C19B: A9 02    lda #$02
 C19D: 20 D8 E1 jsr run_length_uncompress_e1b8
-C1A0: A5 4D    lda $2d
+C1A0: A5 4D    lda nb_lives_current_player_2d
 C1A2: 30 14    bmi $c1b8
 C1A4: A5 05    lda $05
 C1A6: C9 02    cmp #$02
 C1A8: 90 08    bcc $c1b2
-C1AA: E6 06    inc $06
-C1AC: A5 06    lda $06
+C1AA: E6 06    inc current_player_06
+C1AC: A5 06    lda current_player_06
 C1AE: 29 01    and #$01
-C1B0: 85 06    sta $06
+C1B0: 85 06    sta current_player_06
 C1B2: 4C FE A0 jmp $c0fe
 C1B5: 4C 01 A1 jmp $c101
 C1B8: 20 10 A2 jsr $c210
 C1BB: C6 05    dec $05
 C1BD: D0 EB    bne $c1aa
 C1BF: A9 00    lda #$00
-C1C1: 85 06    sta $06
+C1C1: 85 06    sta current_player_06
 C1C3: 8D 01 80 sta dsw2_8001
 C1C6: A5 02    lda nb_credits_02
 C1C8: D0 05    bne $c1cf
-C1CA: 85 04    sta $04
+C1CA: 85 04    sta actual_game_04
 C1CC: 4C 44 A0 jmp $c024
 C1CF: 4C B0 A0 jmp $c0d0
-C1D2: A4 06    ldy $06
+C1D2: A4 06    ldy current_player_06
 C1D4: BE F4 A1 ldx $c1f4, y
 C1D7: A0 0E    ldy #$0e
 C1D9: B5 00    lda $00, x
@@ -331,24 +317,26 @@ C1DE: CA       dex
 C1DF: 88       dey
 C1E0: 10 F7    bpl $c1d9
 C1E2: 60       rts
-C1E3: A4 06    ldy $06
-C1E5: BE F4 A1 ldx $c1f4, y
+
+copy_current_player_data_c1e3:
+C1E3: A4 06    ldy current_player_06
+C1E5: BE F4 A1 ldx $c1f4, y	; address of data for this player
 C1E8: A0 0E    ldy #$0e
-C1EA: B9 4C 00 lda $002c, y
+C1EA: B9 4C 00 lda $002c, y	; address of current player data
 C1ED: 95 00    sta $00, x
 C1EF: CA       dex
 C1F0: 88       dey
 C1F1: 10 F7    bpl $c1ea
 C1F3: 60       rts
 
-C1F6: A4 04    ldy $04
+C1F6: A4 04    ldy actual_game_04
 C1F8: F0 0F    beq $c209
 C1FA: 4C 0F A2 jmp $c20f
 C1FD: A0 01    ldy #$01
 C1FF: A5 05    lda $05
 C201: C9 02    cmp #$02
 C203: 90 04    bcc $c209
-C205: A4 06    ldy $06
+C205: A4 06    ldy current_player_06
 C207: C8       iny
 C208: C8       iny
 C209: BE 53 A2 ldx $c233, y
@@ -358,7 +346,7 @@ C210: A5 05    lda $05
 C212: A0 00    ldy #$00
 C214: C9 02    cmp #$02
 C216: 90 03    bcc $c21b
-C218: A4 06    ldy $06
+C218: A4 06    ldy current_player_06
 C21A: C8       iny
 C21B: BE 57 A2 ldx $c237, y
 C21E: 20 4F BC jsr $dc2f
@@ -366,7 +354,7 @@ C221: A9 80    lda #$80
 C223: 20 A4 BB jsr wait_dbc4
 C226: A2 4E    ldx #$2e
 C228: 20 4F BC jsr $dc2f
-C22B: A5 04    lda $04
+C22B: A5 04    lda actual_game_04
 C22D: F0 03    beq $c232
 C22F: 20 95 E5 jsr $e595
 C232: 60       rts
@@ -399,8 +387,8 @@ C273: A5 5C    lda $3c
 C275: 30 2D    bmi $c2c4
 C277: 09 80    ora #$80
 C279: 85 5C    sta $3c
-C27B: A6 4D    ldx $2d
-C27D: C6 4D    dec $2d
+C27B: A6 4D    ldx nb_lives_current_player_2d
+C27D: C6 4D    dec nb_lives_current_player_2d
 C27F: A9 01    lda #$01
 C281: 8D 00 7C sta $7c00
 C284: 8D 04 7C sta $7c04
@@ -519,7 +507,7 @@ C36E: 99 CD 7F sta $7fad, y
 C371: C8       iny
 C372: CA       dex
 C373: 10 F6    bpl $c36b
-C375: A5 04    lda $04
+C375: A5 04    lda actual_game_04
 C377: F0 05    beq $c37e
 C379: A2 4E    ldx #$2e
 C37B: 20 4F BC jsr $dc2f
@@ -797,7 +785,7 @@ C619: A0 00    ldy #$00
 C61B: 98       tya
 C61C: 91 CB    sta ($ab), y		; [video_address]
 C61E: A9 03    lda #$03
-C620: 20 FD B8 jsr $d8fd
+C620: 20 FD B8 jsr add_to_score_d8fd
 C623: 20 A2 A6 jsr $c6c2
 C626: A5 57    lda nb_pellets_picked_37
 C628: 29 01    and #$01
@@ -814,7 +802,7 @@ C63E: BD 30 A6 lda $c650, x
 C641: 0A       asl a
 C642: 7D 30 A6 adc $c650, x
 C645: 85 96    sta $96
-C647: 20 FD B8 jsr $d8fd
+C647: 20 FD B8 jsr add_to_score_d8fd
 C64A: A9 0A    lda #$0a
 C64C: 20 E7 B9 jsr $d9e7
 C64F: 60       rts
@@ -824,7 +812,7 @@ C656: BD 68 A6 lda $c668, x
 C659: 0A       asl a
 C65A: 7D 68 A6 adc $c668, x
 C65D: 85 99    sta $99
-C65F: 20 FD B8 jsr $d8fd
+C65F: 20 FD B8 jsr add_to_score_d8fd
 C662: A9 08    lda #$08
 C664: 20 E7 B9 jsr $d9e7
 C667: 60       rts
@@ -1187,7 +1175,7 @@ CA34: 20 E7 B9 jsr $d9e7
 CA37: BD 80 AA lda $ca80, x
 CA3A: 8D 1D 7C sta $7c1d
 CA3D: BD 84 AA lda $ca84, x
-CA40: 20 FD B8 jsr $d8fd
+CA40: 20 FD B8 jsr add_to_score_d8fd
 CA43: A6 C1    ldx $a1
 CA45: BD 88 AA lda $ca88, x
 CA48: 49 FF    eor #$ff
@@ -1764,6 +1752,7 @@ D024: A5 5B    lda player_state_3b
 D026: 09 04    ora #$04
 D028: 85 5B    sta player_state_3b
 D02A: 60       rts
+
 D02B: B0 02    bcs $d02f
 D02D: 49 FF    eor #$ff
 D02F: C9 05    cmp #$05
@@ -2205,7 +2194,7 @@ D527: 8D 00 7C sta $7c00
 D52A: A9 40    lda #$20
 D52C: 85 38    sta enemy_y_58
 D52E: 4C CE B4 jmp $d4ae
-D531: A5 06    lda $06
+D531: A5 06    lda current_player_06
 D533: 8D 01 80 sta dsw2_8001
 D536: A2 0B    ldx #$0b
 D538: 20 37 B5 jsr $d557
@@ -2340,7 +2329,7 @@ D69F: 85 3B    sta $5b
 D6A1: A5 35    lda $55
 D6A3: C9 02    cmp #$02
 D6A5: 90 DF    bcc $d666
-D6A7: A5 06    lda $06
+D6A7: A5 06    lda current_player_06
 D6A9: 8D 01 80 sta dsw2_8001
 D6AC: A9 00    lda #$00
 D6AE: 85 3A    sta $5a
@@ -2492,7 +2481,7 @@ D848: 49 8A    eor #$8a
 D84A: 85 CF    sta $af
 D84C: A9 5C    lda #$3c
 D84E: 85 C6    sta $a6
-D850: A5 06    lda $06
+D850: A5 06    lda current_player_06
 D852: 29 01    and #$01
 D854: A8       tay
 D855: BE 79 B8 ldx $d879, y
@@ -2528,48 +2517,53 @@ D894: E6 56    inc $36
 D896: 60       rts
 
 update_high_score_d897:
-D897: A2 0A    ldx #$0a
-D899: A0 02    ldy #$02
+D897: A2 0A    ldx #$0a		; end address of high score (starts at 8)
+D899: A0 02    ldy #$02		; high-score index (for screen address)
 D89B: 4C C5 B8 jmp $d8a5
-D89E: A2 53    ldx #$33
-D8A0: A5 06    lda $06
+update_player_score_d89e:
+D89E: A2 53    ldx #$33		; end address of player score
+D8A0: A5 06    lda current_player_06
 D8A2: 29 01    and #$01
-D8A4: A8       tay
+D8A4: A8       tay			; current player score index (for screen address)
 D8A5: A9 00    lda #$00
 D8A7: 8D 03 80 sta charbank_8003
-D8AA: B9 AF B8 lda $d8cf, y
+D8AA: B9 AF B8 lda $d8cf, y		; address of score (1P,2P,high)
 D8AD: 85 C5    sta $a5
-D8AF: A9 5C    lda #$3c
+D8AF: A9 5C    lda #$3c			; MSB of video address
 D8B1: 85 C6    sta $a6
 D8B3: A9 03    lda #$03
-D8B5: 85 75    sta $75
+D8B5: 85 75    sta $75			; 3*2 digits total
 D8B7: A9 05    lda #$05
 D8B9: 85 76    sta $76
 D8BB: B5 00    lda $00, x
 D8BD: 48       pha
+; higher nibble
 D8BE: 4A       lsr a
 D8BF: 4A       lsr a
 D8C0: 4A       lsr a
 D8C1: 4A       lsr a
-D8C2: 20 B2 B8 jsr write_2_digits_d8d2
+D8C2: 20 B2 B8 jsr write_digit_d8d2
 D8C5: 68       pla
-D8C6: 20 B2 B8 jsr write_2_digits_d8d2
-D8C9: CA       dex
+; lower nibble
+D8C6: 20 B2 B8 jsr write_digit_d8d2
+D8C9: CA       dex		; next byte
 D8CA: C6 75    dec $75
 D8CC: D0 ED    bne $d8bb
 D8CE: 60       rts
 
-write_2_digits_d8d2:
+write_digit_d8d2:
 D8D2: 29 0F    and #$0f
 D8D4: D0 18    bne $d8ee
+; skip leading zeroes
 D8D6: A4 76    ldy $76
 D8D8: F0 18    beq $d8f2
 D8DA: C6 76    dec $76
 D8DC: D0 17    bne $d8f5
+; first char: put "$"
 D8DE: 48       pha
 D8DF: A0 00    ldy #$00
 D8E1: 84 76    sty $76
-D8E3: A9 0B    lda #$0b
+D8E3: A9 0B    lda #$0b			; dollar sign
 D8E5: 91 C5    sta ($a5), y		; [video_address]
 D8E7: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D8EA: 68       pla
@@ -2583,6 +2577,7 @@ D8F7: 91 C5    sta ($a5), y		; [video_address]
 D8F9: 20 7E BA jsr inc_a5_16_bit_pointer_da7e
 D8FC: 60       rts
 
+add_to_score_d8fd:
 D8FD: AA       tax
 D8FE: F8       sed
 D8FF: BD 3A B9 lda $d95a, x
@@ -2624,7 +2619,7 @@ D944: 90 13    bcc $d959
 D946: A5 4C    lda $2c
 D948: 09 01    ora #$01
 D94A: 85 4C    sta $2c
-D94C: E6 4D    inc $2d
+D94C: E6 4D    inc nb_lives_current_player_2d
 D94E: 20 8C BA jsr display_nb_lives_da8c
 D951: A9 0B    lda #$0b
 D953: 20 E7 B9 jsr $d9e7
@@ -2660,7 +2655,7 @@ D9E0: A6 58    ldx nb_times_bag_appeared_38
 D9E2: BD F3 B9 lda $d9f3, x
 D9E5: 09 80    ora #$80
 D9E7: 86 D2    stx $b2
-D9E9: A6 04    ldx $04
+D9E9: A6 04    ldx actual_game_04
 D9EB: F0 03    beq $d9f0
 D9ED: 8D 02 90 sta system_9002
 D9F0: A6 D2    ldx $b2
@@ -2751,7 +2746,7 @@ DA89: E6 CA    inc $aa
 DA8B: 60       rts
 
 display_nb_lives_da8c:
-DA8C: A5 4D    lda $2d
+DA8C: A5 4D    lda nb_lives_current_player_2d
 DA8E: 30 16    bmi $daa6
 DA90: 85 C1    sta $a1
 DA92: A6 C1    ldx $a1
@@ -2854,13 +2849,13 @@ DB68: 10 EE    bpl $db58
 DB6A: A9 01    lda #$01
 DB6C: 20 E0 B7 jsr $d7e0
 DB6F: 60       rts
-DB79: A5 04    lda $04
+DB79: A5 04    lda actual_game_04
 DB7B: F0 43    beq $dba0
 DB7D: A0 00    ldy #$00
 DB7F: AD 00 80 lda dsw1_8000
 DB82: 29 20    and #$40
 DB84: F0 02    beq $db88
-DB86: A4 06    ldy $06
+DB86: A4 06    ldy current_player_06
 DB88: B9 00 90 lda player_1_controls_9000, y
 DB8B: 49 FF    eor #$ff
 DB8D: 85 C1    sta $a1
@@ -2895,8 +2890,8 @@ DBBA: 10 FB    bpl sync_dbb7
 DBBC: AD 00 80 lda dsw1_8000
 DBBF: 30 FB    bmi $dbbc
 DBC1: 60       rts
-DBC2: A9 18    lda #$18
 
+DBC2: A9 18    lda #$18    ; fixed delay value
 ; < A: number of ticks to wait
 wait_dbc4:
 DBC4: 85 C3    sta $a3
@@ -2993,7 +2988,7 @@ DCBF: 20 F8 B9 jsr one_less_credit_d9f8
 DCC2: E6 05    inc $05
 DCC4: 20 F8 B9 jsr one_less_credit_d9f8
 DCC7: E6 05    inc $05
-DCC9: A5 06    lda $06
+DCC9: A5 06    lda current_player_06
 DCCB: 8D 01 80 sta dsw2_8001
 DCCE: 4C B9 A0 jmp $c0d9
 
@@ -3001,7 +2996,7 @@ DCCE: 4C B9 A0 jmp $c0d9
 ; seems to serve no purpose at all
 special_writes_dcd1:
 DCD1: A9 08    lda #$08
-DCD3: 05 06    ora $06
+DCD3: 05 06    ora current_player_06
 DCD5: 8D 01 80 sta dsw2_8001
 DCD8: A9 0F    lda #$0f
 DCDA: 8D 00 80 sta dsw1_8000
@@ -3009,7 +3004,7 @@ DCDD: 60       rts
 
 run_length_uncompress_e1b8:
 E1B8: 0A       asl a
-E1B9: 65 06    adc $06
+E1B9: 65 06    adc current_player_06
 E1BB: AA       tax
 ; load pointers
 E1BC: BC F1 E1 ldy $e1f1, x
@@ -3165,16 +3160,16 @@ E68B: A9 00    lda #$00
 E68D: 85 60    sta $60
 E68F: 85 61    sta $61
 E691: 85 62    sta $62
-E693: 20 FC E7 jsr $e7fc
+E693: 20 FC E7 jsr sync_e7fc
 E696: 20 B1 BC jsr special_writes_dcd1
 E699: 20 17 E8 jsr $e817
 E69C: A5 61    lda $61
 E69E: 29 0F    and #$0f
 E6A0: C9 0F    cmp #$0f
 E6A2: D0 0E    bne $e6b2
-E6A4: A5 06    lda $06
+E6A4: A5 06    lda current_player_06
 E6A6: 8D 02 90 sta system_9002
-E6A9: 20 FC E7 jsr $e7fc
+E6A9: 20 FC E7 jsr sync_e7fc
 E6AC: A9 00    lda #$00
 E6AE: 8D 02 90 sta system_9002
 E6B1: 60       rts
@@ -3265,21 +3260,23 @@ E763: A6 3A    ldx $5a
 E765: BD 91 E7 lda $e791, x
 E768: A8       tay
 E769: B1 35    lda ($55), y
-E76B: 91 37    sta ($57), y
+E76B: 91 37    sta ($57), y		; [video_address]
 E76D: 88       dey
 E76E: 10 F9    bpl $e769
 E770: C6 3A    dec $5a
 E772: 10 B6    bpl $e74a
 E774: 60       rts
 
-
+; used in high-score entry
+sync_e7fc:
 E7FC: AD 00 80 lda dsw1_8000
-E7FF: 10 FB    bpl $e7fc
+E7FF: 10 FB    bpl sync_e7fc
 E801: AD 00 80 lda dsw1_8000
 E804: 30 FB    bmi $e801
 E806: 60       rts
+
 E807: A5 37    lda enemy_x_57
-E809: 91 35    sta ($55), y
+E809: 91 35    sta ($55), y		; [video_address]
 E80B: C8       iny
 E80C: D0 FB    bne $e809
 E80E: E6 36    inc $56
@@ -3287,6 +3284,7 @@ E810: A5 36    lda $56
 E812: C5 38    cmp enemy_y_58
 E814: 90 F1    bcc $e807
 E816: 60       rts
+
 E817: A5 3D    lda $5d
 E819: 38       sec
 E81A: E9 01    sbc #$01
@@ -3310,7 +3308,7 @@ E83B: 85 36    sta $56
 E83D: A2 00    ldx #$00
 E83F: A0 00    ldy #$00
 E841: BD C6 02 lda $02a6, x
-E844: 91 35    sta ($55), y
+E844: 91 35    sta ($55), y		; [video_address]
 E846: E8       inx
 E847: E0 0F    cpx #$0f
 E849: D0 01    bne $e84c
@@ -3340,13 +3338,13 @@ E874: 4A       lsr a
 E875: 4A       lsr a
 E876: 18       clc
 E877: 69 81    adc #$81
-E879: 91 35    sta ($55), y
+E879: 91 35    sta ($55), y		; [video_address]
 E87B: C8       iny
 E87C: BD 94 02 lda $0294, x
 E87F: 29 0F    and #$0f
 E881: 18       clc
 E882: 69 81    adc #$81
-E884: 91 35    sta ($55), y
+E884: 91 35    sta ($55), y		; [video_address]
 E886: E8       inx
 E887: E0 0F    cpx #$0f
 E889: D0 01    bne $e88c
@@ -3394,7 +3392,7 @@ E8D1: D0 56    bne $e909
 E8D3: A5 61    lda $61
 E8D5: 29 E0    and #$e0
 E8D7: D0 50    bne $e909
-E8D9: A6 06    ldx $06
+E8D9: A6 06    ldx current_player_06
 E8DB: AD 00 80 lda dsw1_8000
 E8DE: 29 20    and #$40
 E8E0: D0 02    bne $e8e4
@@ -3449,7 +3447,7 @@ E958: D0 20    bne $e99a
 E95A: A5 61    lda $61
 E95C: 29 E0    and #$e0
 E95E: D0 5A    bne $e99a
-E960: A6 06    ldx $06
+E960: A6 06    ldx current_player_06
 E962: AD 00 80 lda dsw1_8000
 E965: 29 20    and #$40
 E967: D0 02    bne $e96b
@@ -3971,13 +3969,13 @@ F256: C6 12    dec $12
 F258: D0 F4    bne $f24e
 F25A: 60       rts
 F25B: A9 01    lda #$01
-F25D: 85 06    sta $06
+F25D: 85 06    sta current_player_06
 F25F: A9 00    lda #$00
 F261: 85 07    sta $07
 F263: 20 5F F2 jsr sync_f23f
 F266: E6 07    inc $07
 F268: D0 F9    bne $f263
-F26A: C6 06    dec $06
+F26A: C6 06    dec current_player_06
 F26C: D0 F1    bne $f25f
 F26E: 60       rts
 
@@ -4273,7 +4271,7 @@ F4EF: 85 05    sta $05
 F4F1: A9 A0    lda #$c0
 F4F3: 85 03    sta $03
 F4F5: A9 B0    lda #$d0
-F4F7: 85 04    sta $04
+F4F7: 85 04    sta actual_game_04
 F4F9: A0 00    ldy #$00
 F4FB: A2 00    ldx #$00
 F4FD: B1 02    lda ($02), y
@@ -4287,7 +4285,7 @@ F50A: C8       iny
 F50B: D0 F0    bne $f4fd
 F50D: E6 03    inc $03
 F50F: A5 03    lda $03
-F511: C5 04    cmp $04
+F511: C5 04    cmp actual_game_04
 F513: D0 E8    bne $f4fd
 F515: BD F4 FF lda $fff4, x
 F518: C5 00    cmp $00
@@ -4303,8 +4301,8 @@ F52A: 85 01    sta $01
 F52C: E8       inx
 F52D: A9 10    lda #$10
 F52F: 18       clc
-F530: 65 04    adc $04
-F532: 85 04    sta $04
+F530: 65 04    adc actual_game_04
+F532: 85 04    sta actual_game_04
 F534: F0 03    beq $f539
 F536: 4C FD F4 jmp $f4fd
 F539: A9 19    lda #$19

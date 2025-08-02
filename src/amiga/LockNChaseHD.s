@@ -41,14 +41,13 @@ _expmem
 _config
 	dc.b	"C1:X:invincible:0;"
 	dc.b	"C1:X:infinite lives:1;"
-	dc.b	"C1:X:infinite pepper:2;"
 	dc.b	"C1:X:cheat keys:4;"
+	dc.b	"C2:X:fast game:0;"
+	dc.b	"C2:X:start with 5 lives:1;"
 	dc.b	"C3:X:25 Hz update:0;"
-	dc.b	"C3:X:no in-game tune:1;"
 	IFD		CHIP_ONLY
 	dc.b	"C3:X:break at startup:31;"
 	ENDC
-*	dc.b	"C4:L:start lives:3,4,5;"
 *	dc.b	"C5:L:difficulty level:1,2,3,4,5,6,7,8;"
 	dc.b	0
 

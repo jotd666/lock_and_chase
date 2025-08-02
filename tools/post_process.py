@@ -50,12 +50,21 @@ with open(source_dir / "conv.s") as f:
 
         if "[$f1e3:" in line:
             lines[i-1] = ""
-        if "[$f183:" in line:
+        elif "[$f183:" in line:
             lines[i-1] = ""
 
-        if "[$c580:" in line:
+        elif "[$c580:" in line:
             line = change_instruction("cmp.b\t#0,d0",lines,i) + "\tINVERT_XC_FLAGS\n"
             lines[i-1] = ""
+
+        elif "[$d90a:" in line or "[$d911:" in line:
+            # not detected by converter, highscore carry propagation
+            # in bcd
+            lines[i+2] = lines[i+2].replace("addx.b","abcd")
+
+        elif "[$d024:" in line:
+            line = "\ttst.b\tinvincible_flag\n\tjeq\t0f\n\trts\n0:\n"+line
+
         if "[disable]" in line:
             line = remove_instruction(lines,i)
 
@@ -121,11 +130,11 @@ with open(source_dir / "conv.s") as f:
         line = re.sub(tablere,subt,line)
 
 
-        # sync system is crap
-        line = line.replace("jbsr\tsync_dbb7","jbsr\tosd_wait_for_sync")
+        # sync system is crap, and copy-pasted multiple times
 
-        if "[$f23f" in line:
-            line = change_instruction("jbra\tosd_wait_for_sync",lines,i)
+        line = re.sub("jbsr\tsync_....","jbsr\tosd_wait_for_sync",line)
+
+
 
         if "[$f022:" in line or "[$f025:" in line:
             # remove useless 2 second wait
