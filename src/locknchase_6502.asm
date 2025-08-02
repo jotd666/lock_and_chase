@@ -276,7 +276,7 @@ C15D: 20 8C AA jsr $ca8c
 C160: A5 04    lda $04
 C162: F0 06    beq $c16a
 C164: 20 9E B8 jsr $d89e
-C167: 20 97 B8 jsr $d897
+C167: 20 97 B8 jsr update_high_score_d897
 C16A: 20 D0 B7 jsr $d7b0
 C16D: 20 5B B8 jsr $d83b
 C170: A5 06    lda $06
@@ -1992,7 +1992,7 @@ D313: 60       rts
 
 D314: 20 66 BA jsr clear_part_of_screen_da66
 D317: 20 AE BB jsr $dbce
-D31A: 20 97 B8 jsr $d897
+D31A: 20 97 B8 jsr update_high_score_d897
 D31D: A9 FF    lda #$ff
 D31F: 8D C3 02 sta $02a3
 D322: 8D C4 02 sta $02a4
@@ -2527,6 +2527,7 @@ D892: 55 00    eor $00, x
 D894: E6 56    inc $36
 D896: 60       rts
 
+update_high_score_d897:
 D897: A2 0A    ldx #$0a
 D899: A0 02    ldy #$02
 D89B: 4C C5 B8 jmp $d8a5
@@ -2550,14 +2551,15 @@ D8BE: 4A       lsr a
 D8BF: 4A       lsr a
 D8C0: 4A       lsr a
 D8C1: 4A       lsr a
-D8C2: 20 B2 B8 jsr $d8d2
+D8C2: 20 B2 B8 jsr write_2_digits_d8d2
 D8C5: 68       pla
-D8C6: 20 B2 B8 jsr $d8d2
+D8C6: 20 B2 B8 jsr write_2_digits_d8d2
 D8C9: CA       dex
 D8CA: C6 75    dec $75
 D8CC: D0 ED    bne $d8bb
 D8CE: 60       rts
 
+write_2_digits_d8d2:
 D8D2: 29 0F    and #$0f
 D8D4: D0 18    bne $d8ee
 D8D6: A4 76    ldy $76

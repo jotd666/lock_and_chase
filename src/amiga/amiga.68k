@@ -21,14 +21,16 @@ NO68020 = 1
 PREVIOUS_SPRITE_SIZE = 8
 CURRENT_SPRITE_SIZE = 4
 
+TILE_PLANE_X_SHIFT = 8
 
-
-SPRITE_X_CORRECTION = -8
+SPRITE_X_CORRECTION = -1
 SPRITE_Y_CORRECTION = -8
 HW_SPRITE_X_CORRECTION = -8
 HW_SPRITE_Y_CORRECTION = 0
 
-NTSC_Y_SHIFT = 8
+* start displaying earlier in ntsc mode, allowing
+* full display
+NTSC_Y_SHIFT = 12
 
 Y_MAX = 256
 
@@ -65,7 +67,7 @@ OPT_ENABLE_LOGGING = 0
 	.endif
 	
 
-OPT_ENABLE_DOUBLE_BUFFERING = 0
+OPT_ENABLE_DOUBLE_BUFFERING = 1
 
 _custom = 0xDFF000
 
@@ -988,7 +990,6 @@ update_bobs_and_hw_sprites:
 
 	* clear previous positions
 
-	move.l	playfield_drawed_screen_ptr(pc),a1
 	move.w	#NB_TARGET_SPRITES-1,d7
 1:
 	move.w	(2,a4),d1
@@ -1001,6 +1002,7 @@ update_bobs_and_hw_sprites:
 	move.w	(2,a4),d2		| width
 	clr.l	(a4)+			| ack deletion
 	move.w	#NB_PLAYFIELD_PLANES,d3
+	move.l	playfield_drawed_screen_ptr(pc),a1
 	jbsr		clear_planes_any_blitter_internal
 	dbf		d7,1b	
 	bra.b	12f
@@ -1627,7 +1629,12 @@ platform_init:
     move.w #0x00D0,ddfstop(a5)
 
 
-    move.w #0,bplcon1(a5)
+	* applies -8 on X for bobs by applying 8
+	* on X for tile bitplanes (and bobs are properly clipped)
+	
+    move.w #TILE_PLANE_X_SHIFT,bplcon1(a5)
+	
+	# 0 modulo (OCS)
 	moveq	#0,d0
     move.w d0,bpl1mod(a5)
     move.w d0,bpl2mod(a5)
@@ -2682,10 +2689,11 @@ pal_intreq_block_game:
 	.word	 intreq,0x8014  | call copper interrupt in the middle of a frame, also flag so copper interrupt knows that we're going to call copper int
 
 
-
+	.word	0xF001,0xFFFE	| if we don't add an extra wait, NTSC version locks up
+	
 	* pal limit
     .word  0xFFDF,0xFFFE       | PAL wait
-	| no bobs from now on, get a LOT of drawing time
+	* extra wait for PAL (NTSC can't afford this)
 pal_wait:
 	.word	0x0C01,0xFFFE
 	.word	 intreq,0x8010

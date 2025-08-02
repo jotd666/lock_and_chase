@@ -1,8 +1,12 @@
-- SPRITE_X_CORRECTION = 0 and use bplcon to scroll tiles playfield by 8
 - score has strange chars: wrong abcd?
 - hw sprites are flickering/main character disappearing
-- erase bobs implemented but only working for main character 
+- rip sounds
+- cannot use action to close gate anymore??
+- implement fast/slow game mode (option)
+- enemies are super-slow
+- rip music
 - save highscores
+- find "game is playing" flag to insert coin with fire
 
 optim:
 

@@ -14,7 +14,7 @@ Features:
 - hardware sprites used for better refresh rate
 - 25fps on A500 with great speed, 50fps on more powerful machines
 - PAL or NTSC supported (NTSC is slightly faster, also bottom of screen
-  is cut, but it runs)
+  is cut slightly, but it runs)
 - Highscores & best times are saved (unless cheat is on)
 
 Controls:
