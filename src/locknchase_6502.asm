@@ -2682,7 +2682,7 @@ D9DD: 4C E7 B9 jmp $d9e7
 
 D9E0: A6 58    ldx nb_times_bag_appeared_38
 D9E2: BD F3 B9 lda $d9f3, x
-D9E5: 09 80    ora #$80
+D9E5: 09 80    ora #$80			; stop sound
 D9E7: 86 D2    stx $b2
 D9E9: A6 04    ldx actual_game_04
 D9EB: F0 03    beq $d9f0

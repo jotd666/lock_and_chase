@@ -104,7 +104,7 @@ l_c006:
 	clr.b	d0                               	| [$c008: lda #$00]
 	PUSH_SR
 	 |  [$c00a: sta dsw2_8001] video control
-	 |  [$c00d: sta system_9002] stop sound?
+	jbsr	osd_sound_start |  [$c00d: sta system_9002] stop sound?
 	 |  [$c010: sta player_1_controls_9000] nop
 	POP_SR
 	jbsr	clear_screen_and_sprites_da3d     	| [$c013: jsr clear_screen_and_sprites_da3d]
@@ -160,7 +160,7 @@ insert_coin_c02f:
 	GET_ADDRESS	0x03                       	| [$c065: inc $03]
 	addq.b	#1,(a0)                         	| [...]
 	move.b	#0x01,d0                        	| [$c067: lda #$01]
-	 |  [$c069: sta system_9002] play credit sound
+	jbsr	osd_sound_start |  [$c069: sta system_9002] play credit sound
 	clr.b	d1                               	| [$c06c: ldx #$00]
 	jbsr	osd_read_dsw1 |  [$c06e: lda dsw1_8000]
 	not.b	d0                               	| [$c071: eor #$ff]
@@ -2032,130 +2032,88 @@ l_cad5:
 	rts                                    	| [$cad5: rts]
 
 l_cad6:
-	LOG_REGS	cad6   | added by add_reg_log.py
 	GET_ADDRESS	0x50                       	| [$cad6: lda $50]
 	move.b	(a0),d0                         	| [...]
-	LOG_REGS	cad8   | added by add_reg_log.py
 	bmi	l_cb0e                             	| [$cad8: bmi $cb0e]
-	LOG_REGS	cada   | added by add_reg_log.py
 	clr.b	d1                               	| [$cada: ldx #$00]
-	LOG_REGS	cadc   | added by add_reg_log.py
 	GET_ADDRESS	player_state_3b            	| [$cadc: lda player_state_3b]
 	move.b	(a0),d0                         	| [...]
-	LOG_REGS	cade   | added by add_reg_log.py
 	and.b	#0x6e,d0                         	| [$cade: and #$6e]
-	LOG_REGS	cae0   | added by add_reg_log.py
 	beq	l_cb0f                             	| [$cae0: beq $cb0f]
-	LOG_REGS	cae2   | added by add_reg_log.py
 	GET_ADDRESS	0xcb48                     	| [$cae2: bit $cb48]
 	BIT	(a0)                               	| [...]
-	LOG_REGS	cae5   | added by add_reg_log.py
 	bne	l_cafc                             	| [$cae5: bne $cafc]
-	LOG_REGS	cae7   | added by add_reg_log.py
 	move.b	#0x02,d1                        	| [$cae7: ldx #$02]
-	LOG_REGS	cae9   | added by add_reg_log.py
 	GET_ADDRESS	0xcb4b                     	| [$cae9: bit $cb4b]
 	BIT	(a0)                               	| [...]
-	LOG_REGS	caec   | added by add_reg_log.py
 	bne	l_cb0f                             	| [$caec: bne $cb0f]
-	LOG_REGS	caee   | added by add_reg_log.py
 	move.b	#0x04,d1                        	| [$caee: ldx #$04]
-	LOG_REGS	caf0   | added by add_reg_log.py
 	GET_ADDRESS	0xcb49                     	| [$caf0: bit $cb49]
 	BIT	(a0)                               	| [...]
-	LOG_REGS	caf3   | added by add_reg_log.py
 	bne	l_cb0f                             	| [$caf3: bne $cb0f]
-	LOG_REGS	caf5   | added by add_reg_log.py
 	move.b	#0x06,d1                        	| [$caf5: ldx #$06]
-	LOG_REGS	caf7   | added by add_reg_log.py
 	GET_ADDRESS	0xcb4a                     	| [$caf7: bit $cb4a]
 	BIT	(a0)                               	| [...]
-	LOG_REGS	cafa   | added by add_reg_log.py
 	bne	l_cb0f                             	| [$cafa: bne $cb0f]
 l_cafc:
-	LOG_REGS	cafc   | added by add_reg_log.py
 	clr.b	d0                               	| [$cafc: lda #$00]
 	PUSH_SR
-	LOG_REGS	cafe   | added by add_reg_log.py
 	GET_UNCHECKED_ADDRESS	0x7c08                     	| [$cafe: sta $7c08] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	LOG_REGS	cb01   | added by add_reg_log.py
 	GET_UNCHECKED_ADDRESS	0x7c0c                     	| [$cb01: sta $7c0c] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	LOG_REGS	cb04   | added by add_reg_log.py
 	GET_UNCHECKED_ADDRESS	0x7c10                     	| [$cb04: sta $7c10] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
-	LOG_REGS	cb07   | added by add_reg_log.py
 	GET_UNCHECKED_ADDRESS	0x7c14                     	| [$cb07: sta $7c14] [video_address]
 	move.b	d0,(a0)                         	| [...]
 	VIDEO_BYTE_DIRTY | [...]
 	POP_SR
-	LOG_REGS	cb0a   | added by add_reg_log.py
 	move.b	#0xff,d0                        	| [$cb0a: lda #$ff]
 	PUSH_SR
-	LOG_REGS	cb0c   | added by add_reg_log.py
 	GET_ADDRESS	0x50                       	| [$cb0c: sta $50]
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
 l_cb0e:
-	LOG_REGS	cb0e   | added by add_reg_log.py
 	rts                                    	| [$cb0e: rts]
 
 l_cb0f:
-	LOG_REGS	cb0f   | added by add_reg_log.py
 	PUSH_TABLE_X_ADDRESS	enemy_behaviour_table_cb3c 	| [$cb0f: lda enemy_behaviour_table_cb3c, x] [jump_table]
-	LOG_REGS	cb12   | added by add_reg_log.py
 	move.l	(a7)+,a4 |  [$cb12: sta $ad]
 	 |  [$cb14: lda $cb3d, x]
 	 |  [$cb17: sta $ae]
-	LOG_REGS	cb19   | added by add_reg_log.py
 	move.b	#0x02,d0                        	| [$cb19: lda #$02] update 2 enemies at each call
 	PUSH_SR
-	LOG_REGS	cb1b   | added by add_reg_log.py
 	GET_ADDRESS	nb_enemies_to_update_51    	| [$cb1b: sta nb_enemies_to_update_51]
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
 update_one_enemy_cb1d:
-	LOG_REGS	cb1d   | added by add_reg_log.py
 	GET_ADDRESS	current_active_enemy_4f    	| [$cb1d: ldx current_active_enemy_4f]
 	move.b	(a0),d1                         	| [...]
-	LOG_REGS	cb1f   | added by add_reg_log.py
 	GET_ADDRESS	0xcb44                     	| [$cb1f: ldy $cb44, x] struct offset table
 	move.b	(a0,d1.w),d2                    	| [...]
-	LOG_REGS	cb22   | added by add_reg_log.py
 	jbsr	copy_enemy_struct_to_work_data_d2f4	| [$cb22: jsr copy_enemy_struct_to_work_data_d2f4]
-	LOG_REGS	cb25   | added by add_reg_log.py
 	jmp	(a4) |  [$cb25: jmp ($00ad)] indirect jump (not tagged, special case)
 
 return_from_jump_table_cb28:
-	LOG_REGS	cb28   | added by add_reg_log.py
 	jbsr	l_d304                            	| [$cb28: jsr $d304]
-	LOG_REGS	cb2b   | added by add_reg_log.py
 	GET_ADDRESS	current_active_enemy_4f    	| [$cb2b: inc current_active_enemy_4f]
 	addq.b	#1,(a0)                         	| [...]
-	LOG_REGS	cb2d   | added by add_reg_log.py
 	GET_ADDRESS	current_active_enemy_4f    	| [$cb2d: lda current_active_enemy_4f]
 	move.b	(a0),d0                         	| [...]
-	LOG_REGS	cb2f   | added by add_reg_log.py
 	cmp.b	#0x04,d0                         	| [$cb2f: cmp #$04]
 	* bcc=>bcs
-	LOG_REGS	cb31   | added by add_reg_log.py
 	bcs	l_cb37                             	| [$cb31: bcc $cb37]
-	LOG_REGS	cb33   | added by add_reg_log.py
 	clr.b	d0                               	| [$cb33: lda #$00]
 	PUSH_SR
-	LOG_REGS	cb35   | added by add_reg_log.py
 	GET_ADDRESS	current_active_enemy_4f    	| [$cb35: sta current_active_enemy_4f]
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
 l_cb37:
-	LOG_REGS	cb37   | added by add_reg_log.py
 	GET_ADDRESS	nb_enemies_to_update_51    	| [$cb37: dec nb_enemies_to_update_51]
 	subq.b	#1,(a0)                         	| [...]
-	LOG_REGS	cb39   | added by add_reg_log.py
 	bne	update_one_enemy_cb1d              	| [$cb39: bne update_one_enemy_cb1d]
 	rts                                    	| [$cb3b: rts]
 
@@ -4555,7 +4513,7 @@ l_d9e7:
 	move.b	(a0),d1                         	| [...]
 	beq	l_d9f0                             	| [$d9eb: beq $d9f0]
 	PUSH_SR
-	 |  [$d9ed: sta system_9002]
+	jbsr	osd_sound_start |  [$d9ed: sta system_9002]
 	POP_SR
 l_d9f0:
 	GET_ADDRESS	0xb2                       	| [$d9f0: ldx $b2]
@@ -5407,12 +5365,12 @@ l_e693:
 	GET_ADDRESS	current_player_06          	| [$e6a4: lda current_player_06]
 	move.b	(a0),d0                         	| [...]
 	PUSH_SR
-	 |  [$e6a6: sta system_9002]
+	jbsr	osd_sound_start |  [$e6a6: sta system_9002]
 	POP_SR
 	jbsr	osd_wait_for_sync                         	| [$e6a9: jsr sync_e7fc]
 	clr.b	d0                               	| [$e6ac: lda #$00]
 	PUSH_SR
-	 |  [$e6ae: sta system_9002]
+	jbsr	osd_sound_start |  [$e6ae: sta system_9002]
 	POP_SR
 	rts                                    	| [$e6b1: rts]
 
@@ -6322,7 +6280,7 @@ reset_f009:
 l_f02b:
 	clr.b	d0                               	| [$f02b: lda #$00]
 	PUSH_SR
-	 |  [$f02d: sta system_9002]
+	jbsr	osd_sound_start |  [$f02d: sta system_9002]
 	POP_SR
 l_f030:
 	clr.b	d1                               	| [$f030: ldx #$00]
@@ -6572,11 +6530,11 @@ l_f191:
 	PUSH_SR
 	GET_ADDRESS	0x08                       	| [$f193: sta $08]
 	move.b	d0,(a0)                         	| [...]
-	 |  [$f195: sta system_9002]
+	jbsr	osd_sound_start |  [$f195: sta system_9002]
 	POP_SR
 l_f198:
 	clr.b	d0                               	| [$f198: lda #$00]
-	 |  [$f19a: sta system_9002]
+	jbsr	osd_sound_start |  [$f19a: sta system_9002]
 	GET_ADDRESS	0x08                       	| [$f19d: lda $08]
 	move.b	(a0),d0                         	| [...]
 	asl.b	#1,d0                            	| [$f19f: asl a]
@@ -6594,7 +6552,7 @@ l_f198:
 
 l_f1ba:
 	clr.b	d0                               	| [$f1ba: lda #$00]
-	 |  [$f1bc: sta system_9002]
+	jbsr	osd_sound_start |  [$f1bc: sta system_9002]
 	GET_ADDRESS	0x08                       	| [$f1bf: inc $08]
 	addq.b	#1,(a0)                         	| [...]
 	GET_ADDRESS	0x08                       	| [$f1c1: lda $08]
@@ -6874,7 +6832,7 @@ l_f31a:
 	jbsr	l_f22b                            	| [$f31f: jsr $f22b]
 	move.b	#0xf1,d0                        	| [$f322: lda #$f1]
 	PUSH_SR
-	 |  [$f324: sta system_9002]
+	jbsr	osd_sound_start |  [$f324: sta system_9002]
 	POP_SR
 	jbsr	osd_wait_for_sync                         	| [$f327: jsr sync_f23f]
 	clr.b	d0                               	| [$f32a: lda #$00]
@@ -6886,7 +6844,7 @@ l_f32e:
 	GET_ADDRESS	0x00                       	| [$f32e: lda $00]
 	move.b	(a0),d0                         	| [...]
 	PUSH_SR
-	 |  [$f330: sta system_9002]
+	jbsr	osd_sound_start |  [$f330: sta system_9002]
 	POP_SR
 	jbsr	l_f24a                            	| [$f333: jsr $f24a]
 	GET_ADDRESS	0x00                       	| [$f336: inc $00]
@@ -6911,7 +6869,7 @@ l_f349:
 	GET_ADDRESS	0x01                       	| [$f349: lda $01]
 	move.b	(a0),d0                         	| [...]
 	PUSH_SR
-	 |  [$f34b: sta system_9002]
+	jbsr	osd_sound_start |  [$f34b: sta system_9002]
 	POP_SR
 	jbsr	l_f25b                            	| [$f34e: jsr $f25b]
 	jbsr	wait_1_second_f26f                	| [$f351: jsr wait_1_second_f26f]

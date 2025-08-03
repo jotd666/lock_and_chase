@@ -2,7 +2,7 @@ import subprocess,os,struct,glob,tempfile
 import shutil
 
 
-gamename = "burgertime"
+gamename = "lock_and_chase"
 sox = "sox"
 
 def convert():
@@ -21,11 +21,10 @@ def convert():
     sndfile = os.path.join(src_dir,"sound_entries.68k")
 
 
-    hq_sample_rate = 12000
+    hq_sample_rate = 18000
     lq_sample_rate = 8000
 
 
-    loop_channel = 3
 
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
@@ -37,20 +36,18 @@ def convert():
 # A: picked bag
 # 2: laugh after bag pick
 # B: extra life
-##"BONUS_APPEARS_SND"               :{"index":0,"channel":2,"sample_rate":hq_sample_rate,"priority":80},
-##"BONUS_PICKED_UP_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":80},
 "CREDIT_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
-"KILLED_SND"               :{"index":0x42,"channel":3,"sample_rate":lq_sample_rate,"priority":40},
+"KILLED_SND"               :{"index":0x42,"channel":1,"sample_rate":lq_sample_rate,"priority":40},
+"LOOP_FAST_SND"               :{"index":0x17,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "LOOP_SND"               :{"index":0x16,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
-##"START_MUSIC_SND"               :{"index":11,"pattern":0,"volume":32},
 "ENGINE_SND"               :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
-"GATE_CLOSING_SND"               :{"index":4,"channel":1,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
-"START_MUSIC_SND"               :{"index":0x41,"sample_rate":lq_sample_rate,"priority":40},
-"HAPPY_SND"               :{"index":2,"channel":2,"sample_rate":hq_sample_rate,"priority":50},#
-"HAT_PICKED_SND"               :{"index":8,"channel":2,"sample_rate":hq_sample_rate,"priority":50},#
-"BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
-"STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
-"STEP_2_SND"               :{"index":0X1F,"channel":1,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
+"GATE_CLOSING_SND"               :{"index":4,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
+"START_MUSIC_SND"               :{"index":0x41,"channel":0,"sample_rate":lq_sample_rate,"priority":40},
+"HAPPY_SND"               :{"index":2,"channel":2,"sample_rate":hq_sample_rate,"priority":50},
+"HAT_PICKED_SND"               :{"index":8,"channel":0,"sample_rate":hq_sample_rate,"priority":50},
+"BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50},#
+"STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":50},#
+"STEP_2_SND"               :{"index":0X1F,"channel":1,"sample_rate":hq_sample_rate,"priority":50},#
 ##"HIGHSCORE_END_SND"               :{"index":15,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
 
 #"BONUS_STAGE_TUNE_SND"                :{"index":0x28,"pattern":0x15,"volume":32,'loops':True},
@@ -123,14 +120,13 @@ def convert():
             channel = details.get("channel")
             if channel is None:
                 # if music loops, ticks are set to 1 so sound orders only can happen once (else music is started 50 times per second!!)
-
                 sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],details.get("ticks",0),details["volume"],int(details["loops"]))
             else:
                 wav_name = os.path.basename(wav_entry).lower()[:-4]
                 wav_file = os.path.join(sound_dir,wav_name+".wav")
 
                 def get_sox_cmd(sr,output):
-                    return [sox,"--volume","0.8",wav_file,"--channels","1","-D","--bits","8","-r",str(sr),"--encoding","signed-integer",output]
+                    return [sox,"--volume","2.0",wav_file,"--channels","1","-D","--bits","8","-r",str(sr),"--encoding","signed-integer",output]
 
 
                 used_sampling_rate = details["sample_rate"]
@@ -191,11 +187,11 @@ def convert():
 
 
         # make sure next section will be aligned
-        with open(os.path.join(sound_dir,f"{gamename}_conv.mod"),"rb") as f:
-            contents = f.read()
-
-        fw.write("{}:".format(music_module_label))
-        write_asm(contents,fw)
+##        with open(os.path.join(sound_dir,f"{gamename}_conv.mod"),"rb") as f:
+##            contents = f.read()
+##
+##        fw.write("{}:".format(music_module_label))
+##        write_asm(contents,fw)
         fw.write("\t.align\t8\n")
 
 

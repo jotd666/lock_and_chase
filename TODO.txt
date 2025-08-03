@@ -1,10 +1,9 @@
 - clock is 56,75HZ!
 - find "game is playing" flag to insert coin with fire
 - hw sprites are flickering/main character disappearing
-- rip sounds
+- rip sounds: fast loop
 - highscore entry sprite wrong location, then locks
   up when entering letter
-- rip music
 - save highscores
 
 optim:
@@ -17,3 +16,11 @@ optim:
 log sound:
 
 wpset 9002,1,W,,{print A;g}
+
+skip:
+
+bpset D9ED,A==$16||A==$17,{PC=$D9F0;g}
+
+replace credit sound by another sound:
+
+bpset C069,,{A=$17;g}

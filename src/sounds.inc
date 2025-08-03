@@ -1,1 +1,11 @@
-
+	.equ	CREDIT_SND,  0x1
+	.equ	HAPPY_SND,  0x2
+	.equ	GATE_CLOSING_SND,  0x4
+	.equ	HAT_PICKED_SND,  0x8
+	.equ	LOOP_SND,  0x16
+	.equ	ENGINE_SND,  0x1d
+	.equ	STEP_1_SND,  0x1e
+	.equ	STEP_2_SND,  0x1f
+	.equ	BAG_TO_PICK_SND,  0x25
+	.equ	START_MUSIC_SND,  0x41
+	.equ	KILLED_SND,  0x42

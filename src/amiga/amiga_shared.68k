@@ -160,16 +160,19 @@ force_sound_stop:
 	move.b	#-1,music_track_start_number
     clr.w   music_tick   | not playing anymore
 	clr.b	music_playing
-	clr.b	looped_sound_enabled
+	clr.l	looped_sound_enabled
+
     jsr		_mt_end
 0:
 	movem.l	(a7)+,d0-d1/a0/a6
 	rts
 	
 osd_sound_start:
-	movem.l	d0/d1/a0/a6,-(a7)
+	movem.l	d0/d1/d2/a0/a1/a6,-(a7)
 	lea		_custom,a6
 
+	bclr	#7,d0			| stop loop command
+	sne		d2
 
 	lsl.w	#3,d0
 	lea		sound_table,a0
@@ -185,20 +188,35 @@ osd_sound_start:
 	lea		_custom,a6
 	tst.w	d1
 	beq.b	3f
-	tst.b	looped_sound_enabled
-	bne.b	3f
+	
 	* looped sound
-	st.b	looped_sound_enabled
+	moveq	#0,d0
+	move.b	(8,a0),d0		| channel
+
+	lea		looped_sound_enabled,a1
+	
+	tst.b	d2
+	jeq		2f
+	* sound stop command
+	clr.b	(a1,d0.w)
+	jbsr	_mt_stopfx
+	jra		10f
+2:
+	tst.b	(a1,d0.w)
+	bne.b	10f			| already playing
+	
+	st.b	(a1,d0.w)
 	jsr		_mt_loopfx
 	bra.b	10f
 3:
 	jsr		_mt_playfx
 10:
-	movem.l	(a7)+,d0/d1/a0/a6
+	movem.l	(a7)+,d0/d1/d2/a0/a1/a6
 	rts
 
 	* music
 4:
+	BREAKPOINT	"music????"
 	* don't play if already playing
 	* (music_tick value is not important for looped tunes
 	* as long as it's not zero)
@@ -220,8 +238,9 @@ osd_sound_start:
 	bsr		force_sound_stop
     lea _custom,a6
  	movem.l	d0/a0,-(a7)
-	lea	burgertime_tunes,a0
-
+	*lea	burgertime_tunes,a0
+	illegal
+	
 	move.b	d1,music_track_start_number
 	move.w	d1,d0
     sub.l   a1,a1		| samples are in the module
@@ -339,9 +358,14 @@ cpu_log_enable:
 	.word	0
 	.endif
 
-music_playing:
-	.byte	0
+* all 4 channels
+	.align	2
 looped_sound_enabled:
+	.long	0
+
+
+
+music_playing:
 	.byte	0
 
 music_loops:

@@ -846,6 +846,7 @@ is_game_playing:
 	move.l	a6,-(a7)
 	GET_RAM_START_IN_A6
 	tst.b	(actual_game_04,a6)
+
 	movem.l	(a7)+,a6
 	rts
 	
