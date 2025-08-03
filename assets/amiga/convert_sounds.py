@@ -29,8 +29,10 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
+# 2,8,4,A,
 # 4: gate closing, 1E/1F picking dots. +0x80 stop sound
-# 17/25: bonus alarm (x3)
+# 17: loop faster(?)
+# 25: bonus alarm (x3)
 # 8: picked hat
 # A: picked bag
 # 2: laugh after bag pick
@@ -40,11 +42,15 @@ def convert():
 "CREDIT_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
 "KILLED_SND"               :{"index":0x42,"channel":3,"sample_rate":lq_sample_rate,"priority":40},
 "LOOP_SND"               :{"index":0x16,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
-##"LEVEL_COMPLETED_SND"               :{"index":6,"pattern":1,"volume":32,'ticks':180,'loops':False},
 ##"START_MUSIC_SND"               :{"index":11,"pattern":0,"volume":32},
 "ENGINE_SND"               :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
+"GATE_CLOSING_SND"               :{"index":4,"channel":1,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
 "START_MUSIC_SND"               :{"index":0x41,"sample_rate":lq_sample_rate,"priority":40},
-##"SCORE_ENTERED_SND"               :{"index":14,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
+"HAPPY_SND"               :{"index":2,"channel":2,"sample_rate":hq_sample_rate,"priority":50},#
+"HAT_PICKED_SND"               :{"index":8,"channel":2,"sample_rate":hq_sample_rate,"priority":50},#
+"BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
+"STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
+"STEP_2_SND"               :{"index":0X1F,"channel":1,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
 ##"HIGHSCORE_END_SND"               :{"index":15,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
 
 #"BONUS_STAGE_TUNE_SND"                :{"index":0x28,"pattern":0x15,"volume":32,'loops':True},

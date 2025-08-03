@@ -16,4 +16,4 @@ optim:
   
 log sound:
 
-wpset 9002,1,W,{print A;g}
+wpset 9002,1,W,,{print A;g}
