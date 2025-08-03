@@ -13,3 +13,7 @@ optim:
   by direct (a6,a0.w) in zero page
 - review/remove all useless push/pop sr (290 occurrences) manually
   then keep only the ones useful (automatic)
+  
+log sound:
+
+wpset 9002,1,W,{print A;g}

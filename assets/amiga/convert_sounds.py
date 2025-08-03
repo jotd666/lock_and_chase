@@ -29,23 +29,23 @@ def convert():
 
     EMPTY_SND = "EMPTY_SND"
     sound_dict = {
-
-"BONUS_APPEARS_SND"               :{"index":0,"channel":2,"sample_rate":hq_sample_rate,"priority":80},
-"BONUS_PICKED_UP_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":80},
-"CREDIT_SND"               :{"index":2,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-"ENEMY_FALLS_SND"               :{"index":3,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-"ENEMY_SPRAYED_SND"               :{"index":4,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-"KILLED_SND"               :{"index":5,"channel":3,"sample_rate":lq_sample_rate,"priority":40},
-"LEVEL_COMPLETED_SND"               :{"index":6,"pattern":1,"volume":32,'ticks':180,'loops':False},
-"MAIN_TUNE_SND"               :{"index":0x7,"pattern":0x3,"volume":20,'loops':True},
-"PEPPER_SPRAY_SND"               :{"index":8,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
-"SLICE_FALLS_SND"               :{"index":9,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-"SLICE_LANDS_SND"               :{"index":10,"channel":3,"sample_rate":hq_sample_rate,"priority":40},
-"START_MUSIC_SND"               :{"index":11,"pattern":0,"volume":32,'loops':False,'ticks':220},
-"WALK_ON_SLICE_SND"               :{"index":12,"channel":3,"sample_rate":hq_sample_rate,"priority":40},#
-"ENEMY_CRUSHED_SND"               :{"index":13,"channel":3,"sample_rate":hq_sample_rate,"priority":50},#
-"SCORE_ENTERED_SND"               :{"index":14,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
-"HIGHSCORE_END_SND"               :{"index":15,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
+# 4: gate closing, 1E/1F picking dots. +0x80 stop sound
+# 17/25: bonus alarm (x3)
+# 8: picked hat
+# A: picked bag
+# 2: laugh after bag pick
+# B: extra life
+##"BONUS_APPEARS_SND"               :{"index":0,"channel":2,"sample_rate":hq_sample_rate,"priority":80},
+##"BONUS_PICKED_UP_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":80},
+"CREDIT_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
+"KILLED_SND"               :{"index":0x42,"channel":3,"sample_rate":lq_sample_rate,"priority":40},
+"LOOP_SND"               :{"index":0x16,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
+##"LEVEL_COMPLETED_SND"               :{"index":6,"pattern":1,"volume":32,'ticks':180,'loops':False},
+##"START_MUSIC_SND"               :{"index":11,"pattern":0,"volume":32},
+"ENGINE_SND"               :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
+"START_MUSIC_SND"               :{"index":0x41,"sample_rate":lq_sample_rate,"priority":40},
+##"SCORE_ENTERED_SND"               :{"index":14,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
+##"HIGHSCORE_END_SND"               :{"index":15,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
 
 #"BONUS_STAGE_TUNE_SND"                :{"index":0x28,"pattern":0x15,"volume":32,'loops':True},
 
