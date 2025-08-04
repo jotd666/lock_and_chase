@@ -38,6 +38,8 @@ def convert():
 # B: extra life
 "CREDIT_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
 "KILLED_SND"               :{"index":0x42,"channel":1,"sample_rate":lq_sample_rate,"priority":40},
+"LOOP_FASTEST_SND"               :{"index":0x19,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
+"LOOP_FASTER_SND"               :{"index":0x18,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "LOOP_FAST_SND"               :{"index":0x17,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "LOOP_SND"               :{"index":0x16,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "ENGINE_SND"               :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
@@ -47,8 +49,9 @@ def convert():
 "BAG_PICKED_SND"               :{"index":0xA,"channel":0,"sample_rate":lq_sample_rate,"priority":50},
 "HAT_PICKED_SND"               :{"index":8,"channel":0,"sample_rate":hq_sample_rate,"priority":50},
 "BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
-"STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":50},#
-"STEP_2_SND"               :{"index":0X1F,"channel":1,"sample_rate":hq_sample_rate,"priority":50},#
+"EXTRA_LIFE_SND"               :{"index":0xB,"channel":1,"sample_rate":lq_sample_rate,"priority":50},#
+"STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":30},#
+"STEP_2_SND"               :{"index":0X1F,"channel":1,"sample_rate":hq_sample_rate,"priority":30},#
 ##"HIGHSCORE_END_SND"               :{"index":15,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#
 
 #"BONUS_STAGE_TUNE_SND"                :{"index":0x28,"pattern":0x15,"volume":32,'loops':True},

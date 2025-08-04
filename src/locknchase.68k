@@ -212,7 +212,7 @@ l_c09e:
 	move.b	(a0,d1.w),d4	| [...]
 	abcd	d4,d0                    	| [...]
 	cmp.b	#0x09,d0                         	| [$c0a5: cmp #$09]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c0ab                             	| [$c0a7: bcc $c0ab]
 	 |  [$c0a9: lda #$09] max credits, nop that it will allow to insert 99 credits
 l_c0ab:
@@ -268,7 +268,7 @@ l_c0d9:
 	GET_ADDRESS	0x05                       	| [$c0f5: lda $05]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$c0f7: cmp #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c0fe                             	| [$c0f9: bcc $c0fe]
 	jbsr	l_dbd3                            	| [$c0fb: jsr $dbd3]
 l_c0fe:
@@ -352,7 +352,7 @@ l_c16a:
 l_c183:
 	jbsr	l_db2f                            	| [$c183: jsr $db2f]
 	clr.b	d0                               	| [$c186: lda #$00]
-	jbsr	l_d9e7                            	| [$c188: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c188: jsr sound_command_d9e7]
 	move.b	#0x50,d0                        	| [$c18b: lda #$50]
 	jbsr	wait_dbc4                         	| [$c18d: jsr wait_dbc4]
 	GET_ADDRESS	0x2c                       	| [$c190: lda $2c]
@@ -370,7 +370,7 @@ l_c183:
 	GET_ADDRESS	0x05                       	| [$c1a4: lda $05]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$c1a6: cmp #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c1b2                             	| [$c1a8: bcc $c1b2]
 l_c1aa:
 	GET_ADDRESS	current_player_06          	| [$c1aa: inc current_player_06]
@@ -450,7 +450,7 @@ l_c1f6:
 	GET_ADDRESS	0x05                       	| [$c1ff: lda $05]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$c201: cmp #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c209                             	| [$c203: bcc $c209]
 	GET_ADDRESS	current_player_06          	| [$c205: ldy current_player_06]
 	move.b	(a0),d2                         	| [...]
@@ -467,7 +467,7 @@ l_c210:
 	move.b	(a0),d0                         	| [...]
 	clr.b	d2                               	| [$c212: ldy #$00]
 	cmp.b	#0x02,d0                         	| [$c214: cmp #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c21b                             	| [$c216: bcc $c21b]
 	GET_ADDRESS	current_player_06          	| [$c218: ldy current_player_06]
 	move.b	(a0),d2                         	| [...]
@@ -581,7 +581,7 @@ l_c273:
 	GET_ADDRESS	0x49                       	| [$c2bd: sta $49]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x41,d0                        	| [$c2bf: lda #$41]
-	jbsr	l_d9e7                            	| [$c2c1: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c2c1: jsr sound_command_d9e7]
 l_c2c4:
 	GET_ADDRESS	0x44                       	| [$c2c4: lda $44]
 	move.b	(a0),d0                         	| [...]
@@ -606,7 +606,7 @@ l_c2c4:
 	subq.b	#1,(a0)                         	| [...]
 	bne	l_c2ec                             	| [$c2df: bne $c2ec]
 	move.b	#0x1d,d0                        	| [$c2e1: lda #$1d]
-	jbsr	l_d9e7                            	| [$c2e3: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c2e3: jsr sound_command_d9e7]
 l_c2e6:
 	GET_ADDRESS	0x7c02                     	| [$c2e6: dec $7c02]
 	subq.b	#1,(a0)                         	| [...]
@@ -617,10 +617,10 @@ l_c2ec:
 	move.b	(a0),d0                         	| [...]
 	not.b	d0                               	| [$c2ef: eor #$ff]
 	cmp.b	#0xaf,d0                         	| [$c2f1: cmp #$af]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c300                             	| [$c2f3: bcc $c300]
 	move.b	#0x9d,d0                        	| [$c2f5: lda #$9d]
-	jbsr	l_d9e7                            	| [$c2f7: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c2f7: jsr sound_command_d9e7]
 	clr.b	d0                               	| [$c2fa: lda #$00]
 	GET_ADDRESS	0x3c                       	| [$c2fc: sta $3c]
 	move.b	d0,(a0)                         	| [...]
@@ -661,7 +661,7 @@ l_c301:
 	GET_ADDRESS	0x49                       	| [$c326: sta $49]
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
-	jbsr	l_d9d8                            	| [$c328: jsr $d9d8]
+	jbsr	play_sound_loop_d9d8              	| [$c328: jsr play_sound_loop_d9d8]
 	rts                                    	| [$c32b: rts]
 
 l_c32c:
@@ -699,7 +699,7 @@ l_c340:
 	GET_ADDRESS	player_state_3b            	| [$c351: sta player_state_3b]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x04,d0                        	| [$c353: lda #$04]
-	jbsr	l_d9e7                            	| [$c355: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c355: jsr sound_command_d9e7]
 	move.b	#0x01,d0                        	| [$c358: lda #$01]
 	jbsr	l_d7e0                            	| [$c35a: jsr $d7e0]
 	GET_ADDRESS	0x34                       	| [$c35d: lda $34]
@@ -744,7 +744,7 @@ l_c391:
 l_c3a2:
 	GET_ADDRESS	0xc3e9                     	| [$c3a2: cmp $c3e9, x]
 	cmp.b	(a0,d1.w),d0                     	| [...]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c3e8                             	| [$c3a5: bcc $c3e8]
 	GET_ADDRESS	0x3c                       	| [$c3a7: lda $3c]
 	move.b	(a0),d0                         	| [...]
@@ -752,7 +752,7 @@ l_c3a2:
 	GET_ADDRESS	0x3c                       	| [$c3ab: sta $3c]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x05,d0                        	| [$c3ad: lda #$05]
-	jbsr	l_d9e7                            	| [$c3af: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c3af: jsr sound_command_d9e7]
 	jbsr	osd_wait_for_sync                         	| [$c3b2: jsr sync_dbb7]
 	move.b	#0x01,d0                        	| [$c3b5: lda #$01]
 	jbsr	l_d7e0                            	| [$c3b7: jsr $d7e0]
@@ -812,10 +812,10 @@ l_c3ed:
 	GET_ADDRESS	0x49                       	| [$c3f7: sta $49]
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
-	jbsr	l_d9e0                            	| [$c3f9: jsr $d9e0]
+	jbsr	stop_sound_loop_d9e0              	| [$c3f9: jsr stop_sound_loop_d9e0]
 	jbsr	osd_wait_for_sync                         	| [$c3fc: jsr sync_dbb7]
 	move.b	#0xa5,d0                        	| [$c3ff: lda #$a5]
-	jbsr	l_d9e7                            	| [$c401: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c401: jsr sound_command_d9e7]
 l_c404:
 	GET_ADDRESS	0x49                       	| [$c404: lda $49]
 	move.b	(a0),d0                         	| [...]
@@ -833,7 +833,7 @@ l_c404:
 	GET_ADDRESS	0x44                       	| [$c416: sta $44]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x42,d0                        	| [$c418: lda #$42]
-	jbsr	l_d9e7                            	| [$c41a: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c41a: jsr sound_command_d9e7]
 l_c41d:
 	move.b	#0x0b,d0                        	| [$c41d: lda #$0b]
 	GET_ADDRESS	0x49                       	| [$c41f: sta $49]
@@ -889,7 +889,7 @@ l_c462:
 	bne	l_c488                             	| [$c464: bne $c488]
 l_c466:
 	move.b	#0x02,d0                        	| [$c466: lda #$02]
-	jbsr	l_d9e7                            	| [$c468: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c468: jsr sound_command_d9e7]
 	GET_ADDRESS	0x44                       	| [$c46b: lda $44]
 	move.b	(a0),d0                         	| [...]
 	GET_ADDRESS	0x44                       	| [$c46d: inc $44]
@@ -936,7 +936,7 @@ l_c48f:
 	move.b	(a0,d1.w),d0                    	| [...]
 	beq	l_c4a8                             	| [$c49e: beq $c4a8]
 	move.b	#0x24,d0                        	| [$c4a0: lda #$24]
-	jbsr	l_d9e7                            	| [$c4a2: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c4a2: jsr sound_command_d9e7]
 	jmp	l_c4f2                             	| [$c4a5: jmp $c4f2]
 l_c4a8:
 	GET_ADDRESS	0x45                       	| [$c4a8: lda $45]
@@ -989,7 +989,7 @@ l_c4e5:
 	GET_ADDRESS	0x45                       	| [$c4eb: sta $45]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x03,d0                        	| [$c4ed: lda #$03]
-	jbsr	l_d9e7                            	| [$c4ef: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c4ef: jsr sound_command_d9e7]
 l_c4f2:
 	GET_ADDRESS	0x4d                       	| [$c4f2: ldy $4d]
 	move.b	(a0),d2                         	| [...]
@@ -1191,13 +1191,14 @@ l_c617:
 	move.b	d0,d1                           	| [$c62a: tax]
 	GET_ADDRESS	0xc632                     	| [$c62b: lda $c632, x]
 	move.b	(a0,d1.w),d0                    	| [...]
-	jbsr	l_d9e7                            	| [$c62e: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c62e: jsr sound_command_d9e7]
 	rts                                    	| [$c631: rts]
-l_c634:
+
+bag_picked_c634:
 	GET_ADDRESS	player_state_3b            	| [$c634: lda player_state_3b]
 	move.b	(a0),d0                         	| [...]
 	or.b	#0x02,d0                          	| [$c636: ora #$02]
-	GET_ADDRESS	player_state_3b            	| [$c638: sta player_state_3b]
+	GET_ADDRESS	player_state_3b            	| [$c638: sta player_state_3b] player happy
 	move.b	d0,(a0)                         	| [...]
 	GET_ADDRESS	0x39                       	| [$c63a: ldx $39]
 	move.b	(a0),d1                         	| [...]
@@ -1214,8 +1215,8 @@ l_c634:
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
 	jbsr	add_to_score_d8fd                 	| [$c647: jsr add_to_score_d8fd]
-	move.b	#0x0a,d0                        	| [$c64a: lda #$0a]
-	jbsr	l_d9e7                            	| [$c64c: jsr $d9e7]
+	move.b	#0x0a,d0                        	| [$c64a: lda #$0a] bag picked
+	jbsr	sound_command_d9e7                	| [$c64c: jsr sound_command_d9e7]
 	rts                                    	| [$c64f: rts]
 
 l_c654:
@@ -1233,7 +1234,7 @@ l_c654:
 	POP_SR
 	jbsr	add_to_score_d8fd                 	| [$c65f: jsr add_to_score_d8fd]
 	move.b	#0x08,d0                        	| [$c662: lda #$08]
-	jbsr	l_d9e7                            	| [$c664: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c664: jsr sound_command_d9e7]
 	rts                                    	| [$c667: rts]
 l_c672:
 	GET_ADDRESS	0x43                       	| [$c672: lda $43]
@@ -1248,7 +1249,7 @@ l_c672:
 l_c67e:
 	GET_ADDRESS	0xc689                     	| [$c67e: cmp $c689, x]
 	cmp.b	(a0,d1.w),d0                     	| [...]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c688                             	| [$c681: bcc $c688]
 	GET_ADDRESS	0xc68b                     	| [$c683: lda $c68b, x]
 	move.b	(a0,d1.w),d0                    	| [...]
@@ -1266,10 +1267,10 @@ l_c68d:
 	move.b	d0,(a0)                         	| [...]
 	clr.b	d0                               	| [$c693: lda #$00]
 	jbsr	l_d7e0                            	| [$c695: jsr $d7e0]
-	jbsr	l_d9e0                            	| [$c698: jsr $d9e0]
+	jbsr	stop_sound_loop_d9e0              	| [$c698: jsr stop_sound_loop_d9e0]
 	jbsr	osd_wait_for_sync                         	| [$c69b: jsr sync_dbb7]
 	move.b	#0xa5,d0                        	| [$c69e: lda #$a5]
-	jbsr	l_d9e7                            	| [$c6a0: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c6a0: jsr sound_command_d9e7]
 	rts                                    	| [$c6a3: rts]
 l_c6a4:
 	GET_ADDRESS	0x46                       	| [$c6a4: lda $46]
@@ -1317,7 +1318,7 @@ l_c6d2:
 	move.b	(a0),d0                         	| [...]
 	bmi	l_c6de                             	| [$c6d4: bmi $c6de]
 	cmp.b	#0x10,d0                         	| [$c6d6: cmp #$10]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c6ef                             	| [$c6d8: bcc $c6ef]
 	GET_ADDRESS	0x46                       	| [$c6da: lda $46]
 	move.b	(a0),d0                         	| [...]
@@ -1460,7 +1461,7 @@ l_c771:
 	move.b	(a0,d1.w),d0                    	| [...]
 	bmi	l_c7a9                             	| [$c778: bmi $c7a9]
 	cmp.b	#0x02,d2                         	| [$c77a: cpy #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c784                             	| [$c77c: bcc $c784]
 	GET_ADDRESS	0xc7f1                     	| [$c77e: lda $c7f1, y]
 	move.b	(a0,d2.w),d0                    	| [...]
@@ -1559,7 +1560,7 @@ draw_fence_c809:
 	GET_ADDRESS	0xa2                       	| [$c81c: ldx $a2]
 	move.b	(a0),d1                         	| [...]
 	cmp.b	#0x7c,d0                         	| [$c81e: cmp #$7c]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_c825                             	| [$c820: bcc $c825]
                                          | [$c822: inx]
                                          | [$c823: inx]
@@ -1601,10 +1602,10 @@ handle_bonus_appearances_c8b4:
 * of pellets are picked: $28, $46, $64, $82
 	GET_ADDRESS	nb_times_bag_appeared_38   	| [$c8c6: inc nb_times_bag_appeared_38]
 	addq.b	#1,(a0)                         	| [...]
-	jbsr	l_d9d8                            	| [$c8c8: jsr $d9d8]
+	jbsr	play_sound_loop_d9d8              	| [$c8c8: jsr play_sound_loop_d9d8]
 	jbsr	osd_wait_for_sync                         	| [$c8cb: jsr sync_dbb7]
 	move.b	#0x25,d0                        	| [$c8ce: lda #$25]
-	jbsr	l_d9e7                            	| [$c8d0: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c8d0: jsr sound_command_d9e7]
 	move.b	#0x80,d0                        	| [$c8d3: lda #$80]
 	GET_ADDRESS	0x96                       	| [$c8d5: sta $96]
 	move.b	d0,(a0)                         	| [...]
@@ -1652,7 +1653,7 @@ l_c8fa:
 	GET_ADDRESS	0x97                       	| [$c904: sta $97]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0xa5,d0                        	| [$c906: lda #$a5]
-	jbsr	l_d9e7                            	| [$c908: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c908: jsr sound_command_d9e7]
 	jmp	l_c91f                             	| [$c90b: jmp $c91f]
 l_c90e:
 	GET_ADDRESS	0x98                       	| [$c90e: lda $98]
@@ -1666,7 +1667,7 @@ l_c916:
 	GET_ADDRESS	0x96                       	| [$c918: stx $96]
 	move.b	d1,(a0)                         	| [...]
 	move.b	#0xa5,d0                        	| [$c91a: lda #$a5]
-	jbsr	l_d9e7                            	| [$c91c: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$c91c: jsr sound_command_d9e7]
 l_c91f:
 	move.b	#0x02,d2                        	| [$c91f: ldy #$02]
 l_c921:
@@ -1856,7 +1857,7 @@ l_ca06:
 	move.b	(a0,d2.w),d0                    	| [...]
 	GET_ADDRESS	0xca74                     	| [$ca0f: cmp $ca74, x]
 	cmp.b	(a0,d1.w),d0                     	| [...]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_ca28                             	| [$ca12: bcc $ca28]
 	GET_ADDRESS	0xca75                     	| [$ca14: cmp $ca75, x]
 	cmp.b	(a0,d1.w),d0                     	| [...]
@@ -1866,7 +1867,7 @@ l_ca06:
 	move.b	(a0,d2.w),d0                    	| [...]
 	GET_ADDRESS	0xca76                     	| [$ca1c: cmp $ca76, x]
 	cmp.b	(a0,d1.w),d0                     	| [...]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_ca28                             	| [$ca1f: bcc $ca28]
 	GET_ADDRESS	0xca77                     	| [$ca21: cmp $ca77, x]
 	cmp.b	(a0,d1.w),d0                     	| [...]
@@ -1884,7 +1885,7 @@ l_ca28:
 	subq.b	#1,d1                           	| [$ca30: dex]
 	GET_ADDRESS	0xca7c                     	| [$ca31: lda $ca7c, x]
 	move.b	(a0,d1.w),d0                    	| [...]
-	jbsr	l_d9e7                            	| [$ca34: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$ca34: jsr sound_command_d9e7]
 	GET_ADDRESS	0xca80                     	| [$ca37: lda $ca80, x]
 	move.b	(a0,d1.w),d0                    	| [...]
 	GET_ADDRESS	0x7c1d                     	| [$ca3a: sta $7c1d]
@@ -2070,7 +2071,7 @@ return_from_jump_table_cb28:
 	GET_ADDRESS	current_active_enemy_4f    	| [$cb2d: lda current_active_enemy_4f]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x04,d0                         	| [$cb2f: cmp #$04]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_cb37                             	| [$cb31: bcc $cb37]
 	clr.b	d0                               	| [$cb33: lda #$00]
 	PUSH_SR
@@ -2289,7 +2290,7 @@ l_cc6e:
 	GET_ADDRESS	0x69                       	| [$cc70: lda $69]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x20,d0                         	| [$cc72: cmp #$20]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_cc81                             	| [$cc74: bcc $cc81]
 	clr.b	d0                               	| [$cc76: lda #$00]
 	GET_ADDRESS	0x69                       	| [$cc78: sta $69]
@@ -2337,7 +2338,7 @@ l_cc82:
 	GET_ADDRESS	0x64                       	| [$cca7: lda $64]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x06,d0                         	| [$cca9: cmp #$06]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_ccb1                             	| [$ccab: bcc $ccb1]
 	clr.b	d0                               	| [$ccad: lda #$00]
 	PUSH_SR
@@ -2678,7 +2679,7 @@ l_ce8f:
 l_cea0:
 	GET_ADDRESS	0x73                       	| [$cea0: cmp $73]
 	cmp.b	(a0),d0                          	| [...]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_cea6                             	| [$cea2: bcc $cea6]
 	PUSH_SR
 	GET_ADDRESS	0x76                       	| [$cea4: stx $76]
@@ -3133,7 +3134,7 @@ l_d157:
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
 	cmp.b	#0x04,d1                         	| [$d169: cpx #$04]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_d177                             	| [$d16b: bcc $d177]
 	move.b	#0x50,d0                        	| [$d16d: lda #$50]
 	GET_ADDRESS	0x0216                     	| [$d16f: sta $0216]
@@ -3274,7 +3275,7 @@ l_d2cf:
 	move.b	(a0),d0                         	| [...]
 	bmi	l_d2d7                             	| [$d2d1: bmi $d2d7]
 	cmp.b	#0x0e,d0                         	| [$d2d3: cmp #$0e]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_d2eb                             	| [$d2d5: bcc $d2eb]
 l_d2d7:
 	GET_ADDRESS	current_active_enemy_4f    	| [$d2d7: ldx current_active_enemy_4f]
@@ -3315,7 +3316,7 @@ l_d2f8:
 	addq.b	#1,d2                           	| [$d2fd: iny]
 	addq.b	#1,d1                           	| [$d2fe: inx]
 	cmp.b	#0x1a,d1                         	| [$d2ff: cpx #$1a] size of enemy struct
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_d2f8                             	| [$d301: bcc $d2f8]
 	rts                                    	| [$d303: rts]
 
@@ -3332,7 +3333,7 @@ l_d308:
 	addq.b	#1,d2                           	| [$d30d: iny]
 	addq.b	#1,d1                           	| [$d30e: inx]
 	cmp.b	#0x1a,d1                         	| [$d30f: cpx #$1a]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_d308                             	| [$d311: bcc $d308]
 	rts                                    	| [$d313: rts]
 
@@ -3854,7 +3855,7 @@ l_d626:
 	GET_ADDRESS	work_enemy_struct_55       	| [$d650: lda work_enemy_struct_55]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$d652: cmp #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_d666                             	| [$d654: bcc $d666]
 	move.b	#0x02,d2                        	| [$d656: ldy #$02]
 l_d658:
@@ -3920,7 +3921,7 @@ l_d688:
 	GET_ADDRESS	work_enemy_struct_55       	| [$d6a1: lda work_enemy_struct_55]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$d6a3: cmp #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_d666                             	| [$d6a5: bcc $d666]
 	GET_ADDRESS	current_player_06          	| [$d6a7: lda current_player_06]
 	move.b	(a0),d0                         	| [...]
@@ -4406,7 +4407,7 @@ l_d931:
 	addq.b	#1,(a0)                         	| [...]
 	jbsr	display_nb_lives_da8c             	| [$d94e: jsr display_nb_lives_da8c]
 	move.b	#0x0b,d0                        	| [$d951: lda #$0b]
-	jbsr	l_d9e7                            	| [$d953: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$d953: jsr sound_command_d9e7]
 	jbsr	osd_wait_for_sync                         	| [$d956: jsr sync_dbb7]
 l_d959:
 	rts                                    	| [$d959: rts]
@@ -4420,7 +4421,7 @@ l_d9be:
     move.b	d0,(a0,d1.w)                 	| [...]
 	addq.b	#1,d1                           	| [$d9c0: inx]
 	cmp.b	#0xe4,d1                         	| [$d9c1: cpx #$e4]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_d9be                             	| [$d9c3: bcc $d9be]
 	rts                                    	| [$d9c5: rts]
 
@@ -4441,20 +4442,22 @@ l_d9cd:
 	bne	l_d9cd                             	| [$d9d5: bne $d9cd]
 	rts                                    	| [$d9d7: rts]
 
-l_d9d8:
+play_sound_loop_d9d8:
+* play loop 16,17,18,19 depending on bag
 	GET_ADDRESS	nb_times_bag_appeared_38   	| [$d9d8: ldx nb_times_bag_appeared_38]
 	move.b	(a0),d1                         	| [...]
 	GET_ADDRESS	0xd9f3                     	| [$d9da: lda $d9f3, x]
 	move.b	(a0,d1.w),d0                    	| [...]
-	jmp	l_d9e7                             	| [$d9dd: jmp $d9e7]
+	jmp	sound_command_d9e7                 	| [$d9dd: jmp sound_command_d9e7]
 
-l_d9e0:
+stop_sound_loop_d9e0:
 	GET_ADDRESS	nb_times_bag_appeared_38   	| [$d9e0: ldx nb_times_bag_appeared_38]
 	move.b	(a0),d1                         	| [...]
 	GET_ADDRESS	0xd9f3                     	| [$d9e2: lda $d9f3, x]
 	move.b	(a0,d1.w),d0                    	| [...]
 	or.b	#0x80,d0                          	| [$d9e5: ora #$80] stop sound
-l_d9e7:
+* generic sound command used by the whole game
+sound_command_d9e7:
 	GET_ADDRESS	0xb2                       	| [$d9e7: stx $b2]
 	move.b	d1,(a0)                         	| [...]
 	GET_ADDRESS	actual_game_04             	| [$d9e9: ldx actual_game_04]
@@ -4999,7 +5002,7 @@ l_dcb9:
 	GET_ADDRESS	nb_credits_02              	| [$dcb9: lda nb_credits_02]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x02,d0                         	| [$dcbb: cmp #$02]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_dcb8                             	| [$dcbd: bcc $dcb8]
 	jbsr	one_less_credit_d9f8              	| [$dcbf: jsr one_less_credit_d9f8]
 	GET_ADDRESS	0x05                       	| [$dcc2: inc $05]
@@ -5332,6 +5335,8 @@ l_e6b2:
 	GET_ADDRESS	0x62                       	| [$e6b6: lda $62]
 	move.b	(a0),d0                         	| [...]
 	bmi	l_e6c8                             	| [$e6b8: bmi $e6c8]
+* reuse timeout timer this time when highscore
+* has been entered. Timeout is less shorter there
 	move.b	#0x80,d0                        	| [$e6ba: lda #$80]
 	GET_ADDRESS	timer_lsb_5d               	| [$e6bc: sta timer_lsb_5d]
 	move.b	d0,(a0)                         	| [...]
@@ -5517,7 +5522,7 @@ l_e809:
 	move.b	(a0),d0                         	| [...]
 	GET_ADDRESS	enemy_y_58                 	| [$e812: cmp enemy_y_58]
 	cmp.b	(a0),d0                          	| [...]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_e807                             	| [$e814: bcc $e807]
 	rts                                    	| [$e816: rts]
 
@@ -5677,8 +5682,8 @@ l_e8a1:
 	add.b	#0x87,d0                        	| [$e8be: adc #$87]
 	GET_ADDRESS	0x7c01                     	| [$e8c0: sta $7c01] animate main character in highscore
 	move.b	d0,(a0)                         	| [...]
-	move.b	#0x02,d0                        	| [$e8c3: lda #$02]
-	jbsr	l_d9e7                            	| [$e8c5: jsr $d9e7]
+	move.b	#0x02,d0                        	| [$e8c3: lda #$02] happy sound
+	jbsr	sound_command_d9e7                	| [$e8c5: jsr sound_command_d9e7]
 l_e8c8:
 	GET_ADDRESS	0x61                       	| [$e8c8: lda $61]
 	move.b	(a0),d0                         	| [...]
@@ -5725,14 +5730,14 @@ l_e8e4:
 	clr.b	d0                               	| [$e8fa: lda #$00]
 l_e8fc:
 	cmp.b	#0x24,d0                         	| [$e8fc: cmp #$24]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_e902                             	| [$e8fe: bcc $e902]
 	move.b	#0x23,d0                        	| [$e900: lda #$23]
 l_e902:
 	GET_ADDRESS	0x7d                       	| [$e902: sta $7d]
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x1e,d0                        	| [$e904: lda #$1e]
-	jbsr	l_d9e7                            	| [$e906: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$e906: jsr sound_command_d9e7]
 l_e909:
 	rts                                    	| [$e909: rts]
 
@@ -5798,23 +5803,22 @@ l_e96b:
 	and.b	#0x10,d0                         	| [$e970: and #$10]
 	beq	l_e99a                             	| [$e972: beq $e99a]
 	move.b	#0x03,d0                        	| [$e974: lda #$03]
-	jbsr	l_d9e7                            	| [$e976: jsr $d9e7]
+	jbsr	sound_command_d9e7                	| [$e976: jsr sound_command_d9e7]
 	GET_ADDRESS	0x7d                       	| [$e979: lda $7d]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x1e,d0                         	| [$e97b: cmp #$1e]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_e99b                             	| [$e97d: bcc $e99b]
 	                           	| [$e97f: sec]
 	sub.b	#0x1e,d0	| [$e980: sbc #$1e]
 	asl.b	#1,d0                            	| [$e982: asl a]
 	move.b	d0,d1                           	| [$e983: tax]
 	PUSH_TABLE_X_ADDRESS	table_e9db                 	| [$e984: lda table_e9db, x] [jump_table]
-	POP_SR
 	move.b	#0x3f,d0                        	| [$e98e: lda #$3f]
 	GET_ADDRESS	0x60                       	| [$e990: sta $60]
 	move.b	d0,(a0)                         	| [...]
-	move.b	#0x0a,d0                        	| [$e992: lda #$0a]
-	jbsr	l_d9e7                            	| [$e994: jsr $d9e7]
+	move.b	#0x0a,d0                        	| [$e992: lda #$0a] bag picked (highscore entry)
+	jbsr	sound_command_d9e7                	| [$e994: jsr sound_command_d9e7]
 	rts |  [$e997: jmp ($0055)] [indirect_jump]
 l_e99a:
 	rts                                    	| [$e99a: rts]
@@ -6017,7 +6021,8 @@ l_ea5d:
 	GET_ADDRESS	0x7c02                     	| [$ea66: cmp $7c02]
 	cmp.b	(a0),d0                          	| [...]
 	beq	l_ea75                             	| [$ea69: beq $ea75]
-	bcc	l_ea72                             	| [$ea6b: bcc $ea72]
+	* bcc=>bcs (cmp higher above)
+	bcs	l_ea72                             	| [$ea6b: bcc $ea72]
 	GET_ADDRESS	0x7c02                     	| [$ea6d: inc $7c02]
 	addq.b	#1,(a0)                         	| [...]
 	bne	l_ea75                             	| [$ea70: bne $ea75]
@@ -6264,7 +6269,7 @@ l_f03c:
     move.b	d0,(a0,d1.w)                 	| [...]
 	addq.b	#1,d1                           	| [$f068: inx]
 	cmp.b	#0xfe,d1                         	| [$f069: cpx #$fe]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_f03c                             	| [$f06b: bcc $f03c]
 	move.b	#0xff,d0                        	| [$f06d: lda #$ff]
 	GET_ADDRESS	0x00                       	| [$f06f: sta $00, x]
@@ -6378,7 +6383,7 @@ l_f0d4:
     move.b	d0,(a0,d1.w)                 	| [...]
 	addq.b	#1,d1                           	| [$f108: inx]
 	cmp.b	#0xfe,d1                         	| [$f109: cpx #$fe]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_f0d4                             	| [$f10b: bcc $f0d4]
 	move.b	#0xff,d0                        	| [$f10d: lda #$ff]
 	GET_ADDRESS	0x0100                     	| [$f10f: sta $0100, x]
@@ -6600,7 +6605,7 @@ l_f232:
 	addq.b	#1,d2                           	| [$f238: iny]
 	addq.b	#1,d1                           	| [$f239: inx]
 	cmp.b	#0x11,d2                         	| [$f23a: cpy #$11]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_f232                             	| [$f23c: bcc $f232]
 	rts                                    	| [$f23e: rts]
 
@@ -6819,7 +6824,7 @@ l_f349:
 	GET_ADDRESS	0x01                       	| [$f359: lda $01]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0xf8,d0                         	| [$f35b: cmp #$f8]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_f349                             	| [$f35d: bcc $f349]
 	jmp	l_f1ba                             	| [$f35f: jmp $f1ba]
 l_f362:
@@ -6869,7 +6874,7 @@ l_f38e:
 	GET_ADDRESS	0x01                       	| [$f397: lda $01]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x40,d0                         	| [$f399: cmp #$40]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_f38e                             	| [$f39b: bcc $f38e]
 	move.b	#0x02,d0                        	| [$f39d: lda #$02]
 	PUSH_SR
@@ -7061,7 +7066,7 @@ l_f46e:
 	GET_ADDRESS	0x01                       	| [$f477: lda $01]
 	move.b	(a0),d0                         	| [...]
 	cmp.b	#0x40,d0                         	| [$f479: cmp #$40]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_f46e                             	| [$f47b: bcc $f46e]
 	move.b	#0x02,d0                        	| [$f47d: lda #$02]
 	GET_ADDRESS	0x01                       	| [$f47f: sta $01]
@@ -7257,7 +7262,7 @@ l_f56e:
 	addq.b	#1,d2                           	| [$f574: iny]
 	addq.b	#1,d1                           	| [$f575: inx]
 	cmp.b	#0x11,d2                         	| [$f576: cpy #$11]
-	* bcc=>bcs
+	* bcc=>bcs (cmp above)
 	bcs	l_f56e                             	| [$f578: bcc $f56e]
 	move.b	#0x82,d0                        	| [$f57a: lda #$82]
 	GET_UNCHECKED_ADDRESS	0x3d2d                     	| [$f57c: sta $3d2d] [video_address]
@@ -7777,7 +7782,7 @@ l_f7ef:
 table_c55d:
 	.long	l_c6c2                           	|  $c55d
 	.long	l_c617                           	|  $c55f
-	.long	l_c634                           	|  $c561
+	.long	bag_picked_c634                  	|  $c561
 	.long	l_c654                           	|  $c563
 	.long	l_c672                           	|  $c565
 	.long	l_c68d                           	|  $c567

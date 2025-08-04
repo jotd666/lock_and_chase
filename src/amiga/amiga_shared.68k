@@ -199,7 +199,9 @@ osd_sound_start:
 	
 	* sound stop
 	clr.b	(a1,d0.w)
+	movem.l	d0/a0,-(a7)
 	jbsr	_mt_stopfx
+	movem.l	(a7)+,d0/a0
 	tst.b	d2
 	jne		10f		| sound stop requested: done
 2:

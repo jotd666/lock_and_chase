@@ -2680,7 +2680,7 @@ D9D3: E0 FF    cpx #$ff
 D9D5: D0 F6    bne $d9cd
 D9D7: 60       rts
 
-play_sound_loop_d9d8
+play_sound_loop_d9d8:
 ; play loop 16,17,18,19 depending on bag
 D9D8: A6 58    ldx nb_times_bag_appeared_38
 D9DA: BD F3 B9 lda $d9f3, x
@@ -3236,6 +3236,7 @@ E6C0: 09 80    ora #$80
 E6C2: 85 62    sta $62
 E6C4: A9 00    lda #$00
 E6C6: 85 3E    sta timer_msb_5e
+; check if both timers at zero
 E6C8: A5 3D    lda timer_lsb_5d
 E6CA: 05 3E    ora timer_msb_5e
 E6CC: D0 0C    bne $e6da

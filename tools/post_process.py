@@ -37,7 +37,8 @@ with open(source_dir / "conv.s") as f:
             if any(x in line for x in ("_cd28","_cf24","_c55d","_f1ae")):
                 lines[i+1] = "\trts   | rest of the code is useless, just jump\n\n"
             if "_e9db" in line:
-                for j in range(i+1,i+11):
+                # remove useless code, but after that there is useful code, we can't just rts
+                for j in range(i+1,i+12):
                     lines[j] = ""
             else:
                 lines[i+1] = ""
