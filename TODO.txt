@@ -1,20 +1,19 @@
-- clock is 56,75HZ!
+- clock is 56,75HZ not 60
+- e984: POP_SR not removed just here (anywhere else ok...)
+- converter: after cmp, scan branch until no branch instruction
+  not only the first one:
+
+EA66: CD 02 7C cmp $7c02
+EA69: F0 0A    beq $ea75
+EA6B: 90 05    bcc $ea72
+
 - find "game is playing" flag to insert coin with fire
   acually doesn't work with $4
 - hw sprites are flickering/main character disappearing
-- loop sounds sometimes don't stop
 - when picking bag sfx go crazy (2 sfx is repeated a lot)
   then loop stop is not working anymore
-- highscore entry sprite wrong location, then locks
-  up when entering letter
-  7C00: 0182 E030 should be 0181 B430
-- save highscores
 
-converter:
-do not simplify sbc by sub if bcc/bcs right after
-or then invert condition like cmp
-E93E: E9 0A    sbc #$0a
-E940: B0 FC    bcs $e93e
+- save highscores
 
 
 optim:

@@ -3632,8 +3632,9 @@ EA72: CE 02 7C dec $7c02
 EA75: A5 36    lda $56
 EA77: CD 03 7C cmp $7c03
 EA7A: F0 04    beq $ea80
-EA7C: EE 03 7C inc $7c03
+EA7C: EE 03 7C inc $7c03		; highscore cursor goes down
 EA7F: 60       rts
+
 EA80: A5 35    lda work_enemy_struct_55
 EA82: CD 02 7C cmp $7c02
 EA85: F0 09    beq $ea90

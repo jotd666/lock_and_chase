@@ -8141,7 +8141,6 @@ enter_highscore_e65b:
 	GET_ADDRESS	0x62                       	| [$e691: sta $62]
 	move.b	d0,(a0)                         	| [...]
 	POP_SR
-	.word	0x60FE
 * highscore entry mainloop
 highscore_entry_mainloop_e693:
 	LOG_REGS	e693   | added by add_reg_log.py
@@ -8844,7 +8843,6 @@ l_e91c:
 	LOG_REGS	e934   | added by add_reg_log.py
 	bcc	l_e938                             	| [$e934: bcs $e938]
 	LOG_REGS	e936   | added by add_reg_log.py
-	BREAKPOINT	"kfkfkk"
 	move.b	#0x30,d1                        	| [$e936: ldx #$30]
 l_e938:
 	LOG_REGS	e938   | added by add_reg_log.py
@@ -8858,6 +8856,7 @@ l_e938:
 l_e93e:
 	LOG_REGS	e93e   | added by add_reg_log.py
 	sub.b	#0x0a,d0	| [$e93e: sbc #$0a]
+	INVERT_XC_FLAGS
 	LOG_REGS	e940   | added by add_reg_log.py
 	bcs	l_e93e                             	| [$e940: bcs $e93e]
 	LOG_REGS	e942   | added by add_reg_log.py
@@ -8932,7 +8931,7 @@ l_e96b:
 	move.b	d0,d1                           	| [$e983: tax]
 	LOG_REGS	e984   | added by add_reg_log.py
 	PUSH_TABLE_X_ADDRESS	table_e9db                 	| [$e984: lda table_e9db, x] [jump_table]
-	POP_SR
+
 	LOG_REGS	e98e   | added by add_reg_log.py
 	move.b	#0x3f,d0                        	| [$e98e: lda #$3f]
 	LOG_REGS	e990   | added by add_reg_log.py
@@ -9243,7 +9242,7 @@ l_ea5d:
 	LOG_REGS	ea69   | added by add_reg_log.py
 	beq	l_ea75                             	| [$ea69: beq $ea75]
 	LOG_REGS	ea6b   | added by add_reg_log.py
-	bcc	l_ea72                             	| [$ea6b: bcc $ea72]
+	bcs	l_ea72                             	| [$ea6b: bcc $ea72]
 	LOG_REGS	ea6d   | added by add_reg_log.py
 	GET_ADDRESS	0x7c02                     	| [$ea6d: inc $7c02]
 	addq.b	#1,(a0)                         	| [...]
