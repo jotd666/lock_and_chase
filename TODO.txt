@@ -1,3 +1,4 @@
+- after highscore entry, character remains jumping and it locks up
 - clock is 56,75HZ not 60
 - e984: POP_SR not removed just here (anywhere else ok...)
 - converter: after cmp, scan branch until no branch instruction
