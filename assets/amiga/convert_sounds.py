@@ -45,7 +45,7 @@ def convert():
 "START_MUSIC_SND"               :{"index":0x41,"channel":0,"sample_rate":lq_sample_rate,"priority":40},
 "HAPPY_SND"               :{"index":2,"channel":2,"sample_rate":hq_sample_rate,"priority":50},
 "HAT_PICKED_SND"               :{"index":8,"channel":0,"sample_rate":hq_sample_rate,"priority":50},
-"BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50},#
+"BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
 "STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":50},#
 "STEP_2_SND"               :{"index":0X1F,"channel":1,"sample_rate":hq_sample_rate,"priority":50},#
 ##"HIGHSCORE_END_SND"               :{"index":15,"channel":3,"sample_rate":lq_sample_rate,"priority":50},#

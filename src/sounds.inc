@@ -3,6 +3,7 @@
 	.equ	GATE_CLOSING_SND,  0x4
 	.equ	HAT_PICKED_SND,  0x8
 	.equ	LOOP_SND,  0x16
+	.equ	LOOP_FAST_SND,  0x17
 	.equ	ENGINE_SND,  0x1d
 	.equ	STEP_1_SND,  0x1e
 	.equ	STEP_2_SND,  0x1f

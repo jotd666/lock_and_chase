@@ -173,7 +173,9 @@ osd_sound_start:
 
 	bclr	#7,d0			| stop loop command
 	sne		d2
-
+	beq		0f
+	move.w	#0x0F0,0xDFF180
+0:
 	lsl.w	#3,d0
 	lea		sound_table,a0
 
@@ -191,7 +193,7 @@ osd_sound_start:
 	
 	* looped sound
 	moveq	#0,d0
-	move.b	(8,a0),d0		| channel
+	move.b	(10,a0),d0		| channel
 
 	lea		looped_sound_enabled,a1
 	
