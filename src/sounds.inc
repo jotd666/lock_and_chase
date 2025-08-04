@@ -1,5 +1,6 @@
 	.equ	CREDIT_SND,  0x1
 	.equ	HAPPY_SND,  0x2
+	.equ	BANG_SND,  0x3
 	.equ	GATE_CLOSING_SND,  0x4
 	.equ	HAT_PICKED_SND,  0x8
 	.equ	BAG_PICKED_SND,  0xa

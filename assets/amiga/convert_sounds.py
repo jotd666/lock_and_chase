@@ -43,6 +43,7 @@ def convert():
 "LOOP_FAST_SND"               :{"index":0x17,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "LOOP_SND"               :{"index":0x16,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "ENGINE_SND"               :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
+"BANG_SND"               :{"index":3,"channel":1,"sample_rate":hq_sample_rate,"priority":40},  # red gates/enter letter sound
 "GATE_CLOSING_SND"               :{"index":4,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
 "START_MUSIC_SND"               :{"index":0x41,"channel":0,"sample_rate":lq_sample_rate,"priority":40},
 "HAPPY_SND"               :{"index":2,"silent":True},  # ignore, just play after "bag picked", else repeats a lot/super fast and causes issues

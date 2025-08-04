@@ -1,16 +1,18 @@
-- clock is 56,75HZ not 60
+- clock is 56,75HZ not 60: compare game speeds MAME/conversion
 - find "game is playing" flag to insert coin with fire
   acually doesn't work with $4
 - hw sprites are flickering/main character disappearing
 - save highscores
-- review/remove all useless set_xc_flags/push/pop sr (290 occurrences) manually
-  then keep only the ones useful (automatize?): in progress:
-
-
+- C466: plays happy sound when exiting: disabled because of
+  the super-repeats so no sound now
+  
 optim:
 
 - last post_processing phase / directly in converter: change move.b dx,(a0) / move.b (a0),dx after a GET_ADDRESS or such
   by direct (a6,a0.w) in zero page
+- review/remove all useless set_xc_flags/push/pop sr (290 occurrences) manually
+  then keep only the ones useful (automatize?): in progress:
+  can we get rid of ALL occurrences to make a unique 68000/020 exe
   
 log sound:
 
