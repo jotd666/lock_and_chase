@@ -10,6 +10,13 @@
   7C00: 0182 E030 should be 0181 B430
 - save highscores
 
+converter:
+do not simplify sbc by sub if bcc/bcs right after
+or then invert condition like cmp
+E93E: E9 0A    sbc #$0a
+E940: B0 FC    bcs $e93e
+
+
 optim:
 
 - last post_processing phase / directly in converter: change move.b dx,(a0) / move.b (a0),dx after a GET_ADDRESS or such
