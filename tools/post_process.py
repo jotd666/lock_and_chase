@@ -54,6 +54,11 @@ with open(source_dir / "conv.s") as f:
         elif "[$f183:" in line:
             lines[i-1] = ""
 
+        elif "[$e81a:" in line:
+            # cancel the optimization that changes sec+sbc to sub
+            # as there's a sbc 00 afterwards (16-bit timer)
+            line = change_instruction("SBC_IMM\t1",lines,i)
+            lines[i-1] = change_instruction("SET_XC_FLAGS",lines,i-1)
         elif "[$c580:" in line:
             line = change_instruction("cmp.b\t#0,d0",lines,i) + "\tINVERT_XC_FLAGS\n"
             lines[i-1] = ""
