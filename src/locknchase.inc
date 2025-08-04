@@ -247,11 +247,13 @@ get_address:
 	jcc		1f
 	* 0X3c00 <= range < 0x4000, video ram
 	cmp.w	#0x7c00,a0
-	jcs		0f
-	* video/attribute: must be done without "get_address"
-	jbsr	osd_get_last_known_pc
-	BREAKPOINT	"unsupported address range 0x7c00-0x7FFF, PC in D6"	
-0:
+	jcc		10f
+*	jcs		0f
+*	jcc
+*	* video/attribute: must be done without "get_address"
+*	jbsr	osd_get_last_known_pc
+*	BREAKPOINT	"unsupported address range 0x7c00-0x7FFF, PC in D6"	
+*0:
 	cmp.w	#0x3c00,a0
 	jcs		10f
 	* 0X3c00 <= range < 0x4000, video ram

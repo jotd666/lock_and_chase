@@ -4,8 +4,10 @@
 - hw sprites are flickering/main character disappearing
 - loop sounds sometimes don't stop
 - when picking bag sfx go crazy (2 sfx is repeated a lot)
+  then loop stop is not working anymore
 - highscore entry sprite wrong location, then locks
   up when entering letter
+  7C00: 0182 E030 should be 0181 B430
 - save highscores
 
 optim:

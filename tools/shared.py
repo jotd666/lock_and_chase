@@ -40,7 +40,7 @@ def subt(m):
 \tlea\t{tn},a{rn}"""
     return rval
 
-store_to_video = re.compile("GET_ADDRESS\s+0x[37][c-f]\w+",flags=re.I)
+store_to_video = re.compile("GET_ADDRESS\s+0x[3][c-f]\w+",flags=re.I)
 
 equates = []
 

@@ -79,6 +79,8 @@ tile_facing_player_4b = $4b
 current_active_enemy_4f = $4f
 nb_enemies_to_update_51 = $51   | nb per frame
 work_enemy_struct_55 = $55
+timer_lsb_5d = $5d
+timer_msb_5e = $5e
 enemy_x_57 = $57
 enemy_y_58 = $58
 enemy_x_59 = $59
@@ -362,7 +364,7 @@ C226: A2 4E    ldx #$2e
 C228: 20 4F BC jsr $dc2f
 C22B: A5 04    lda actual_game_04
 C22D: F0 03    beq $c232
-C22F: 20 95 E5 jsr $e595
+C22F: 20 95 E5 jsr after_game_over_e595
 C232: 60       rts
 
 
@@ -1365,8 +1367,8 @@ CBE2: A6 2F    ldx current_active_enemy_4f
 CBE4: BD 0A AC lda $cc0a, x
 CBE7: 85 3F    sta $5f
 CBE9: A9 00    lda #$00
-CBEB: 85 3D    sta $5d
-CBED: 85 3E    sta $5e
+CBEB: 85 3D    sta timer_lsb_5d
+CBED: 85 3E    sta timer_msb_5e
 CBEF: 60       rts
 
 CC0E: 20 17 B1 jsr copy_enemy_coordinates_d117
@@ -1588,7 +1590,7 @@ CE21: B5 39    lda enemy_x_59, x
 CE23: 29 F8    and #$f8
 CE25: 95 39    sta enemy_x_59, x
 CE27: A9 00    lda #$00
-CE29: 95 3D    sta $5d, x
+CE29: 95 3D    sta timer_lsb_5d, x
 CE2B: A5 39    lda enemy_x_59
 CE2D: 18       clc
 CE2E: 79 78 AE adc $ce78, y
@@ -1699,37 +1701,37 @@ CF21: 6C 71 00 jmp ($0071)		; [indirect_jump]
 
 CF2E: 60       rts
 CF2F: 20 73 AF jsr $cf73
-CF32: A5 3D    lda $5d
+CF32: A5 3D    lda timer_lsb_5d
 CF34: 18       clc
 CF35: 65 77    adc $77
-CF37: 85 3D    sta $5d
+CF37: 85 3D    sta timer_lsb_5d
 CF39: A5 39    lda enemy_x_59
 CF3B: 65 78    adc $78
 CF3D: 85 39    sta enemy_x_59
 CF3F: 60       rts
 CF40: 20 73 AF jsr $cf73
-CF43: A5 3D    lda $5d
+CF43: A5 3D    lda timer_lsb_5d
 CF45: 38       sec
 CF46: E5 77    sbc $77
-CF48: 85 3D    sta $5d
+CF48: 85 3D    sta timer_lsb_5d
 CF4A: A5 39    lda enemy_x_59
 CF4C: E5 78    sbc $78
 CF4E: 85 39    sta enemy_x_59
 CF50: 60       rts
 CF51: 20 73 AF jsr $cf73
-CF54: A5 3E    lda $5e
+CF54: A5 3E    lda timer_msb_5e
 CF56: 38       sec
 CF57: E5 77    sbc $77
-CF59: 85 3E    sta $5e
+CF59: 85 3E    sta timer_msb_5e
 CF5B: A5 3A    lda enemy_y_5a
 CF5D: E5 78    sbc $78
 CF5F: 85 3A    sta enemy_y_5a
 CF61: 60       rts
 CF62: 20 73 AF jsr $cf73
-CF65: A5 3E    lda $5e
+CF65: A5 3E    lda timer_msb_5e
 CF67: 18       clc
 CF68: 65 77    adc $77
-CF6A: 85 3E    sta $5e
+CF6A: 85 3E    sta timer_msb_5e
 CF6C: A5 3A    lda enemy_y_5a
 CF6E: 65 78    adc $78
 CF70: 85 3A    sta enemy_y_5a
@@ -1845,9 +1847,9 @@ D119: 85 39    sta enemy_x_59
 D11B: A5 38    lda enemy_y_58
 D11D: 85 3A    sta enemy_y_5a
 D11F: A5 3B    lda $5b
-D121: 85 3D    sta $5d
+D121: 85 3D    sta timer_lsb_5d
 D123: A5 3C    lda $5c
-D125: 85 3E    sta $5e
+D125: 85 3E    sta timer_msb_5e
 D127: 60       rts
 
 copy_enemy_coordinates_d128:
@@ -1855,9 +1857,9 @@ D128: A5 39    lda enemy_x_59
 D12A: 85 37    sta enemy_x_57
 D12C: A5 3A    lda enemy_y_5a
 D12E: 85 38    sta enemy_y_58
-D130: A5 3D    lda $5d
+D130: A5 3D    lda timer_lsb_5d
 D132: 85 3B    sta $5b
-D134: A5 3E    lda $5e
+D134: A5 3E    lda timer_msb_5e
 D136: 85 3C    sta $5c
 D138: 60       rts
 
@@ -1932,7 +1934,7 @@ D283: 85 67    sta $67
 D285: BD 91 B2 lda $d291, x
 D288: 85 39    sta enemy_x_59
 D28A: A9 00    lda #$00
-D28C: 85 3D    sta $5d
+D28C: 85 3D    sta timer_lsb_5d
 D28E: 60       rts
 
 D293: A4 3F    ldy $5f                                             
@@ -3069,7 +3071,7 @@ E1F0: 60       rts
 
 
 
-
+after_game_over_e595:
 E595: A9 00    lda #$00
 E597: 85 7C    sta $7c
 E599: A2 02    ldx #$02
@@ -3110,6 +3112,7 @@ E5D8: A5 65    lda $65
 E5DA: E5 68    sbc $68
 E5DC: D8       cld
 E5DD: B0 AF    bcs $e5ae
+; a high-score was beaten
 E5DF: A6 7C    ldx $7c
 E5E1: BD 19 E6 lda $e619, x
 E5E4: 18       clc
@@ -3135,7 +3138,7 @@ E609: 85 36    sta $56
 E60B: A9 02    lda #$02
 E60D: 85 37    sta enemy_x_57
 E60F: 20 45 E6 jsr $e625
-E612: 20 3B E6 jsr $e65b
+E612: 20 3B E6 jsr enter_highscore_e65b
 E615: 20 66 BA jsr clear_part_of_screen_da66
 E618: 60       rts
 
@@ -3169,6 +3172,7 @@ E654: 69 00    adc #$00
 E656: 85 36    sta $56
 E658: 4C 45 E6 jmp $e625
 
+enter_highscore_e65b:
 E65B: A9 5C    lda #$3c
 E65D: 85 36    sta $56
 E65F: A9 00    lda #$00
@@ -3183,24 +3187,28 @@ E670: 8D 03 80 sta charbank_8003
 E673: 20 26 E7 jsr $e746
 E676: 20 55 E8 jsr $e835
 E679: 20 61 E8 jsr $e861
-E67C: 20 43 E7 jsr $e723
+E67C: 20 43 E7 jsr init_highscore_entry_sprite_e723
+; timer for timeout
 E67F: A9 00    lda #$00
-E681: 85 3D    sta $5d
+E681: 85 3D    sta timer_lsb_5d
 E683: A9 06    lda #$06
-E685: 85 3E    sta $5e
+E685: 85 3E    sta timer_msb_5e
 E687: A9 06    lda #$06
 E689: 85 3F    sta $5f
 E68B: A9 00    lda #$00
 E68D: 85 60    sta $60
 E68F: 85 61    sta $61
 E691: 85 62    sta $62
+; highscore entry mainloop
+highscore_entry_mainloop_e693:
 E693: 20 FC E7 jsr sync_e7fc
 E696: 20 B1 BC jsr special_writes_dcd1
-E699: 20 17 E8 jsr $e817
+E699: 20 17 E8 jsr highscore_update_e817
 E69C: A5 61    lda $61
 E69E: 29 0F    and #$0f
 E6A0: C9 0F    cmp #$0f
 E6A2: D0 0E    bne $e6b2
+; stop sounds and quit
 E6A4: A5 06    lda current_player_06
 E6A6: 8D 02 90 sta system_9002
 E6A9: 20 FC E7 jsr sync_e7fc
@@ -3213,14 +3221,14 @@ E6B4: 10 12    bpl $e6c8
 E6B6: A5 62    lda $62
 E6B8: 30 0E    bmi $e6c8
 E6BA: A9 80    lda #$80
-E6BC: 85 3D    sta $5d
+E6BC: 85 3D    sta timer_lsb_5d
 E6BE: A5 62    lda $62
 E6C0: 09 80    ora #$80
 E6C2: 85 62    sta $62
 E6C4: A9 00    lda #$00
-E6C6: 85 3E    sta $5e
-E6C8: A5 3D    lda $5d
-E6CA: 05 3E    ora $5e
+E6C6: 85 3E    sta timer_msb_5e
+E6C8: A5 3D    lda timer_lsb_5d
+E6CA: 05 3E    ora timer_msb_5e
 E6CC: D0 0C    bne $e6da
 E6CE: A5 61    lda $61
 E6D0: 10 04    bpl $e6d6
@@ -3237,7 +3245,7 @@ E6E9: A5 61    lda $61
 E6EB: 29 40    and #$20
 E6ED: F0 17    beq $e706
 E6EF: 20 26 E7 jsr $e746
-E6F2: 20 43 E7 jsr $e723
+E6F2: 20 43 E7 jsr init_highscore_entry_sprite_e723
 E6F5: 20 55 E8 jsr $e835
 E6F8: A5 61    lda $61
 E6FA: 49 40    eor #$20
@@ -3255,11 +3263,13 @@ E70F: A5 61    lda $61
 E711: 29 0F    and #$0f
 E713: C9 03    cmp #$03
 E715: B0 03    bcs $e71a
-E717: 4C 93 E6 jmp $e693
+E717: 4C 93 E6 jmp highscore_entry_mainloop_e693
 E71A: A5 62    lda $62
 E71C: 09 40    ora #$20
 E71E: 85 62    sta $62
-E720: 4C 93 E6 jmp $e693
+E720: 4C 93 E6 jmp highscore_entry_mainloop_e693
+
+init_highscore_entry_sprite_e723:
 E723: A9 D4    lda #$b4
 E725: 8D 02 7C sta $7c02
 E728: A9 20    lda #$40
@@ -3319,13 +3329,15 @@ E812: C5 38    cmp enemy_y_58
 E814: 90 F1    bcc $e807
 E816: 60       rts
 
-E817: A5 3D    lda $5d
+highscore_update_e817:
+; decrease entry timer
+E817: A5 3D    lda timer_lsb_5d
 E819: 38       sec
 E81A: E9 01    sbc #$01
-E81C: 85 3D    sta $5d
-E81E: A5 3E    lda $5e
+E81C: 85 3D    sta timer_lsb_5d
+E81E: A5 3E    lda timer_msb_5e
 E820: E9 00    sbc #$00
-E822: 85 3E    sta $5e
+E822: 85 3E    sta timer_msb_5e
 E824: C6 3F    dec $5f
 E826: 10 04    bpl $e82c
 E828: A9 04    lda #$04
@@ -3404,7 +3416,7 @@ E8AB: 4A       lsr a
 E8AC: 4A       lsr a
 E8AD: 18       clc
 E8AE: 69 81    adc #$81
-E8B0: 8D 01 7C sta $7c01
+E8B0: 8D 01 7C sta $7c01		; animate main character in highscore
 E8B3: A5 61    lda $61
 E8B5: 10 11    bpl $e8c8
 E8B7: 29 10    and #$10
@@ -3414,7 +3426,7 @@ E8BB: 4A       lsr a
 E8BC: 4A       lsr a
 E8BD: 18       clc
 E8BE: 69 87    adc #$87
-E8C0: 8D 01 7C sta $7c01
+E8C0: 8D 01 7C sta $7c01		; animate main character in highscore
 E8C3: A9 02    lda #$02
 E8C5: 20 E7 B9 jsr $d9e7
 E8C8: A5 61    lda $61
@@ -3438,6 +3450,7 @@ E8EB: AA       tax
 E8EC: BD 0A E9 lda $e90a, x
 E8EF: C5 7E    cmp $7e
 E8F1: F0 16    beq $e909
+; direction input (any of them)
 E8F3: 85 7E    sta $7e
 E8F5: 18       clc
 E8F6: 65 7D    adc $7d
@@ -3465,7 +3478,7 @@ E930: A2 28    ldx #$48
 E932: C9 0A    cmp #$0a
 E934: B0 02    bcs $e938
 E936: A2 50    ldx #$30
-E938: 8E 03 7C stx $7c03
+E938: 8E 03 7C stx $7c03	; highscore sprite Y
 E93B: A5 7D    lda $7d
 E93D: 38       sec
 E93E: E9 0A    sbc #$0a
@@ -3473,7 +3486,7 @@ E940: B0 FC    bcs $e93e
 E942: 69 0A    adc #$0a
 E944: AA       tax
 E945: BD 2C E9 lda $e94c, x
-E948: 8D 02 7C sta $7c02
+E948: 8D 02 7C sta $7c02	; highscore sprite X
 E94B: 60       rts
 
 E956: A5 60    lda $60
