@@ -1,5 +1,10 @@
 - after highscore entry, character remains jumping and it locks up
+  break at e6c6 see what is done with timer 5D/5E
 - clock is 56,75HZ not 60
+- rip other loop sounds
+- RETEST: when killed, sometimes loop not stopped (after bag sound,
+  which is also a loop). Probably because loop switched from 16
+  to 17 without stopping, so ignored, so not found...
 - e984: POP_SR not removed just here (anywhere else ok...)
 - converter: after cmp, scan branch until no branch instruction
   not only the first one:
@@ -12,7 +17,8 @@ EA6B: 90 05    bcc $ea72
   acually doesn't work with $4
 - hw sprites are flickering/main character disappearing
 - when picking bag sfx go crazy (2 sfx is repeated a lot)
-  then loop stop is not working anymore
+  then loop stop is not working anymore:
+  better: record both sounds together and ignore sound 2
 
 - save highscores
 

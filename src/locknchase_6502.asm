@@ -284,7 +284,7 @@ C17F: 29 7F    and #$7f
 C181: 85 4C    sta $2c
 C183: 20 4F BB jsr $db2f
 C186: A9 00    lda #$00
-C188: 20 E7 B9 jsr $d9e7
+C188: 20 E7 B9 jsr sound_command_d9e7
 C18B: A9 30    lda #$50
 C18D: 20 A4 BB jsr wait_dbc4
 C190: A5 4C    lda $2c
@@ -426,7 +426,7 @@ C2B9: 85 4C    sta $2c
 C2BB: A9 A0    lda #$c0
 C2BD: 85 29    sta $49
 C2BF: A9 21    lda #$41
-C2C1: 20 E7 B9 jsr $d9e7
+C2C1: 20 E7 B9 jsr sound_command_d9e7
 C2C4: A5 24    lda $44
 C2C6: E6 24    inc $44
 C2C8: 29 0F    and #$0f
@@ -442,7 +442,7 @@ C2DB: F0 09    beq $c2e6
 C2DD: C6 29    dec $49
 C2DF: D0 0B    bne $c2ec
 C2E1: A9 1D    lda #$1d
-C2E3: 20 E7 B9 jsr $d9e7
+C2E3: 20 E7 B9 jsr sound_command_d9e7
 C2E6: CE 02 7C dec $7c02
 C2E9: CE 06 7C dec $7c06
 C2EC: AD 02 7C lda $7c02
@@ -450,7 +450,7 @@ C2EF: 49 FF    eor #$ff
 C2F1: C9 CF    cmp #$af
 C2F3: 90 0B    bcc $c300
 C2F5: A9 9D    lda #$9d
-C2F7: 20 E7 B9 jsr $d9e7
+C2F7: 20 E7 B9 jsr sound_command_d9e7
 C2FA: A9 00    lda #$00
 C2FC: 85 5C    sta $3c
 C2FE: E6 4E    inc $2e
@@ -474,7 +474,7 @@ C31F: 85 23    sta $43
 C321: 20 DB A5 jsr $c5bb
 C324: A9 60    lda #$60
 C326: 85 29    sta $49
-C328: 20 B8 B9 jsr $d9d8
+C328: 20 B8 B9 jsr play_sound_loop_d9d8
 C32B: 60       rts
 
 C32C: A5 29    lda $49
@@ -500,7 +500,7 @@ C34D: A5 5B    lda player_state_3b
 C34F: 09 01    ora #$01
 C351: 85 5B    sta player_state_3b
 C353: A9 04    lda #$04
-C355: 20 E7 B9 jsr $d9e7
+C355: 20 E7 B9 jsr sound_command_d9e7
 C358: A9 01    lda #$01
 C35A: 20 E0 B7 jsr $d7e0
 C35D: A5 54    lda $34
@@ -536,7 +536,7 @@ C3A7: A5 5C    lda $3c
 C3A9: 09 80    ora #$80
 C3AB: 85 5C    sta $3c
 C3AD: A9 05    lda #$05
-C3AF: 20 E7 B9 jsr $d9e7
+C3AF: 20 E7 B9 jsr sound_command_d9e7
 C3B2: 20 D7 BB jsr sync_dbb7
 C3B5: A9 01    lda #$01
 C3B7: 20 E0 B7 jsr $d7e0
@@ -570,10 +570,10 @@ C3F1: 09 80    ora #$80
 C3F3: 85 5C    sta $3c
 C3F5: A9 20    lda #$40
 C3F7: 85 29    sta $49
-C3F9: 20 E0 B9 jsr $d9e0
+C3F9: 20 E0 B9 jsr stop_sound_loop_d9e0
 C3FC: 20 D7 BB jsr sync_dbb7
 C3FF: A9 C5    lda #$a5
-C401: 20 E7 B9 jsr $d9e7
+C401: 20 E7 B9 jsr sound_command_d9e7
 C404: A5 29    lda $49
 C406: D0 51    bne $c439
 C408: A5 5B    lda player_state_3b
@@ -585,7 +585,7 @@ C412: 85 5B    sta player_state_3b
 C414: A9 00    lda #$00
 C416: 85 24    sta $44
 C418: A9 22    lda #$42
-C41A: 20 E7 B9 jsr $d9e7
+C41A: 20 E7 B9 jsr sound_command_d9e7
 C41D: A9 0B    lda #$0b
 C41F: 85 29    sta $49
 C421: A6 24    ldx $44
@@ -616,7 +616,7 @@ C460: 85 2A    sta $4a
 C462: A5 29    lda $49
 C464: D0 42    bne $c488
 C466: A9 02    lda #$02
-C468: 20 E7 B9 jsr $d9e7
+C468: 20 E7 B9 jsr sound_command_d9e7
 C46B: A5 24    lda $44
 C46D: E6 24    inc $44
 C46F: 29 0F    and #$0f
@@ -647,7 +647,7 @@ C49A: A2 04    ldx #$04
 C49C: B5 80    lda $80, x
 C49E: F0 08    beq $c4a8
 C4A0: A9 44    lda #$24
-C4A2: 20 E7 B9 jsr $d9e7
+C4A2: 20 E7 B9 jsr sound_command_d9e7
 C4A5: 4C F2 A4 jmp $c4f2
 C4A8: A5 25    lda $45
 C4AA: F0 26    beq $c4f2
@@ -682,7 +682,7 @@ C4E7: 95 80    sta $80, x
 C4E9: A9 00    lda #$00
 C4EB: 85 25    sta $45
 C4ED: A9 03    lda #$03
-C4EF: 20 E7 B9 jsr $d9e7
+C4EF: 20 E7 B9 jsr sound_command_d9e7
 C4F2: A4 2D    ldy $4d
 C4F4: BE 59 A5 ldx $c539, y
 C4F7: 30 05    bmi $c4fe
@@ -800,11 +800,13 @@ C626: A5 57    lda nb_pellets_picked_37
 C628: 29 01    and #$01
 C62A: AA       tax
 C62B: BD 52 A6 lda $c632, x
-C62E: 20 E7 B9 jsr $d9e7
+C62E: 20 E7 B9 jsr sound_command_d9e7
 C631: 60       rts
+
+bag_picked_c634:
 C634: A5 5B    lda player_state_3b
 C636: 09 02    ora #$02
-C638: 85 5B    sta player_state_3b
+C638: 85 5B    sta player_state_3b		; player happy
 C63A: A6 59    ldx $39
 C63C: E6 59    inc $39
 C63E: BD 30 A6 lda $c650, x
@@ -812,8 +814,8 @@ C641: 0A       asl a
 C642: 7D 30 A6 adc $c650, x
 C645: 85 96    sta $96
 C647: 20 FD B8 jsr add_to_score_d8fd
-C64A: A9 0A    lda #$0a
-C64C: 20 E7 B9 jsr $d9e7
+C64A: A9 0A    lda #$0a			; bag picked
+C64C: 20 E7 B9 jsr sound_command_d9e7
 C64F: 60       rts
 
 C654: A6 50    ldx $30
@@ -823,7 +825,7 @@ C65A: 7D 68 A6 adc $c668, x
 C65D: 85 99    sta $99
 C65F: 20 FD B8 jsr add_to_score_d8fd
 C662: A9 08    lda #$08
-C664: 20 E7 B9 jsr $d9e7
+C664: 20 E7 B9 jsr sound_command_d9e7
 C667: 60       rts
 C672: A5 23    lda $43
 C674: 4A       lsr a
@@ -842,10 +844,10 @@ C68F: 09 08    ora #$08
 C691: 85 5B    sta player_state_3b
 C693: A9 00    lda #$00
 C695: 20 E0 B7 jsr $d7e0
-C698: 20 E0 B9 jsr $d9e0
+C698: 20 E0 B9 jsr stop_sound_loop_d9e0
 C69B: 20 D7 BB jsr sync_dbb7
 C69E: A9 C5    lda #$a5
-C6A0: 20 E7 B9 jsr $d9e7
+C6A0: 20 E7 B9 jsr sound_command_d9e7
 C6A3: 60       rts
 C6A4: A5 26    lda $46
 C6A6: 30 1A    bmi $c6c2
@@ -1031,10 +1033,10 @@ C8C4: D0 7A    bne $c940
 ; trigger central money bag when a given number
 ; of pellets are picked: $28, $46, $64, $82
 C8C6: E6 58    inc nb_times_bag_appeared_38
-C8C8: 20 B8 B9 jsr $d9d8
+C8C8: 20 B8 B9 jsr play_sound_loop_d9d8
 C8CB: 20 D7 BB jsr sync_dbb7
 C8CE: A9 45    lda #$25
-C8D0: 20 E7 B9 jsr $d9e7
+C8D0: 20 E7 B9 jsr sound_command_d9e7
 C8D3: A9 80    lda #$80
 C8D5: 85 96    sta $96
 C8D7: A6 50    ldx $30
@@ -1060,7 +1062,7 @@ C900: 85 96    sta $96
 C902: A9 01    lda #$01
 C904: 85 97    sta $97
 C906: A9 C5    lda #$a5
-C908: 20 E7 B9 jsr $d9e7
+C908: 20 E7 B9 jsr sound_command_d9e7
 C90B: 4C 1F A9 jmp $c91f
 C90E: A5 98    lda $98
 C910: D0 4C    bne $c93e
@@ -1069,7 +1071,7 @@ C914: D0 44    bne $c93a
 C916: A2 00    ldx #$00
 C918: 86 96    stx $96
 C91A: A9 C5    lda #$a5
-C91C: 20 E7 B9 jsr $d9e7
+C91C: 20 E7 B9 jsr sound_command_d9e7
 C91F: A0 02    ldy #$02
 C921: BD 8A B9 lda $d98a, x
 C924: 99 AE 5D sta $3dce, y
@@ -1183,7 +1185,7 @@ CA2C: A6 C2    ldx $a2
 CA2E: F0 5B    beq $ca6b
 CA30: CA       dex
 CA31: BD 7C AA lda $ca7c, x
-CA34: 20 E7 B9 jsr $d9e7
+CA34: 20 E7 B9 jsr sound_command_d9e7
 CA37: BD 80 AA lda $ca80, x
 CA3A: 8D 1D 7C sta $7c1d
 CA3D: BD 84 AA lda $ca84, x
@@ -2653,7 +2655,7 @@ D94A: 85 4C    sta $2c
 D94C: E6 4D    inc nb_lives_current_player_2d
 D94E: 20 8C BA jsr display_nb_lives_da8c
 D951: A9 0B    lda #$0b
-D953: 20 E7 B9 jsr $d9e7
+D953: 20 E7 B9 jsr sound_command_d9e7
 D956: 20 D7 BB jsr sync_dbb7
 D959: 60       rts
 
@@ -2678,13 +2680,18 @@ D9D3: E0 FF    cpx #$ff
 D9D5: D0 F6    bne $d9cd
 D9D7: 60       rts
 
+play_sound_loop_d9d8
+; play loop 16,17,18,19 depending on bag
 D9D8: A6 58    ldx nb_times_bag_appeared_38
 D9DA: BD F3 B9 lda $d9f3, x
-D9DD: 4C E7 B9 jmp $d9e7
+D9DD: 4C E7 B9 jmp sound_command_d9e7
 
+stop_sound_loop_d9e0:
 D9E0: A6 58    ldx nb_times_bag_appeared_38
 D9E2: BD F3 B9 lda $d9f3, x
 D9E5: 09 80    ora #$80			; stop sound
+; generic sound command used by the whole game
+sound_command_d9e7:
 D9E7: 86 D2    stx $b2
 D9E9: A6 04    ldx actual_game_04
 D9EB: F0 03    beq $d9f0
@@ -3220,6 +3227,8 @@ E6B2: A5 61    lda $61
 E6B4: 10 12    bpl $e6c8
 E6B6: A5 62    lda $62
 E6B8: 30 0E    bmi $e6c8
+; reuse timeout timer this time when highscore
+; has been entered. Timeout is less shorter there
 E6BA: A9 80    lda #$80
 E6BC: 85 3D    sta timer_lsb_5d
 E6BE: A5 62    lda $62
@@ -3427,8 +3436,8 @@ E8BC: 4A       lsr a
 E8BD: 18       clc
 E8BE: 69 87    adc #$87
 E8C0: 8D 01 7C sta $7c01		; animate main character in highscore
-E8C3: A9 02    lda #$02
-E8C5: 20 E7 B9 jsr $d9e7
+E8C3: A9 02    lda #$02			; happy sound
+E8C5: 20 E7 B9 jsr sound_command_d9e7
 E8C8: A5 61    lda $61
 E8CA: 49 10    eor #$10
 E8CC: 85 61    sta $61
@@ -3461,7 +3470,7 @@ E8FE: 90 02    bcc $e902
 E900: A9 43    lda #$23
 E902: 85 7D    sta $7d
 E904: A9 1E    lda #$1e
-E906: 20 E7 B9 jsr $d9e7
+E906: 20 E7 B9 jsr sound_command_d9e7
 E909: 60       rts
 
 E91C: A5 61    lda $61
@@ -3504,7 +3513,7 @@ E96E: 49 FF    eor #$ff
 E970: 29 10    and #$10
 E972: F0 46    beq $e99a
 E974: A9 03    lda #$03
-E976: 20 E7 B9 jsr $d9e7
+E976: 20 E7 B9 jsr sound_command_d9e7
 E979: A5 7D    lda $7d
 E97B: C9 1E    cmp #$1e
 E97D: 90 1C    bcc $e99b
@@ -3518,8 +3527,8 @@ E989: BD BC E9 lda $e9dc, x
 E98C: 85 36    sta $56
 E98E: A9 5F    lda #$3f
 E990: 85 60    sta $60
-E992: A9 0A    lda #$0a
-E994: 20 E7 B9 jsr $d9e7
+E992: A9 0A    lda #$0a			; bag picked (highscore entry)
+E994: 20 E7 B9 jsr sound_command_d9e7
 E997: 6C 35 00 jmp ($0055)        ; [indirect_jump]
 E99A: 60       rts
 E99B: A5 62    lda $62
@@ -4691,7 +4700,7 @@ F7F3: 60       rts
 table_c55d:
 	dc.w	$c6c2	; $c55d
 	dc.w	$c617	; $c55f
-	dc.w	$c634	; $c561
+	dc.w	bag_picked_c634	; $c561
 	dc.w	$c654	; $c563
 	dc.w	$c672	; $c565
 	dc.w	$c68d	; $c567

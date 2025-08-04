@@ -43,7 +43,8 @@ def convert():
 "ENGINE_SND"               :{"index":0x1D,"channel":3,"sample_rate":hq_sample_rate,"priority":40,"loops":True},
 "GATE_CLOSING_SND"               :{"index":4,"channel":1,"sample_rate":hq_sample_rate,"priority":40},
 "START_MUSIC_SND"               :{"index":0x41,"channel":0,"sample_rate":lq_sample_rate,"priority":40},
-"HAPPY_SND"               :{"index":2,"channel":2,"sample_rate":hq_sample_rate,"priority":50},
+"HAPPY_SND"               :{"index":2,"silent":True},  # ignore, just play after "bag picked", else repeats a lot/super fast and causes issues
+"BAG_PICKED_SND"               :{"index":0xA,"channel":0,"sample_rate":lq_sample_rate,"priority":50},
 "HAT_PICKED_SND"               :{"index":8,"channel":0,"sample_rate":hq_sample_rate,"priority":50},
 "BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
 "STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":50},#
@@ -119,8 +120,11 @@ def convert():
 
             channel = details.get("channel")
             if channel is None:
-                # if music loops, ticks are set to 1 so sound orders only can happen once (else music is started 50 times per second!!)
-                sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],details.get("ticks",0),details["volume"],int(details["loops"]))
+                if details.get('silent'):
+                    pass
+                else:
+                    # if music loops, ticks are set to 1 so sound orders only can happen once (else music is started 50 times per second!!)
+                    sound_table_set_1[sound_index] = "\t.word\t{},{},{}\n\t.byte\t{},{}".format(2,details["pattern"],details.get("ticks",0),details["volume"],int(details["loops"]))
             else:
                 wav_name = os.path.basename(wav_entry).lower()[:-4]
                 wav_file = os.path.join(sound_dir,wav_name+".wav")

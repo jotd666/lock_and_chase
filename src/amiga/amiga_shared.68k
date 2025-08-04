@@ -197,16 +197,13 @@ osd_sound_start:
 
 	lea		looped_sound_enabled,a1
 	
-	tst.b	d2
-	jeq		2f
-	* sound stop command
+	* sound stop
 	clr.b	(a1,d0.w)
 	jbsr	_mt_stopfx
-	jra		10f
+	tst.b	d2
+	jne		10f		| sound stop requested: done
 2:
-	tst.b	(a1,d0.w)
-	bne.b	10f			| already playing
-	
+	* now that prev loop is stopped, play the next one
 	st.b	(a1,d0.w)
 	jsr		_mt_loopfx
 	bra.b	10f

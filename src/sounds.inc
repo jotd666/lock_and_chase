@@ -2,6 +2,7 @@
 	.equ	HAPPY_SND,  0x2
 	.equ	GATE_CLOSING_SND,  0x4
 	.equ	HAT_PICKED_SND,  0x8
+	.equ	BAG_PICKED_SND,  0xa
 	.equ	LOOP_SND,  0x16
 	.equ	LOOP_FAST_SND,  0x17
 	.equ	ENGINE_SND,  0x1d
