@@ -5,7 +5,6 @@ Credits:
 
 - jotd: game reverse engineering, 6502 to 68000 conversion, 
         amiga graphics conversion, amiga sound effects
-- no9: music conversion
 - PascalDe73: icon
 
 Features:

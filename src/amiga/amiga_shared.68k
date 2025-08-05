@@ -173,9 +173,19 @@ osd_sound_start:
 
 	bclr	#7,d0			| stop loop command
 	sne		d2
-	beq		0f
-	move.w	#0x0F0,0xDFF180
+
+	cmp.w	#HAPPY_SND,d0
+	jne		0f
+	* special case for that one: the game plays it at a
+	* super high frequency. Sounds must be queued by the sound
+	* cpu so it doesn't matter but it matters for us!
+	* so this sound has just been recorded repeated, and
+	* played once (denied playing the other times)
+	cmp.b	last_sound_played,d0
+	jeq		10f
 0:
+	move.b	d0,last_sound_played
+	
 	lsl.w	#3,d0
 	lea		sound_table,a0
 
@@ -390,7 +400,8 @@ highscore_needs_saving:
 	.byte	0
 highscore_loaded:
 	.byte	0
-
+last_sound_played:
+	.byte	0
 normal_hiscorename:
 	.asciz	"burger_time.high"
 

@@ -8,11 +8,12 @@ src_dir = os.path.join(this_dir,"..","..","src","amiga")
 sprite_names = dict()
 
 NB_TILES = 1024
-NB_SPRITES = 64
+NB_SPRITES = 256
 
+TT_UNKNOWN = 0
 TT_BOB = 1
-TT_TILE = 0
 TT_SPRITE = 2
+TT_TILE = 3
 
 dump_it = True
 dump_dir = os.path.join(this_dir,"dumps")
@@ -98,38 +99,21 @@ def change_color(img,color1,color2):
             rval.putpixel((x,y),p)
     return rval
 
-def add_sprite(index,name,cluts=[0]):
-    if isinstance(index,range):
-        pass
-    elif not isinstance(index,(list,tuple)):
-        index = [index]
-    for idx in index:
-        sprite_names[idx] = name
-        sprite_cluts[idx] = cluts
-
-def add_hw_sprite(index,name,cluts=[0]):
-    if isinstance(index,range):
-        pass
-    elif not isinstance(index,(list,tuple)):
-        index = [index]
-    for idx in index:
-        sprite_names[idx] = name
-        hw_sprite_cluts[idx] = cluts
-
 
 nb_planes = 3
 nb_colors = 1<<nb_planes
 
 
 sprite_names = {}
-sprite_cluts = [[] for _ in range(64)]
-hw_sprite_cluts = [[] for _ in range(64)]
+hw_sprite_table = set()
 
-def add_sprite(values,name):
+def add_sprite(values,name,is_hw_sprite=False):
     if isinstance(values,int):
         values = [values]
     for v in values:
         sprite_names[v] = name
+    if is_hw_sprite:
+        hw_sprite_table.update(values)
 
 add_sprite(0x80,"blank")
 add_sprite(0xb5,"points_100")
@@ -137,15 +121,14 @@ add_sprite(0xb6,"points_300")
 add_sprite(0xB7,"points_1000")
 add_sprite(0xB8,"points_2000")
 
-add_sprite(0xac,"money_bag")
 
 add_sprite(range(0xA8,0xAC),"player_car")
 add_sprite(range(0x81,0x8d),"player")
-add_sprite(range(0x8d,0x90),"angry_cop")
-add_sprite(range(0x90,0x96),"red_cop")
-add_sprite(range(0x96,0x9c),"yellow_cop")
-add_sprite(range(0x9c,0xa2),"blue_cop")
-add_sprite(range(0xa2,0xa8),"green_cop")
+add_sprite(range(0x8d,0x90),"angry_cop")  # no hw sprites as there are 4 angry cops
+add_sprite(range(0x90,0x96),"red_cop",True)  # okay for colored ones as only once instance
+add_sprite(range(0x96,0x9c),"yellow_cop",True)
+add_sprite(range(0x9c,0xa2),"blue_cop",True)
+add_sprite(range(0xa2,0xa8),"green_cop",True)
 
 sprites_path = os.path.join(this_dir,os.path.pardir,"sheets")
 
@@ -200,7 +183,14 @@ def read_tileset(img_set,palette,plane_orientation_flags,tile_type,cache=None):
     tile_entry = []
     for i,tile in enumerate(img_set):
         entry = dict()
+        if tile_type == TT_TILE:
+            pass
+        else:
+            if (i in hw_sprite_table) == (tile_type == TT_BOB):
+                tile = None  # incompatible sprite type
         if tile:
+
+            # check if tile_type is compatible with current tile
 
             for b,(plane_name,plane_func) in zip(plane_orientation_flags,plane_orientations):
                 if b:
@@ -266,41 +256,19 @@ with open(os.path.join(src_dir,"palette.68k"),"w") as f:
 ##    f.write("background_palette:\n")
 ##    bitplanelib.palette_dump(background_palette,f,bitplanelib.PALETTE_FORMAT_ASMGNU)
 
+sprite_type_table = [TT_UNKNOWN]*NB_SPRITES
+for k in sprite_names:
+    sprite_type_table[k] = TT_SPRITE if k in hw_sprite_table else TT_BOB
+
 with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
+    f.write("\t.global\tsprite_type_table\n")
     f.write("\t.global\tcharacter_table\n")
     f.write("\t.global\tbob_table\n")
     f.write("\t.global\tsprite_table\n")
-   # f.write("\t.global\tbackground_table\n")
 
-##    f.write("background_table:\n")
-##
-##    for i,tile_entry in enumerate(background_table):
-##        f.write("\t.long\t")
-##        if tile_entry:
-##            f.write(f"background_{i:02x}")
-##        else:
-##            f.write("0")
-##        f.write("\n")
-##
-##
-##    for i,tile_entry in enumerate(background_table):
-##        if tile_entry:
-##            name = f"background_{i:02x}"
-##
-##            f.write(f"{name}:\n")
-##
-##            for bitplane_id in tile_entry["standard"]["bitplanes"]:
-##                f.write("\t.long\t")
-##                if bitplane_id:
-##                    f.write(f"background_plane_{bitplane_id:02d}")
-##                else:
-##                    f.write("0")
-##                f.write("\n")
-##
-##    for k,v in background_plane_cache.items():
-##        f.write(f"background_plane_{v:02d}:")
-##        dump_asm_bytes(k,f)
-
+    f.write("* 0: no sprite\n* 1: blitter object\n* 2: hardware sprite\n")
+    f.write("sprite_type_table:\n")
+    bitplanelib.dump_asm_bytes(sprite_type_table,f,True)
 
     f.write("character_table:\n")
 
@@ -317,7 +285,8 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
     for i,tile_entry in enumerate(sprite_table):
         f.write("\t.long\t")
         if tile_entry:
-            f.write(f"sprite_{i:03x}")
+            prefix = sprite_names.get(i,"sprite")
+            f.write(f"{prefix}_{i:03x}")
         else:
             f.write("0")
         f.write("\n")
@@ -325,11 +294,12 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
 
     for i,tile_entry in enumerate(sprite_table):
         if tile_entry:
-            f.write(f"sprite_{i:03x}:\n")
+            prefix = sprite_names.get(i,"sprite")
+            f.write(f"{prefix}_{i:03x}:\n")
             for orientation,_ in plane_orientations:
                 f.write("\t.long\t")
                 if orientation in tile_entry:
-                    f.write(f"sprite_{i:03x}_{orientation}")
+                    f.write(f"{prefix}_{i:03x}_{orientation}")
                 else:
                     f.write("0")
                 f.write("\n")
@@ -407,9 +377,11 @@ with open(os.path.join(src_dir,"graphics.68k"),"w") as f:
 
     for i,tile_entry in enumerate(sprite_table):
         if tile_entry:
+            prefix = sprite_names.get(i,"sprite")
+
             for orientation,_ in plane_orientations:
                 if orientation in tile_entry:
-                    f.write(f"sprite_{i:03x}_{orientation}:\n")
+                    f.write(f"{prefix}_{i:03x}_{orientation}:\n")
                     for j,hw_sprite_data in enumerate(tile_entry[orientation]["bitplanes"]):
                         f.write(f"* attach #{j} (each is 48 bytes)\n")
                         bitplanelib.dump_asm_bytes(hw_sprite_data,f,mit_format=True)

@@ -5,7 +5,7 @@
 
 ;CHIP_ONLY
 
-EXPMEM = $80000
+EXPMEM = $40000
 CHIPSIZE = $80000
 
 _base	SLAVE_HEADER					; ws_security + ws_id
@@ -70,7 +70,7 @@ _data   dc.b    0
 _name	dc.b	"Lock'N'Chase",0
 _copy	dc.b	'2025 JOTD',0
 _info
-    dc.b    "Music by no9",0
+    dc.b    "Original by Data East 1981",0
 	dc.b	0
 _kickname   dc.b    0
 ;--- version id

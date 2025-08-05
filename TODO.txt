@@ -1,11 +1,8 @@
 - clock is 56,75HZ not 60: compare game speeds MAME/conversion
 - find "game is playing" flag to insert coin with fire
   acually doesn't work with $4
-- hw sprites are flickering/main character disappearing
 - save highscores
-- C466: plays happy sound when exiting: disabled because of
-  the super-repeats so no sound now
-  
+	 
 optim:
 
 - last post_processing phase / directly in converter: change move.b dx,(a0) / move.b (a0),dx after a GET_ADDRESS or such

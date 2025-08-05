@@ -230,7 +230,6 @@ skip\@:
 	jbsr	get_address
 	.endm
 	
-	
 * dev mode, more checks about the address
 get_address:
 	cmp.l	#0xC000,a0
@@ -270,8 +269,9 @@ get_address:
 10:
 	GET_UNCHECKED_ADDRESS_FUNC
 	rts
+	ffk
 	.endif
-	
+
 	.macro	PUSH_TABLE_X_ADDRESS	table
 	lea		\table,a0
 	and.w	#0xFF,d1

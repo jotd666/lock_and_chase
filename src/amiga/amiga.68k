@@ -25,8 +25,8 @@ TILE_PLANE_X_SHIFT = 8
 
 SPRITE_X_CORRECTION = -1
 SPRITE_Y_CORRECTION = -8
-HW_SPRITE_X_CORRECTION = -8
-HW_SPRITE_Y_CORRECTION = 0
+HW_SPRITE_X_CORRECTION = 0
+HW_SPRITE_Y_CORRECTION = 8
 
 * start displaying earlier in ntsc mode, allowing
 * full display
@@ -948,18 +948,12 @@ update_bobs_and_hw_sprites:
 	* make a copy of the sprite memory
 	GET_RAM_START_IN_A6
 
-	lea	(MIRROR_ADDRESS,a6),a0   | crash!!!
+	lea	(MIRROR_ADDRESS,a6),a0
 	lea	sprite_memory,a1
 	* super-quick copy of 32 bytes of memory
 	movem.l	(a0),d0-d7
 	movem.l	d0-d7,(a1)
-	* clear frames allocated to hardware sprites
-	move.w	#0x1F,d0
-	lea		hw_sprite_allocated_frames,a0
-0:
-	clr.l	(a0)+
-	dbf		D0,0b
-	
+
 
 	*****************************
 	* position hardware sprites *
@@ -968,12 +962,12 @@ update_bobs_and_hw_sprites:
 	lea	sprite_memory,a0
 	lea	HW_SpriteYTable_16,a1
 	lea	game_sprites+2,a3
-	lea	hw_sprite_allocated_frames,a2
+	lea	sprite_type_table,a2
 	lea	sprite_table,a4
 	moveq	#0,d6
 	moveq	#NB_TARGET_SPRITES-1,d7
 1:
-	*jbsr	update_one_sprite
+	jbsr	update_one_sprite
 	cmp.b	#4,d6
 	jeq		2f		| used all the slots: exit!
 	addq.w	#CURRENT_SPRITE_SIZE,a0
@@ -1034,6 +1028,7 @@ update_bobs_and_hw_sprites:
     lea _custom,A5
 	move.l	bob_previous_drawed_sprites(pc),a6
 	lea		bob_table,a4
+	lea	sprite_type_table,a2
 	
 	moveq	#NB_TARGET_SPRITES-1,d7
 1:
@@ -1062,7 +1057,9 @@ compute_sprite_xy_code:
 	move.b	(TARGET_SPRITE_CODE,a0),d2
 	rts
 	
-* < A0,A1,A2,A3,A4
+* < A0,A1
+* < A2: sprite type table
+* < A4
 * < A3: pointer on copperlist (updated if slot allocated)
 * < D6: updated if slot has been allocated
 * A3,A5,A6,D0-D5 may be used as scratch registers
@@ -1073,36 +1070,17 @@ update_one_sprite:
 	jeq	2f			| bit not set: not shown
 
 	jbsr	compute_sprite_xy_code
-	* check if this sprite instance is already used. We choose not
-	* to duplicate the sprite data. There are only 4 available slots
-	* and most of the time the sprite frames aren't the same, so really
-	* not worth the trouble and the memory
-	tst.b	(a2,d2.w)
-	jne		2f		| already used in that frame
-	* mark as used, we can't allocate this sprite in the same frame
-	st.b	(a2,d2.w)
-	* mark as cleared: won't try to display a bob there TEMP LEAVE IT
-	clr.b	(TARGET_SPRITE_ATTRIBUTES,a0)
-	
+	cmp.b	#2,(a2,d2.w)
+	jne		2f			| not a HW sprite: skip, bob display will collect
 	add.w	d2,d2
 	add.w	d2,d2
-	.ifdef	RELEASE
-	move.l	(a4,d2.w),a5		| get pointer from bob table, no checks
-	.else
-	move.l	(a4,d2.w),d4		| get pointer from bob table
-	jne		100f
-	moveq	#0,d2
-	move.b	(TARGET_SPRITE_CODE,a0),d2
-	BREAKPOINT	"unregistered HW sprite clut (D2=code)"
-	jra		2f
-100:
-	move.l	d4,a5
-	.endif
+	move.l	(a4,d2.w),a5		| get pointer from bob table
+
 	btst	#1,d3
 	jeq		101f
-	addq	#8,a5
+	addq	#8,a5		| mirror
 101:
-	move.l	(a5),a5		| TEMP standard no mirror or such
+	move.l	(a5),a5
 	.ifne	HW_SPRITE_X_CORRECTION
 	add.b	#HW_SPRITE_X_CORRECTION,d0
 	.endif
@@ -1157,11 +1135,16 @@ update_one_bob:
 	jeq	2f			| bit not set: not shown
 
 	jbsr	compute_sprite_xy_code
+	cmp.b	#2,(a2,d2.w)
+	jeq		2f					| already drawn as sprite
 	add.w	d2,d2
 	add.w	d2,d2
 	move.l	(a4,d2.w),d4		| get pointer from bob table
 	.ifndef	RELEASE
 	jne		100f
+	* in dev mode, break if we try to display a non-existing bob
+	* we have the table (0,1,2) but if we forgot to register a bob
+	* then we could miss out some sprite
 	moveq	#0,d2
 	move.b	(TARGET_SPRITE_CODE,a0),d2
 	BREAKPOINT	"unregistered sprite clut (D2=code)"
@@ -2333,12 +2316,6 @@ handle_keyboard:
 	st.b	cheat_used
 	
 0:
-	cmp.b	#34,d0
-	bne		0f
-	* 'D': dump all logging buffers to data dir
-	jbsr	osd_dump_logs
-0:
-
 
 	cmp.b	#0x50,d0	| F1 key: skip level
 	bne.b	0f
@@ -2369,10 +2346,12 @@ handle_keyboard:
 *
 10:
 	.ifndef	RELEASE
-*	cmp.b	#0x56,d0	| F7 key: hurry up!
-*	bne.b	0f
-*	move.w	#0x0FF,_custom+color
-*0:
+	cmp.b	#34,d0
+	bne		0f
+	* 'D': dump all logging buffers to data dir
+	jbsr	osd_dump_logs
+0:
+
 	* last life, if killed, direct game over
 	cmp.b	#0x57,d0	| F8 key: lose all lives
 	bne.b	0f
