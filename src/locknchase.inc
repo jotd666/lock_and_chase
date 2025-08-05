@@ -218,6 +218,17 @@ skip\@:
 	lea		(a6,a0.l),a0
 	.endm
 	
+	.macro OP_1_ON_ZP_ADDRESS	inst,offset
+	\inst\().b	(a6,\offset\().W)
+	.endm
+
+	.macro OP_R_ON_ZP_ADDRESS	inst,offset,reg
+	\inst\().b	(a6,\offset\().W),\reg
+	.endm
+
+	.macro OP_W_ON_ZP_ADDRESS	inst,offset,reg
+	\inst\().b	\reg,(a6,\offset\().W)
+	.endm
 
 	.ifdef	RELEASE
 	.macro	GET_ADDRESS_FUNC

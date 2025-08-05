@@ -1,0 +1,42 @@
+from shared import *
+
+# various dirty but at least automatic patches applying on the specific track and field code
+with open(source_dir / "locknchase.68k") as f:
+    lines = list(f)
+    i = 0
+
+    while i < len(lines):
+        line = lines[i]
+        toks = line.split()
+        if toks and toks[0] == "GET_ADDRESS":
+            value = None
+            value_str = toks[1]
+            try:
+                value = int(value_str,16)
+            except ValueError:
+                try:
+                    value = int(value_str.rsplit("_",1)[0],16)
+                except ValueError:
+                    pass
+            if value is not None and value < 0x100:
+                # GET_ADDRESS in zero page. If we recognize the next instruction
+                # there's a way to optimize the access, as it's legal and fast
+                next_line = lines[i+1]
+                toks = next_line.split("|")[0].split()
+                if len(toks)==2:
+                    inst,params = toks
+                    subparams = params.split(",")
+                    # we discard too complex moves
+                    if len(subparams)==2:
+                        src,dest = subparams
+                        if src == "(a0)":
+                            # read instruction
+                            line = change_instruction(f"OP_R_ON_ZP_ADDRESS\t{inst},{value_str},{dest}",lines,i)
+                            print(line)
+                            lines[i+1] = ""
+        lines[i] = line
+        i+=1
+
+with open(source_dir / "locknchase_optim.68k","w") as fw:
+
+    fw.writelines(lines)
