@@ -1,7 +1,5 @@
 - clock is 56,75HZ not 60: compare game speeds MAME/conversion
 - release mode is crashing badly (in whdload)
-- green gates seem to have a problem when full open, close
-  and immediately reopen
 - find "game is playing" flag to insert coin with fire
   acually doesn't work with $4
 - save highscores

@@ -4757,6 +4757,7 @@ after_game_over_e595:
 	move.b	d0,(a0)                         	| [...]
 	move.b	#0x02,d1                        	| [$e599: ldx #$02]
 	clr.b	d2                               	| [$e59b: ldy #$00]
+* copy player score
 l_e59d:
 	GET_ADDRESS	0x0031                     	| [$e59d: lda $0031, y]
 	move.b	(a0,d2.w),d0                    	| [...]
@@ -4765,6 +4766,7 @@ l_e59d:
 	addq.b	#1,d2                           	| [$e5a2: iny]
 	subq.b	#1,d1                           	| [$e5a3: dex]
 	bpl	l_e59d                             	| [$e5a4: bpl $e59d]
+* highscore table is stored at 0x294
 	move.b	#0x94,d0                        	| [$e5a6: lda #$94]
 	GET_ADDRESS	0x63                       	| [$e5a8: sta $63]
 	move.b	d0,(a0)                         	| [...]

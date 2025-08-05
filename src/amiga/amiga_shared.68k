@@ -36,7 +36,8 @@ LOG_BUFFER_SIZE = 0x20000
 * < A0: buffer
 osd_read_high_scores:
 	movem.l	d0-d7/a0-a6,-(a7)
-	move.l	a0,a1
+	GET_RAM_START_IN_A6
+	lea		(high_score_table_0294,a6),a1
 	move.l	_resload,d0
 	beq.b	0f
 	move.l	d0,a2

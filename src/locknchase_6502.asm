@@ -88,7 +88,8 @@ enemy_y_5a = $5a
 enemy_struct_offset_a4 = $a4
 exit_open_flag_b0 = $b0
 enemy_structures_0200 = $200
- 
+high_score_table_0294 = $294
+
 player_1_controls_9000 = $9000
 system_9002 = $9002
 dsw1_8000 = $8000
@@ -3083,11 +3084,13 @@ E595: A9 00    lda #$00
 E597: 85 7C    sta $7c
 E599: A2 02    ldx #$02
 E59B: A0 00    ldy #$00
+; copy player score
 E59D: B9 51 00 lda $0031, y
 E5A0: 95 68    sta $68, x
 E5A2: C8       iny
 E5A3: CA       dex
 E5A4: 10 F7    bpl $e59d
+; highscore table is stored at 0x294
 E5A6: A9 94    lda #$94
 E5A8: 85 63    sta $63
 E5AA: A9 02    lda #$02
