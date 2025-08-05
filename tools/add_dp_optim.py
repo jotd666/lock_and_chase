@@ -25,14 +25,14 @@ with open(source_dir / "locknchase.68k") as f:
                 toks = next_line.split("|")[0].split()
                 if len(toks)==2:
                     inst,params = toks
+                    inst = inst.split(".")[0]
                     subparams = params.split(",")
                     # we discard too complex moves
                     if len(subparams)==2:
                         src,dest = subparams
-                        if src == "(a0)":
+                        if src == "(a0)" and dest in ["d0","d1","d2"]:
                             # read instruction
-                            line = change_instruction(f"OP_R_ON_ZP_ADDRESS\t{inst},{value_str},{dest}",lines,i)
-                            print(line)
+                            line = change_instruction(f"OP_R_ON_ZP_ADDRESS\t{inst},{value_str},{dest}",lines,i,remove_cont_lines=False)
                             lines[i+1] = ""
         lines[i] = line
         i+=1

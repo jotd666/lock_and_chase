@@ -14,12 +14,13 @@ def remove_continuing_lines(lines,i):
         else:
             break
 
-def change_instruction(code,lines,i):
+def change_instruction(code,lines,i,remove_cont_lines=True):
     line = lines[i]
     toks = line.split("|")
     if len(toks)==2:
         toks[0] = f"\t{code}"
-        remove_continuing_lines(lines,i)
+        if remove_cont_lines:
+            remove_continuing_lines(lines,i)
         return " | ".join(toks)
     return line
 
