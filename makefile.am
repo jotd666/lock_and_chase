@@ -68,7 +68,7 @@ $(PROGNAME)_020.o: $(PROGNAME).68k $(PROGNAME).inc sounds.inc
 	
 amiga.o: $(AMIGASRC)/amiga.68k $(PROGNAME).inc $(AMIGASRC)/ReadJoyPad.i $(AMIGASRC)/palette.68k $(AMIGASRC)/sound_entries.68k
 	$(ASM) -Iamiga $(AMIGASRC)/amiga.68k -o amiga.o
-amiga_shared.o: $(AMIGASRC)/amiga_shared.68k $(AMIGASRC)/sound_entries.68k $(PROGNAME).inc $(AMIGASRC)/ReadJoyPad.i
+amiga_shared.o: $(AMIGASRC)/amiga_shared.68k $(AMIGASRC)/sound_entries.68k $(PROGNAME).inc $(AMIGASRC)/ReadJoyPad.i data.inc
 	$(ASM) -Iamiga $(AMIGASRC)/amiga_shared.68k -o amiga_shared.o
 vbr.o: $(AMIGASRC)/vbr.68k
 	$(ASM_020) -Iamiga $(AMIGASRC)/vbr.68k -o vbr.o

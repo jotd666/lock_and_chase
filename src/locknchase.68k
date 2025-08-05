@@ -97,7 +97,7 @@ l_c000:
 	jmp	insert_coin_c02f                   	| [$c000: jmp insert_coin_c02f]
 
 boot_continues_c003:
-	jmp	l_c006                             	| [$c003: jmp $c006] useless jump just next line
+	                             	| [$c003: jmp $c006] useless jump just next line
 l_c006:
 	CLR_I_FLAG                             	| [$c006: cli] interrupts enabled
 	 |  [$c007: cld] decimal disabled
@@ -108,6 +108,9 @@ l_c006:
 	jbsr	clear_screen_and_sprites_da3d     	| [$c013: jsr clear_screen_and_sprites_da3d]
 	jbsr	clear_zero_page_d9ba              	| [$c016: jsr clear_zero_page_d9ba]
 	jbsr	clear_page_2_d9cb                 	| [$c019: jsr clear_page_2_d9cb]
+
+	jbsr	osd_read_high_scores
+
 	move.b	#0x40,d0                        	| [$c01c: lda #$40]
 	jbsr	wait_dbc4                         	| [$c01e: jsr wait_dbc4] wait 2/3 of a second
 	jbsr	l_d314                            	| [$c021: jsr $d314]
@@ -1486,10 +1489,16 @@ l_c827:
 	                           	| [$c82e: clc]
 	add.b	#0x9c,d0                        	| [$c82f: adc #$9c]
 l_c831:
+	* can write to ROM??? at C7E9
+	* happens when drawing fence
 	GET_INDIRECT_UNCHECKED_ADDRESS	0xab              	| [$c831: sta ($ab), y] [video_address]
+	* defensive code added!
+	cmp.w	#0x4000,a0
+	jcc		0f
 	move.b	d0,(a0,d2.w)                    	| [...]
 	add.w	d2,a0 | [...]
 	VIDEO_BYTE_DIRTY | [...]
+0:
 	addq.b	#1,d1                           	| [$c833: inx]
 	subq.b	#1,d2                           	| [$c834: dey]
 	bpl	l_c827                             	| [$c835: bpl $c827]
@@ -5296,6 +5305,9 @@ l_e8a1:
 	add.b	#0x87,d0                        	| [$e8be: adc #$87]
 	GET_ADDRESS	0x7c01                     	| [$e8c0: sta $7c01] animate main character in highscore
 	move.b	d0,(a0)                         	| [...]
+
+	jbsr	osd_write_high_scores
+
 	move.b	#0x02,d0                        	| [$e8c3: lda #$02] happy sound
 	jbsr	sound_command_d9e7                	| [$e8c5: jsr sound_command_d9e7]
 l_e8c8:

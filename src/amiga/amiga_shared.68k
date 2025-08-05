@@ -20,6 +20,7 @@
 .include "whdload_funcs.i"
 .include "locknchase.inc"
 .include "sounds.inc"
+.include "data.inc"
 
 SCORE_FILE_SIZE = 0x23
 
@@ -70,6 +71,8 @@ osd_write_high_scores:
 	tst.b	cheat_used		| don't save score if cheat on
 	bne.b	2f
 	.endif
+	GET_RAM_START_IN_A6
+	lea		(high_score_table_0294,a6),a0
 
 	move.l	_resload,d0
 	bne.b	1f
@@ -404,6 +407,6 @@ highscore_loaded:
 last_sound_played:
 	.byte	0
 normal_hiscorename:
-	.asciz	"burger_time.high"
+	.asciz	"locknchase.high"
 
 
