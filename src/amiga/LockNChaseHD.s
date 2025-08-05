@@ -5,7 +5,7 @@
 
 ;CHIP_ONLY
 
-EXPMEM = $40000
+EXPMEM = $70000
 CHIPSIZE = $80000
 
 _base	SLAVE_HEADER					; ws_security + ws_id
@@ -86,6 +86,10 @@ start:
     IFD CHIP_ONLY
     lea  _expmem(pc),a0
     move.l  #$60000,(a0)
+	ELSE
+	move.l	_expmem(pc),a0
+	add.l	#EXPMEM,a0
+	move.l 	a0,a7		; top of fastmem
     ENDC
     lea progstart(pc),a0
     move.l  _expmem(pc),(a0)

@@ -269,7 +269,7 @@ get_address:
 10:
 	GET_UNCHECKED_ADDRESS_FUNC
 	rts
-	ffk
+
 	.endif
 
 	.macro	PUSH_TABLE_X_ADDRESS	table

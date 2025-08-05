@@ -1,14 +1,15 @@
 .key nope
-set game burger_time_000
+set prefix locknchase
+set game ${prefix}_000
 copy $game.RNC DF0:$game
 protect DF0:$game RWED
-set game burger_time_020
+set game ${prefix}_020
 copy $game.RNC DF0:$game
 protect DF0:$game RWED
 copy readme.md df0:
 
 ; copy startup exe
-set game burger_time
+set game ${prefix}
 copy $game DF0:$game
 
 if exists df0:$game.high

@@ -1083,7 +1083,11 @@ update_one_sprite:
 	move.l	(a5),a5
 	.ifne	HW_SPRITE_X_CORRECTION
 	add.b	#HW_SPRITE_X_CORRECTION,d0
+	.else
+	tst.w	d0
 	.endif
+	jmi		2f		| don't display if negative!
+
 	.ifne	HW_SPRITE_Y_CORRECTION
 	add.b	#HW_SPRITE_Y_CORRECTION,d1
 	.endif

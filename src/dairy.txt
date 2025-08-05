@@ -5,7 +5,6 @@
 - named the variables that MAME cheat reveals (number of lives, time... whatever)
 - Memory map & I/O copied from MAME source into the disassembly
 - identified the location where the number of credits is written on screen
-- identified credits variable ($1f) by following the source of the char written for credits
 - removed the non-code parts (we'll use the ROM binary images to read the data)
 - dumped the sprites & tiles using MAME - tile saving edition
   
@@ -26,4 +25,32 @@
   (else no copper => no sync => program stuck)
 - now we have to figure out where screen writes occur to perform osd_w_videoram calls
   and display tiles on screen (we'll see for sprites later). Tag the original source code
+  so post-processing script can insert the VIDEO_BYTE_DIRTY macros
+- also patch automatically the source using post-processing
+
+4. Graphics:
+
+- log the used sprites (there are a lot of unused ones as sprites
+  and tiles share the same data)
+- identify the candidates for hardware sprites: here the cops
+
+5. Controls:
+
+- Intercept reads to inputs and replace them by a "osd" call
+- same thing for dip switches
+
+6. Audio
+
+- Intercept writes to 9002 and figure out sounds.
+- Replace credit sound by the sounds we need and insert coins
+  to play sounds at will (using conditional breakpoints in MAME)
+- Remove some sounds using conditional breakpoints in MAME like
+  loops if we need to record the sounds "live" during game
+
+7. Finetuning
+
+- from that point, we cannot generate the 68k code from 6502 code
+- remove the useless PUSH_SR/POP_SR (tedious) macros.
+- manual other optimizations
+
   
