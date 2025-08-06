@@ -10,7 +10,7 @@
 OPT_NO_GREEN_FENCES = 0		| leave at 0
 	.else
 	* dev cheats
-OPT_NO_GREEN_FENCES = 1
+OPT_NO_GREEN_FENCES = 0
 	.endif
 	
 	.macro	ERROR	arg

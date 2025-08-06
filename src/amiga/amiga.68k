@@ -842,12 +842,12 @@ osd_wait:
 
 	
 
-* Z: set if not playing
+* Z: set if playing
 is_game_playing:
 	move.l	a6,-(a7)
 	GET_RAM_START_IN_A6
-	tst.b	(actual_game_04,a6)
-
+	* both flags are at 1 when actual game is playing (not demo)
+	cmp.w	#0x0101,(actual_game_04,a6)
 	movem.l	(a7)+,a6
 	rts
 	
@@ -2170,7 +2170,7 @@ update_controls:
 	move.l	_joypad_state(pc),d1
 	btst	#JPB_BTN_UP,d1
 	beq.b	0f
-	bclr	#BIT_UP,d0		| only if up for jump set!
+	bclr	#BIT_UP,d0
 0:
 	btst	#JPB_BTN_DOWN,d1
 	beq.b	0f
@@ -2190,14 +2190,14 @@ update_controls:
 0:
 	move.b	d0,player_1_controls
 
-	bsr		is_game_playing
-	jne	0f
+	jbsr		is_game_playing
+	jeq	0f
 	* game not playing, we can insert coin/start with joypad
 	btst	#JPB_BTN_RED,d1		| "5" key like in MAME
 	jeq		0f
 	btst	#JPB_BTN_RED,d2
 	jne		0f
-	jbsr	insert_coin
+	st.b	insert_coin_requested
 0:
 	rts
 	
@@ -2227,8 +2227,8 @@ osd_read_system:
 	bclr	#BIT_START_2P,d0
 0:	
 
-	bsr		is_game_playing
-	jne	1f
+	jbsr		is_game_playing
+	jeq	1f
 	move.l	_joypad_state,d1
 	* game not playing, we can start with joypad
 	btst	#JPB_BTN_UP,d1		| "1" key like in MAME

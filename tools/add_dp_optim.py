@@ -15,7 +15,7 @@ with open(source_dir / "locknchase.68k") as f:
                 value = int(value_str,16)
             except ValueError:
                 try:
-                    value = int(value_str.rsplit("_",1)[0],16)
+                    value = int(value_str.rsplit("_",1)[-1],16)
                 except ValueError:
                     pass
             if value is not None and value < 0x100:

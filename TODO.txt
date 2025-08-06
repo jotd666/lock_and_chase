@@ -1,8 +1,5 @@
-- infinite lives cheat
-- find "game is playing" flag to insert coin with fire
-  acually doesn't work with $4
+
 - leave gate bug doesn't work properly
-- clock is 56,75HZ not 60: compare game speeds MAME/conversion
 
 C8AC => 79 7E : fixes bug
 
