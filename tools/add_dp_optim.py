@@ -34,6 +34,10 @@ with open(source_dir / "locknchase.68k") as f:
                             # read instruction
                             line = change_instruction(f"OP_R_ON_ZP_ADDRESS\t{inst},{value_str},{dest}",lines,i,remove_cont_lines=False)
                             lines[i+1] = ""
+                        elif dest == "(a0)" and src in ["d0","d1","d2"]:
+                            # read instruction
+                            line = change_instruction(f"OP_W_ON_ZP_ADDRESS\t{inst},{value_str},{src}",lines,i,remove_cont_lines=False)
+                            lines[i+1] = ""
         lines[i] = line
         i+=1
 

@@ -6,6 +6,13 @@
 
 	.include	"breakpoint.inc"
 	
+	.ifdef	RELEASE
+OPT_NO_GREEN_FENCES = 0		| leave at 0
+	.else
+	* dev cheats
+OPT_NO_GREEN_FENCES = 1
+	.endif
+	
 	.macro	ERROR	arg
 	*.error	"\arg"     | comment out to disable errors
 	.endm

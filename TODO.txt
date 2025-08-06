@@ -2,13 +2,11 @@
 - release mode is crashing badly (in whdload)
 - find "game is playing" flag to insert coin with fire
   acually doesn't work with $4
-	 
-optim:
-
-- last post_processing phase / directly in converter: change move.b dx,(a0) / move.b (a0),dx after a GET_ADDRESS or such
-  by direct (a6,a0.w) in zero page
-
 - at c831, can write to ROM??? at C7E9 (happens when drawing fence)
+  actually seems systematic if game wants to close a gate on the
+  last row near the exit. Bug also present on the original game  
+
+
 
 
 log sound:
