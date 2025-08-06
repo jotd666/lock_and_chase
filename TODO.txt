@@ -1,4 +1,5 @@
-
+- fire while entering highscore inserts coin?
+- missing sound for captured cops
 - leave gate bug doesn't work properly
 
 C8AC => 79 7E : fixes bug
