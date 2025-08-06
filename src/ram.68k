@@ -6,7 +6,7 @@
 	.global		bof_sync_flag
 	.global		vb_ticks_count
 	.global		break_at_startup_flag
-	.global		infinite_pepper_flag
+	.global		leave_gate_bug_flag
 	.global		infinite_lives_flag
 	.global		invincible_flag
 	.global		player_1_controls
@@ -38,6 +38,8 @@ current_bank:
 vb_ticks_count:
 	.skip	1
 invincible_flag:
+	.skip	1
+leave_gate_bug_flag:
 	.skip	1
 break_at_startup_flag:
 	.skip	1

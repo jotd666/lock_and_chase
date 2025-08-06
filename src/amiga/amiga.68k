@@ -395,8 +395,6 @@ _user:
 
 	BTST	#1,d0
 	sne		infinite_lives_flag
-	btst	#2,d0
-	*sne		infinite_pepper_flag
 
 0:
 1:
@@ -408,8 +406,6 @@ _user:
 	move.l	misc_options,d1
 	btst	#0,d1
 	sne		frameskip
-	btst	#1,d1
-	sne		no_main_tune
 	.ifndef	RELEASE
 	btst	#31,d1
 	sne		break_at_startup_flag
@@ -428,6 +424,10 @@ _user:
 
 	move.b	d1,dip_switches_2
 
+	* something that is not a dip switch but could be
+	* considered like it is the gate bug fix flag
+	btst	#2,d0
+	sne		leave_gate_bug_flag
 
 	
 

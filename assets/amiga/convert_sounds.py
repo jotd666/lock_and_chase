@@ -49,6 +49,7 @@ def convert():
 "HAPPY_SND"               :{"index":2,"channel":0,"sample_rate":lq_sample_rate,"priority":50},  # ignore, just play after "bag picked", else repeats a lot/super fast and causes issues
 "BAG_PICKED_SND"               :{"index":0xA,"channel":0,"sample_rate":hq_sample_rate,"priority":50},
 "HAT_PICKED_SND"               :{"index":8,"channel":0,"sample_rate":hq_sample_rate,"priority":50},
+"NO_MORE_GATES_SND"               :{"index":0x24,"channel":1,"sample_rate":hq_sample_rate,"priority":30},#
 "BAG_TO_PICK_SND"               :{"index":0x25,"channel":2,"sample_rate":hq_sample_rate,"priority":50,"loops":True},#
 "EXTRA_LIFE_SND"               :{"index":0xB,"channel":1,"sample_rate":lq_sample_rate,"priority":50},#
 "STEP_1_SND"               :{"index":0X1E,"channel":1,"sample_rate":hq_sample_rate,"priority":30},#

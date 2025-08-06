@@ -12,6 +12,7 @@
 	.equ	ENGINE_SND,  0x1d
 	.equ	STEP_1_SND,  0x1e
 	.equ	STEP_2_SND,  0x1f
+	.equ	NO_MORE_GATES_SND,  0x24
 	.equ	BAG_TO_PICK_SND,  0x25
 	.equ	START_MUSIC_SND,  0x41
 	.equ	KILLED_SND,  0x42

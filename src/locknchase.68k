@@ -1346,15 +1346,47 @@ l_c7d4:
 draw_fence_c809:
 	clr.b	d0                               	| [$c809: lda #$00]
 	jbsr	osd_set_charbank |  [$c80b: sta charbank_8003]
+	* index of fence to draw
 	OP_R_ON_ZP_ADDRESS	move,0xa1,d0 |  [$c80e: lda $a1]
+
+	* typo in the address list means that index $28 of the fence
+	* list is a ROM address, not the actual fence screen address
+	* As a result, the gate doesn't appear despite the sound
+	* and can write to ROM at C7E9
+	*
+	* we could change ROM data but I wanted to leave the option
+	* to preserve original game bug too, and avoid a write to ROM
+	* (which here is RAM so maybe a problem!!)
+	cmp.b	#0x28,d0
+	jne		2f
+	tst.b	leave_gate_bug_flag
+	jne		0f
+	* this slot contains the buggy ROM address
+	* C7E9 should be 7E79 (mega typo or byte skip?)
+	* inject the proper address
+	move.b	#0x79,d0
+	OP_W_ON_ZP_ADDRESS	move,0xab,d0 |  [$c815: sta $ab]
+	move.b	#0x7E,d0
+	OP_W_ON_ZP_ADDRESS	move,0xac,d0 |  [$c81a: sta $ac]
+	jra		1f						| skip the buggy address load
+0:
+	* don't fix the bug: don't draw the gate in ROM,
+	* return immediately
+	rts
+2:
 	asl.b	#1,d0                            	| [$c810: asl a]
 	move.b	d0,d1                           	| [$c811: tax]
+	* table of red fences addresses
+	* start with 3Cxx ones (horizontal) then end with 7Cxx ones
+	* (vertical)
+	* 
 	GET_ADDRESS	0xc85c                     	| [$c812: lda $c85c, x]
 	move.b	(a0,d1.w),d0                    	| [...]
 	OP_W_ON_ZP_ADDRESS	move,0xab,d0 |  [$c815: sta $ab]
 	GET_ADDRESS	0xc85d                     	| [$c817: lda $c85d, x]
 	move.b	(a0,d1.w),d0                    	| [...]
 	OP_W_ON_ZP_ADDRESS	move,0xac,d0 |  [$c81a: sta $ac]
+1:
 	OP_R_ON_ZP_ADDRESS	move,0xa2,d1 |  [$c81c: ldx $a2]
 	cmp.b	#0x7c,d0                         	| [$c81e: cmp #$7c]
 	* bcc=>bcs (cmp above)
@@ -1372,16 +1404,11 @@ l_c827:
 	                           	| [$c82e: clc]
 	add.b	#0x9c,d0                        	| [$c82f: adc #$9c]
 l_c831:
-	* can write to ROM??? at C7E9
-	* happens when drawing fence even on original game
-	* defensive code added!
-	cmp.b	#0x40,(a6,0xac)
-	jcc		0f				| pointer must be in videoram
 	GET_INDIRECT_UNCHECKED_ADDRESS	0xab              	| [$c831: sta ($ab), y] [video_address]
 	move.b	d0,(a0,d2.w)                    	| [...]
 	add.w	d2,a0 | [...]
 	VIDEO_BYTE_DIRTY | [...]
-0:
+
 	addq.b	#1,d1                           	| [$c833: inx]
 	subq.b	#1,d2                           	| [$c834: dey]
 	jpl	l_c827                             	| [$c835: bpl $c827]
