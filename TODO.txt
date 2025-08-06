@@ -1,5 +1,4 @@
 - infinite lives cheat
-- release mode is crashing badly (in whdload)
 - find "game is playing" flag to insert coin with fire
   acually doesn't work with $4
 - leave gate bug doesn't work properly
