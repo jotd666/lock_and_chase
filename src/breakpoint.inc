@@ -22,7 +22,9 @@ next\@:
 	.endm
 	.endif
 	
-
+	.macro	INFINITE_LOOP
+	.word	0x60FE
+	.endif
 
 	* to trace at some virtual PCs, insert this macro
 	

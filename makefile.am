@@ -35,7 +35,7 @@ all : $(MAIN_020) $(MAIN_000) $(AMIGA_SHELL) $(WHDLOADER) $(WHDLOADER_CHIP) $(AM
 
 
 clean:
-	del $(OBJS) "$(MAIN_000)" "$(MAIN_020)"
+	del $(OBJS) $(PROGNAME)_000.o $(PROGNAME)_020.o "$(MAIN_000)" "$(MAIN_020)"
 	
 $(AMIGASRC)/graphics.68k: $(ASSETS)/convert_graphics.py
 	cmd /c $(ASSETS)\convert_graphics.py

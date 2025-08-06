@@ -19,7 +19,7 @@
 * ram also includes video & sprite ram
 ram_buffer:
 	.ifdef	RELEASE
-	.skip	0x2000
+	.skip	0x10000
 	.else
 	.skip	0x20000
 ram_start_0000:
@@ -28,9 +28,8 @@ ram_start_0000:
 
 
 
-
 	
-	* a lot of room for stack just in case...
+	* 4k for stack should be ok
 	.skip	0x1000
 stack_top:
 current_bank:

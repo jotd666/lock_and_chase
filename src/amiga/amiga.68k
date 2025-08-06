@@ -7,6 +7,9 @@
 
 
 	.include "../src/breakpoint.inc"
+	
+ 
+	
 	.include "custom.i"
 	.include "exec_lvos.i"
 	.include "dos_lvos.i"
@@ -160,10 +163,6 @@ w\@:
 	blitz_bypass
 .endm
 
-start:
-	move.l	a7,old_stack
-	bra	_user
-    
 	
 
 * exports
@@ -188,13 +187,15 @@ start:
 	.global	osd_set_charbank
 	.global	osd_read_system
 
-		.global	is_game_playing
+	.global	is_game_playing
 		
 	.include	"ReadJoypad.i"
 	.include	"whdload_funcs.i"
 		.text
 
 
+start:
+	move.l	a7,old_stack
 	    
 _user:
     * if D0 contains "WHDL"
