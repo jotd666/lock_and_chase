@@ -3,6 +3,7 @@
 	.equ	BANG_SND,  0x3
 	.equ	GATE_CLOSING_SND,  0x4
 	.equ	HAT_PICKED_SND,  0x8
+	.equ	COPS_LOCKED_SND,  0x9
 	.equ	BAG_PICKED_SND,  0xa
 	.equ	EXTRA_LIFE_SND,  0xb
 	.equ	LOOP_SND,  0x16

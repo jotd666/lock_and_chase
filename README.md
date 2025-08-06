@@ -11,15 +11,17 @@ Features:
 
 - 100% original game code, sound & graphics
 - hardware sprites used for better refresh rate
-- 25fps on A500 with great speed, 50fps on more powerful machines
+- 50fps on A500
 - PAL or NTSC supported (NTSC is slightly faster, also bottom of screen
   is cut slightly, but it runs)
-- Highscores & best times are saved (unless cheat is on)
+- Highscores are saved (unless cheat is on)
+- Original gate bug fixed
+- Fast mode / 3-5 lives settings
 
 Controls:
 
 - joystick left/right/up/down: move character
-- joystick fire: close gate
+- joystick fire: close gate (only 2 gates)
 
 To start a game (when game not running):
 

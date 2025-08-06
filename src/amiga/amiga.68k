@@ -1500,14 +1500,15 @@ store_system:
 2:
 	move.l	(a7)+,d0
 	cmp.l	#0x200000,d0
-	bcs.b	3f				| will crawl if no fastmem
+	bcs.b	3f				| could crawl if no fastmem
 	move.w	AttnFlags(a6),d0
 	btst	#AFB_68020,d0
 	bne.b	1f
 3:
 	* no whdload, no 68020: assume slow
 	* if running on PiStorm, well, too bad use whdload
-	st.b	frameskip
+	*st.b	frameskip
+	nop
 1:
 
 	lea	_custom,a6
