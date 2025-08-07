@@ -241,32 +241,19 @@ _user:
 	or.l	#2,cheat_flags
 	st.b	cheat_used
 2:
-	move.l	(A0)+,D0	| INFPEPPER/S
-	beq.b	2f
-	or.l	#4,cheat_flags
-	st.b	cheat_used
-2:
-
 	move.l	(A0)+,D0	| CHEATKEYS/S
 	beq.b	2f
 	* cheat isn't used as long as no cheat key is used
 	or.l	#0x10,cheat_flags
 2:
-	move.l	(A0)+,D0	| NOMAINTUNE/S
-	beq.b	2f
-	* cheat isn't used as long as no cheat key is used
-	st.b	no_main_tune
-2:
 
-	move.l	(A0)+,D0	| STARTLIVES/K/N
+	move.l	(A0)+,D0	| FIVELIVES/K
 	beq.b	2f
-	bsr		bcpl_string_to_int
-	move.l	d0,start_lives
+	bset	#1,dsw_options+3
 2:
-	move.l	(A0)+,D0	| SKILL/K/N
+	move.l	(A0)+,D0	| FAST/K
 	beq.b	2f
-	bsr		bcpl_string_to_int
-	move.l	d0,difficulty_level
+	bset	#0,dsw_options+3
 2:
 
 
@@ -452,16 +439,7 @@ _user:
 	st		cheat_used
 
 0:
-	
-	move	#0x80,d1	| demo sounds
-	move.l	start_lives(pc),d0
-	or.b	d0,d1
-	move.l	difficulty_level(pc),d0
-	ror.b	#3,d0
-	or.b	d0,d1
-	
-	move.b	d1,dip_switches_1
-	
+		
 	jsr	 _detect_controller_types 
 	clr.b	controller_joypad_0
 	clr.b	controller_joypad_1
@@ -2210,7 +2188,6 @@ direction_table:
 
 osd_read_dsw1:
 	* actual dipswitches
-	move.b	dip_switches_1(pc),d0
 	not.b	d0		| active low
 	move.b	#0xBF,d0	| what MAME returns
 	rts
@@ -2423,8 +2400,8 @@ program_args_end:
 	.align	4
 read_args_string:
 	.byte	read_args_string_end-read_args_string
-	.ascii	"INVINCIBLE/S,INFLIVES/S,INFPEPPER/S,"
-	.ascii	"CHEATKEYS/S,NOMAINTUNE/S"
+	.ascii	"INVINCIBLE/S,INFLIVES/S,"
+	.ascii	"CHEATKEYS/S,FIVELIVES/S,FAST/S"
 read_args_string_end:
 	.align	2
 
@@ -2466,11 +2443,9 @@ misc_options:
 		.long	0
 		
 		.long	WHDLTAG_CUSTOM4_GET
-start_lives:
 		.long	0
 
 		.long	WHDLTAG_CUSTOM5_GET
-difficulty_level:
 		.long	0
 	.long	0
 dip_switches_1:

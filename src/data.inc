@@ -29,4 +29,4 @@ system_9002 = 0x9002
 dsw1_8000 = 0x8000
 dsw2_8001 = 0x8001
 charbank_8003 = 0x8003
-high_score_table_0294 = 0x294
+* 0x200: contains enemy structs (size = 0x1A)
