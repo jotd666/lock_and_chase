@@ -3,8 +3,13 @@ MAIN_000 = ..\$(PROGNAME)_000
 MAIN_020 = ..\$(PROGNAME)_020
 
 
+
 ifdef RELEASE_BUILD
 OPT_RELEASE = --defsym RELEASE=1
+OPT_RELEASE_LINK = -s
+else
+OPT_RELEASE = 
+OPT_RELEASE_LINK = 
 endif
 
 # Bebbo's package usually installs itself there
@@ -49,13 +54,13 @@ $(AMIGASRC)/sounds.68k: $(ASSETS)/convert_sounds.py
 	del sound_entries.o
 	
 $(MAIN_000): $(OBJS) $(PROGNAME)_000.o
-	$(GCC_BIN)/m68k-amigaos-ld -s -o $(MAIN_000) $(OBJS) $(PROGNAME)_000.o
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_000) $(OBJS) $(PROGNAME)_000.o
 
 $(MAIN_020): $(OBJS) $(PROGNAME)_020.o
-	$(GCC_BIN)/m68k-amigaos-ld -s -o $(MAIN_020) $(OBJS) $(PROGNAME)_020.o
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(MAIN_020) $(OBJS) $(PROGNAME)_020.o
 
 $(AMIGA_SHELL): shell.o
-	$(GCC_BIN)/m68k-amigaos-ld -s -o $(AMIGA_SHELL) shell.o
+	$(GCC_BIN)/m68k-amigaos-ld $(OPT_RELEASE_LINK) -o $(AMIGA_SHELL) shell.o
 
 ram.o: ram.68k
 	$(ASM) ram.68k -o ram.o

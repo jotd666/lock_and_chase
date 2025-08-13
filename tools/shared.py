@@ -7,6 +7,12 @@ jmpre = re.compile("(j..)\s+\[([ab]),(.)\]")
 def remove_instruction(lines,i):
     return change_instruction("",lines,i)
 
+def remove_error(line):
+    if "ERROR" in line:
+        return ""
+    else:
+        raise Exception(f"No ERROR to remove in {line}")
+
 def remove_continuing_lines(lines,i):
     for j in range(i+1,i+4):
         if "[...]" in lines[j]:

@@ -1,4 +1,4 @@
-command line options for non-whdload
+why make a copy of the sprite ram??
 
 hacks:
 
