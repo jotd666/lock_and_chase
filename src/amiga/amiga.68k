@@ -923,22 +923,15 @@ blit_background:
 
 really_update_sprites:
 update_bobs_and_hw_sprites:
-	
-	* make a copy of the sprite memory
-	GET_RAM_START_IN_A6
-
-	lea	(MIRROR_ADDRESS,a6),a0
-	lea	sprite_memory,a1
-	* super-quick copy of 32 bytes of memory
-	movem.l	(a0),d0-d7
-	movem.l	d0-d7,(a1)
 
 
 	*****************************
 	* position hardware sprites *
 	*****************************
 
-	lea	sprite_memory,a0
+	GET_RAM_START_IN_A6
+	lea	(MIRROR_ADDRESS,a6),a0
+
 	lea	HW_SpriteYTable_16,a1
 	lea	game_sprites+2,a3
 	lea	sprite_type_table,a2
@@ -1003,7 +996,8 @@ update_bobs_and_hw_sprites:
 	* draw current BOBs *
 	*********************
 
-	lea	sprite_memory,a0
+	GET_RAM_START_IN_A6
+	lea	(MIRROR_ADDRESS,a6),a0
     lea _custom,A5
 	move.l	bob_previous_drawed_sprites(pc),a6
 	lea		bob_table,a4
@@ -1407,8 +1401,6 @@ start_process_1_plane:
 * 2 words: first shift (as bplcon value), then
 * offset in bytes
 
-sprite_memory:
-	.skip	0x20
 hw_sprite_allocated_frames:
 	.skip	0x80
 current_hw_sprite:

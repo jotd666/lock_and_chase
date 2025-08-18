@@ -1,6 +1,5 @@
-why make a copy of the sprite ram??
-top screen highscore not copied when loading
-cop captured sound conflicts with player killed
+top screen highscore not copied when loading; @8 (3 bytes)
+
 
 hacks:
 

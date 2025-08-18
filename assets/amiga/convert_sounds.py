@@ -37,7 +37,7 @@ def convert():
 # 2: laugh after bag pick
 # B: extra life
 "CREDIT_SND"               :{"index":1,"channel":2,"sample_rate":hq_sample_rate,"priority":40},
-"KILLED_SND"               :{"index":0x42,"channel":1,"sample_rate":lq_sample_rate,"priority":40},
+"KILLED_SND"               :{"index":0x42,"channel":1,"sample_rate":lq_sample_rate,"priority":60},
 "LOOP_FASTEST_SND"               :{"index":0x19,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "LOOP_FASTER_SND"               :{"index":0x18,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},
 "LOOP_FAST_SND"               :{"index":0x17,"channel":3,"sample_rate":lq_sample_rate,"priority":40,"loops":True},

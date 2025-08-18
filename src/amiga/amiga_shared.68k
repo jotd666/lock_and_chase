@@ -62,6 +62,13 @@ osd_read_high_scores:
 	move.b	(a1)+,(a0)+
 	dbf		d0,0b
 1:
+	* also update high score on top
+	lea		(high_score_0007+3,a6),a1
+	lea		(high_score_table_0294,a6),a0
+	move.b	(a0)+,(a1)
+	move.b	(a0)+,-(a1)
+	move.b	(a0)+,-(a1)
+
 	movem.l	(a7)+,d0-d7/a0-a6
 	rts
 	

@@ -89,6 +89,7 @@ enemy_struct_offset_a4 = $a4
 exit_open_flag_b0 = $b0
 enemy_structures_0200 = $200
 high_score_table_0294 = $294
+high_score_0007 = $7
 
 player_1_controls_9000 = $9000
 system_9002 = $9002
