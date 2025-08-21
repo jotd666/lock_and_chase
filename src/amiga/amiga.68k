@@ -1322,7 +1322,7 @@ blit_planes_any_internal_cookie_cut:
     lsr.w   #1,d2
     add.w   d2,d4       | blit height
     * always the same settings (ATM)
-	moveq	#0,d2
+	moveq	#-2,d2
 	add.w	d5,a3			| apply y offset to mask too (y offset looks wrong)
 	
     * now just wait for blitter ready to write all registers
@@ -1332,6 +1332,8 @@ blit_planes_any_internal_cookie_cut:
 
 	move.w d2,bltamod(a5)		|A modulo=bytes to skip between lines
 	move.w d2,bltbmod(a5)		|B modulo=bytes to skip between lines
+	moveq	#0,d2
+    move.w  d2,bltalwm(a5)
 	
     move.w  d0,bltcmod(a5)	|C modulo
     move.w  d0,bltdmod(a5)	|D modulo
