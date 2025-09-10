@@ -60,6 +60,7 @@ OPT_NO_GREEN_FENCES = 0
 
 	.macro	SBC_X	address
 	INVERT_XC_FLAGS
+	SET_Z_FLAG
 	GET_ADDRESS	\address
 	move.b	(a0,d1.w),d4
 	subx.b	d4,d0
@@ -68,6 +69,7 @@ OPT_NO_GREEN_FENCES = 0
 	
 	.macro	SBC_Y	address
 	INVERT_XC_FLAGS
+	SET_Z_FLAG
 	GET_ADDRESS	\address
 	move.b	(a0,d2.w),d4
 	subx.b	d4,d0
@@ -76,6 +78,7 @@ OPT_NO_GREEN_FENCES = 0
 	
 	.macro	SBC	address
 	INVERT_XC_FLAGS
+	SET_Z_FLAG
 	GET_ADDRESS	\address
 	move.b	(a0),d4
 	subx.b	d4,d0
@@ -84,6 +87,7 @@ OPT_NO_GREEN_FENCES = 0
 
 	.macro	SBCD_DIRECT	address
 	INVERT_XC_FLAGS
+	SET_Z_FLAG
 	GET_ADDRESS	\address
 	move.b	(a0),d4
 	scbd	d4,d0
@@ -97,6 +101,7 @@ OPT_NO_GREEN_FENCES = 0
 	
 	.macro	SBC_IMM	param
 	INVERT_XC_FLAGS
+	SET_Z_FLAG
 	move.b	#\param,d4
 	subx.b	d4,d0
 	INVERT_XC_FLAGS
@@ -104,17 +109,18 @@ OPT_NO_GREEN_FENCES = 0
 
 	.macro	SBCD_IMM	param
 	INVERT_XC_FLAGS
+	SET_Z_FLAG
 	move.b	#\param,d4
 	sbcd	d4,d0
 	INVERT_XC_FLAGS
 	.endm
 
+	.macro	SET_Z_FLAG
+	cmp.b	d4,d4
+	.endm
+	
 	.macro INVERT_XC_FLAGS
-	PUSH_SR
-	move.w	(sp),d4
-	eor.b	#0x11,d4
-	move.w	d4,(sp)
-	POP_SR
+	eor.b	#0x11,ccr
 	.endm
 
 * useful to recall C from X (add then move then bcx)
@@ -130,37 +136,22 @@ OPT_NO_GREEN_FENCES = 0
 	POP_SR
 	.endm
 
-	.macro	SET_X_FROM_CLEARED_C
-	PUSH_SR
-	move.w	(sp),d4
-	bset	#4,d4   | set X
-	btst	#0,d4
-	beq.b	skip\@
-	bclr	#4,d4   | C is set: clear X
-skip\@:
-	move.w	d4,(sp)
-	POP_SR
+	.macro CLR_V_FLAG
+	and.b	#0xFD,ccr		| bit 1 = V
 	.endm
 
 	.macro CLR_XC_FLAGS
-	moveq	#0,d7
-	roxl.b	#1,d7
+	and.b	#0xEE,ccr		| bit 4 = X, bit 0 = C
 	.endm
+	
 	.macro SET_XC_FLAGS
-	st	d7
-	roxl.b	#1,d7
+	or.b	#0x11,ccr		| bit 4 = X, bit 0 = C
 	.endm
 
-	.macro CLR_V_FLAG
-	moveq	#0,d3
-	add.b	d3,d3
-	.endm
 
 	.macro SET_I_FLAG
-	ERROR  "TODO: insert interrupt disable code here"
 	.endm
 	.macro CLR_I_FLAG
-	ERROR   "TODO: insert interrupt enable code here"
 	.endm
 
 
