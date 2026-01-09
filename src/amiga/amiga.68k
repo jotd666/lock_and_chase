@@ -441,8 +441,6 @@ _user:
 0:
 		
 	jsr	 _detect_controller_types 
-	clr.b	controller_joypad_0
-	clr.b	controller_joypad_1
 
 	jra		demo_game
 
@@ -2555,11 +2553,10 @@ _end_of_ng_code:
 	* so the assembler can optimize by using PC-relative addressing
 	* whenever possible (and it does)
 	.ifndef	RELEASE
-	* easier to debug game to have memory aligned on 0x10000
-	.align	0x10000
+
 
 	.ifne	OPT_ENABLE_LOGGING
-	.section	.bss
+	.section	.bsspublic
 	.ascii	"TILE"
 tile_log_table:
 	* 32 cluts, 1024 tiles
